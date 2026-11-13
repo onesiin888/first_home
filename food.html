@@ -64,9 +64,8 @@
                 <div class="truncate">
                     <div class="flex items-center space-x-2">
                         <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">탕비실 · 비품 신청 보드</h1>
-                        <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25">
-                            <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-[#43A842]"></span>
-                            <span id="syncText">실시간 공유중</span>
+                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#159E8A]/10 text-[#0F766E] border border-[#159E8A]/25">
+                            <span>🚚 정기 주문: 매주 화 · 목요일</span>
                         </span>
                     </div>
                     <p class="text-xs text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
@@ -88,35 +87,26 @@
     <!-- 메인 컨텐츠 -->
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
 
-        <!-- 상단 총괄 요약 바 -->
-        <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
+        <!-- 탕비실 예산 및 잔액 요약 바 -->
+        <section class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3 w-full sm:w-auto">
+                <div class="w-10 h-10 rounded-xl bg-[#0083CA]/10 text-[#0083CA] flex items-center justify-center font-bold text-lg shrink-0">
+                    💳
+                </div>
                 <div>
-                    <p class="text-xs font-medium text-slate-500">접수 대기</p>
-                    <p class="text-xl font-extrabold text-[#0083CA] mt-0.5" id="statPending">0건</p>
+                    <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider">이번 달 탕비실 예산 현황</h2>
+                    <div class="flex items-center space-x-2 mt-0.5">
+                        <span class="text-lg font-extrabold text-slate-900" id="budgetDisplay">총 300,000원 중</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">잔액 300,000원</span>
+                    </div>
                 </div>
-                <span class="w-9 h-9 rounded-lg bg-[#0083CA]/10 text-[#0083CA] flex items-center justify-center text-sm font-bold">⏳</span>
             </div>
-            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-slate-500">발주(주문) 완료</p>
-                    <p class="text-xl font-extrabold text-[#159E8A] mt-0.5" id="statOrdered">0건</p>
+            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                <div id="adminBudgetControl" class="hidden">
+                    <button onclick="openBudgetModal()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg font-semibold transition">
+                        ⚙️ 예산 설정
+                    </button>
                 </div>
-                <span class="w-9 h-9 rounded-lg bg-[#159E8A]/10 text-[#159E8A] flex items-center justify-center text-sm font-bold">🚚</span>
-            </div>
-            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
-                <div>
-                    <p class="text-xs font-medium text-slate-500">탕비실 비치 완료</p>
-                    <p class="text-xl font-extrabold text-[#43A842] mt-0.5" id="statCompleted">0건</p>
-                </div>
-                <span class="w-9 h-9 rounded-lg bg-[#43A842]/10 text-[#43A842] flex items-center justify-center text-sm font-bold">✅</span>
-            </div>
-            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between col-span-2 sm:col-span-1">
-                <div class="min-w-0 pr-2">
-                    <p class="text-xs font-medium text-slate-500">현재 최다 공감 품목</p>
-                    <p class="text-sm font-bold text-slate-900 truncate mt-1" id="statTopItem">-</p>
-                </div>
-                <span class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold shrink-0">🔥</span>
             </div>
         </section>
 
@@ -146,7 +136,10 @@
                     <div class="h-1 w-full dadam-gradient-bg"></div>
                     <div class="p-5">
                         <div class="mb-4 pb-3 border-b border-slate-100">
-                            <h2 class="text-sm font-bold text-slate-900">간식 · 비품 신청하기</h2>
+                            <div class="flex justify-between items-center">
+                                <h2 class="text-sm font-bold text-slate-900">간식 · 비품 신청하기</h2>
+                                <span class="text-[10px] font-bold text-[#0083CA] bg-[#0083CA]/10 px-2 py-0.5 rounded">화·목 취합 발주</span>
+                            </div>
                             <p class="text-xs text-slate-500 mt-0.5">목록에 이미 있는 메뉴는 우측에서 '나도 원해요'를 눌러주세요.</p>
                         </div>
 
@@ -206,12 +199,6 @@
                             <option value="popular">👍 공감 많은 순</option>
                             <option value="latest">🕒 최신 등록 순</option>
                         </select>
-                        <select id="filterStatus" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#0083CA]">
-                            <option value="all">전체 상태</option>
-                            <option value="pending">접수 대기</option>
-                            <option value="ordered">발주 완료</option>
-                            <option value="completed">비치 완료</option>
-                        </select>
                         <select id="filterCategory" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="all">전체 분류</option>
                             <option value="과자·스낵">과자·스낵</option>
@@ -221,7 +208,7 @@
                             <option value="사무용품">사무용품</option>
                         </select>
                         <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold transition ml-auto sm:ml-0">
-                            📋 대기목록 복사
+                            📋 발주 목록 복사
                         </button>
                     </div>
                 </div>
@@ -286,13 +273,13 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 비밀번호(PIN) 변경</label>
                     <input type="password" id="settingNewPinInput" placeholder="새 비밀번호 입력 (변경 시에만 입력)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 바꾸고 [설정 저장]을 누르면 즉시 클라우드에 반영되어 다른 분들도 새 번호로만 로그인할 수 있습니다.</p>
+                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 변경하고 [설정 저장]을 누르면 이 링크(깃허브)에 고정됩니다.</p>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
-                    <label class="block text-xs font-semibold text-slate-700">완료 데이터 정리</label>
-                    <button type="button" onclick="clearCompletedOrders()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 rounded-lg font-semibold transition">
-                        '비치 완료'된 지난 내역 일괄 삭제하기
+                    <label class="block text-xs font-semibold text-slate-700">전체 데이터 관리</label>
+                    <button type="button" onclick="clearAllOrders()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 rounded-lg font-semibold transition">
+                        주문 완료된 지난 내역 전체 초기화하기
                     </button>
                 </div>
             </div>
@@ -343,11 +330,52 @@
             </div>
             <form onsubmit="handleSaveMemo(event)" class="space-y-3.5">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">메모 내용 (도착 예정일 / 반려 사유 등)</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">메모 내용 (도착 예정일 / 안내 사항 등)</label>
                     <input type="text" id="adminMemoInput" placeholder="예: 금요일 오후 입고 예정입니다!" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
                     <button type="button" onclick="closeMemoModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
+                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 모달 5: 구매 금액 입력 모달 -->
+    <div id="priceModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900">실제 구매 금액 입력</h3>
+                <button onclick="closePriceModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+            </div>
+            <form onsubmit="handleSavePrice(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">결제 금액 (원)</label>
+                    <input type="number" id="orderPriceInput" required placeholder="예: 28500" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <p class="text-[11px] text-slate-400 mt-1">입력한 금액만큼 월 예산에서 자동으로 차감됩니다.</p>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closePriceModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
+                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">금액 확정 및 차감</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 모달 6: 예산 설정 모달 -->
+    <div id="budgetModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900">이번 달 총 예산 설정</h3>
+                <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+            </div>
+            <form onsubmit="handleSaveBudget(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">총 예산 (원)</label>
+                    <input type="number" id="totalBudgetInput" required placeholder="예: 300000" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeBudgetModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
                     <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">저장</button>
                 </div>
             </form>
@@ -360,12 +388,12 @@
     </div>
 
     <script>
-        // 초기 기본 비밀번호 (코드 내 최초 설정)
-        const INITIAL_ADMIN_PIN = "1234";
+        const INITIAL_ADMIN_PIN = "ddam";
 
         const DEFAULT_CONFIG = {
             pin: INITIAL_ADMIN_PIN,
-            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요."
+            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요. (매주 화·목 정기 발주)",
+            totalBudget: 300000
         };
 
         const DEFAULT_PRESETS = [
@@ -384,10 +412,10 @@
                 category: "커피·음료",
                 name: "코카콜라 제로 355ml 1박스",
                 link: "https://www.coupang.com",
-                reqNote: "오후 시간 당 충전용으로 신청합니다!",
+                reqNote: "오후 당 충전용으로 신청합니다!",
                 likes: 5,
-                status: "pending",
                 adminMemo: "",
+                price: 18500,
                 date: "11/13"
             },
             {
@@ -398,22 +426,20 @@
                 link: "https://shopping.naver.com",
                 reqNote: "탕비실 과자 칸이 비었어요",
                 likes: 7,
-                status: "ordered",
-                adminMemo: "주문 완료! 목요일 도착 예정입니다.",
+                adminMemo: "목요일 정기 발주로 주문 예정입니다!",
+                price: 0,
                 date: "11/12"
             }
         ];
 
-        const CLOUD_SYNC_URL = "https://kvdb.io/dadamlabs_pantry_room_2026_fixed_key/state";
+        let appConfig = JSON.parse(localStorage.getItem('dadam_config_v4')) || Object.assign({}, DEFAULT_CONFIG);
+        let presetItems = JSON.parse(localStorage.getItem('dadam_presets_v4')) || DEFAULT_PRESETS.slice();
+        let orders = JSON.parse(localStorage.getItem('dadam_orders_v4')) || DEFAULT_ORDERS.slice();
+        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v4')) || [];
 
-        let appConfig = JSON.parse(localStorage.getItem('dadam_config')) || Object.assign({}, DEFAULT_CONFIG);
-        let presetItems = JSON.parse(localStorage.getItem('dadam_presets')) || DEFAULT_PRESETS.slice();
-        let orders = JSON.parse(localStorage.getItem('dadam_orders')) || DEFAULT_ORDERS.slice();
-        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes')) || [];
-
-        let isAdmin = localStorage.getItem('dadam_is_admin') === 'true';
+        let isAdmin = localStorage.getItem('dadam_is_admin_v4') === 'true';
         let editingMemoId = null;
-        let lastCloudUpdatedAt = 0;
+        let editingPriceId = null;
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
@@ -427,77 +453,26 @@
             }, 2600);
         }
 
-        function setSyncBadge(isLive, textLabel) {
-            const dot = document.getElementById('syncDot');
-            const text = document.getElementById('syncText');
-            const badge = document.getElementById('syncStatusBadge');
-            if (!dot || !text || !badge) return;
-            text.innerText = textLabel;
-            if (isLive) {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-[#43A842]";
-                badge.className = "inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25";
+        function saveData() {
+            localStorage.setItem('dadam_config_v4', JSON.stringify(appConfig));
+            localStorage.setItem('dadam_presets_v4', JSON.stringify(presetItems));
+            localStorage.setItem('dadam_orders_v4', JSON.stringify(orders));
+            localStorage.setItem('dadam_likes_v4', JSON.stringify(myLikedIds));
+        }
+
+        function updateBudgetUI() {
+            const totalBudget = appConfig.totalBudget || 300000;
+            const totalSpent = orders.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
+            const balance = totalBudget - totalSpent;
+
+            document.getElementById('budgetDisplay').innerText = `총 ${totalBudget.toLocaleString()}원 중`;
+            const balanceEl = document.getElementById('balanceDisplay');
+            balanceEl.innerText = `잔액 ${balance.toLocaleString()}원`;
+
+            if (balance < 0) {
+                balanceEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200";
             } else {
-                dot.className = "w-1.5 h-1.5 rounded-full bg-[#0083CA]";
-                badge.className = "inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200";
-            }
-        }
-
-        async function pullFromCloud(forceRender = false) {
-            try {
-                const res = await fetch(CLOUD_SYNC_URL + "?t=" + Date.now(), { cache: 'no-store' });
-                if (res.status === 404) {
-                    await pushToCloud();
-                    return;
-                }
-                if (!res.ok) return;
-                const data = await res.json();
-                if (data && (forceRender || !data.updatedAt || data.updatedAt >= lastCloudUpdatedAt)) {
-                    lastCloudUpdatedAt = data.updatedAt || Date.now();
-                    if (data.appConfig) {
-                        appConfig = data.appConfig;
-                        localStorage.setItem('dadam_config', JSON.stringify(appConfig));
-                    }
-                    if (Array.isArray(data.presetItems)) {
-                        presetItems = data.presetItems;
-                        localStorage.setItem('dadam_presets', JSON.stringify(presetItems));
-                    }
-                    if (Array.isArray(data.orders)) {
-                        orders = data.orders;
-                        localStorage.setItem('dadam_orders', JSON.stringify(orders));
-                    }
-
-                    applyUIWithConfig();
-                    renderPresets();
-                    renderOrders();
-                }
-                setSyncBadge(true, "실시간 전사 공유중");
-            } catch (e) {
-                setSyncBadge(false, "오프라인 모드");
-            }
-        }
-
-        async function pushToCloud() {
-            localStorage.setItem('dadam_config', JSON.stringify(appConfig));
-            localStorage.setItem('dadam_presets', JSON.stringify(presetItems));
-            localStorage.setItem('dadam_orders', JSON.stringify(orders));
-            localStorage.setItem('dadam_likes', JSON.stringify(myLikedIds));
-
-            try {
-                const nowTs = Date.now();
-                lastCloudUpdatedAt = nowTs;
-                await fetch(CLOUD_SYNC_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        appConfig,
-                        presetItems,
-                        orders,
-                        updatedAt: nowTs
-                    })
-                });
-                setSyncBadge(true, "실시간 전사 공유중");
-            } catch (e) {
-                setSyncBadge(false, "로컬 저장됨");
+                balanceEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
             }
         }
 
@@ -526,6 +501,7 @@
             const adminBtn = document.getElementById('adminBtn');
             const settingsBtn = document.getElementById('settingsBtn');
             const presetCtrl = document.getElementById('adminPresetControl');
+            const budgetCtrl = document.getElementById('adminBudgetControl');
 
             if (isAdmin) {
                 adminBtn.classList.remove('hidden');
@@ -533,13 +509,16 @@
                 adminBtn.className = "text-xs bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm";
                 settingsBtn.classList.remove('hidden');
                 presetCtrl.classList.remove('hidden');
+                budgetCtrl.classList.remove('hidden');
             } else {
                 adminBtn.classList.remove('hidden');
                 adminBtn.innerText = "🔒 담당자 로그인";
                 adminBtn.className = "text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm";
                 settingsBtn.classList.add('hidden');
                 presetCtrl.classList.add('hidden');
+                budgetCtrl.classList.add('hidden');
             }
+            updateBudgetUI();
         }
 
         function renderPresets() {
@@ -592,26 +571,26 @@
             modal.classList.remove('flex');
         }
 
-        async function handleAddPreset(e) {
+        function handleAddPreset(e) {
             e.preventDefault();
             const name = document.getElementById('presetNameInput').value.trim();
             const category = document.getElementById('presetCategoryInput').value;
             if (!name) return;
             presetItems.push({ name, category });
+            saveData();
             renderPresets();
             closeAddPresetModal();
-            await pushToCloud();
             showToast("단골 품목에 추가되었습니다.");
         }
 
-        async function deletePreset(idx) {
+        function deletePreset(idx) {
             presetItems.splice(idx, 1);
+            saveData();
             renderPresets();
-            await pushToCloud();
             showToast("단골 품목이 삭제되었습니다.");
         }
 
-        async function handleFormSubmit(e) {
+        function handleFormSubmit(e) {
             e.preventDefault();
             const now = new Date();
             const dateStr = `${now.getMonth() + 1}/${now.getDate()}`;
@@ -630,20 +609,20 @@
                 link: linkVal,
                 reqNote: noteVal,
                 likes: 1,
-                status: 'pending',
                 adminMemo: '',
+                price: 0,
                 date: dateStr
             };
 
             orders.unshift(newItem);
             myLikedIds.push(newId);
+            saveData();
             renderOrders();
             document.getElementById('orderForm').reset();
-            await pushToCloud();
             showToast("신청 목록에 등록되었습니다!");
         }
 
-        async function toggleLike(id) {
+        function toggleLike(id) {
             const item = orders.find(o => o.id === id);
             if (!item) return;
 
@@ -655,17 +634,8 @@
                 item.likes = Math.max(1, (item.likes || 1) - 1);
                 myLikedIds.splice(likedIndex, 1);
             }
+            saveData();
             renderOrders();
-            await pushToCloud();
-        }
-
-        async function updateStatus(id, status) {
-            const item = orders.find(o => o.id === id);
-            if (!item) return;
-            item.status = status;
-            renderOrders();
-            await pushToCloud();
-            showToast("진행 상태가 변경되었습니다.");
         }
 
         function openMemoModal(id) {
@@ -685,31 +655,88 @@
             modal.classList.remove('flex');
         }
 
-        async function handleSaveMemo(e) {
+        function handleSaveMemo(e) {
             e.preventDefault();
             if (editingMemoId === null) return;
             const item = orders.find(o => o.id === editingMemoId);
             if (item) {
                 item.adminMemo = document.getElementById('adminMemoInput').value.trim();
+                saveData();
                 renderOrders();
-                await pushToCloud();
                 showToast("담당자 안내 메모가 저장되었습니다.");
             }
             closeMemoModal();
         }
 
-        async function deleteOrder(id) {
+        function openPriceModal(id) {
+            editingPriceId = id;
+            const item = orders.find(o => o.id === id);
+            document.getElementById('orderPriceInput').value = item && item.price ? item.price : '';
+            const modal = document.getElementById('priceModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('orderPriceInput').focus();
+        }
+
+        function closePriceModal() {
+            editingPriceId = null;
+            const modal = document.getElementById('priceModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleSavePrice(e) {
+            e.preventDefault();
+            if (editingPriceId === null) return;
+            const item = orders.find(o => o.id === editingPriceId);
+            if (item) {
+                item.price = Number(document.getElementById('orderPriceInput').value) || 0;
+                saveData();
+                renderOrders();
+                updateBudgetUI();
+                showToast("구매 금액이 반영되어 예산에서 차감되었습니다.");
+            }
+            closePriceModal();
+        }
+
+        function openBudgetModal() {
+            document.getElementById('totalBudgetInput').value = appConfig.totalBudget || 300000;
+            const modal = document.getElementById('budgetModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeBudgetModal() {
+            const modal = document.getElementById('budgetModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function handleSaveBudget(e) {
+            e.preventDefault();
+            const val = Number(document.getElementById('totalBudgetInput').value);
+            if (!isNaN(val)) {
+                appConfig.totalBudget = val;
+                saveData();
+                updateBudgetUI();
+                closeBudgetModal();
+                showToast("이번 달 총 예산이 변경되었습니다.");
+            }
+        }
+
+        function deleteOrder(id) {
             orders = orders.filter(o => o.id !== id);
+            saveData();
             renderOrders();
-            await pushToCloud();
+            updateBudgetUI();
             showToast("신청 내역이 삭제되었습니다.");
         }
 
-        async function registerToPreset(name, category) {
+        function registerToPreset(name, category) {
             if (!presetItems.some(p => p.name === name)) {
                 presetItems.push({ name, category });
+                saveData();
                 renderPresets();
-                await pushToCloud();
                 showToast("상단 단골 품목에 등록되었습니다.");
             } else {
                 showToast("이미 단골 품목에 등록되어 있습니다.");
@@ -719,16 +746,13 @@
         function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
-                localStorage.removeItem('dadam_is_admin');
+                localStorage.removeItem('dadam_is_admin_v3');
                 applyUIWithConfig();
                 renderPresets();
                 renderOrders();
                 showToast("담당자 모드가 종료되었습니다.");
                 return;
             }
-            
-            // 딜레이 없이 즉시 로그인 모달 창 띄우기 (클라우드 동기화는 백그라운드에서 실행)
-            pullFromCloud(false);
 
             document.getElementById('loginPinInput').value = '';
             document.getElementById('loginErrorMsg').classList.add('hidden');
@@ -744,17 +768,14 @@
             modal.classList.remove('flex');
         }
 
-        async function handleAdminLogin(e) {
+        function handleAdminLogin(e) {
             e.preventDefault();
-            // 최신 클라우드 설정 반영을 위해 한 번 더 동기화 시도
-            await pullFromCloud(false);
-
             const inputPin = document.getElementById('loginPinInput').value.trim();
             const currentPin = (appConfig && appConfig.pin) ? appConfig.pin : INITIAL_ADMIN_PIN;
 
             if (inputPin === currentPin) {
                 isAdmin = true;
-                localStorage.setItem('dadam_is_admin', 'true');
+                localStorage.setItem('dadam_is_admin_v4', 'true');
                 closeLoginModal();
                 applyUIWithConfig();
                 renderPresets();
@@ -765,8 +786,7 @@
             }
         }
 
-        async function openSettingsModal() {
-            await pullFromCloud(true);
+        function openSettingsModal() {
             document.getElementById('settingNoticeInput').value = appConfig.notice || DEFAULT_CONFIG.notice;
             document.getElementById('settingNewPinInput').value = '';
             const modal = document.getElementById('settingsModal');
@@ -780,7 +800,7 @@
             modal.classList.remove('flex');
         }
 
-        async function saveAdminSettings() {
+        function saveAdminSettings() {
             const newNotice = document.getElementById('settingNoticeInput').value.trim();
             const newPin = document.getElementById('settingNewPinInput').value.trim();
 
@@ -788,39 +808,22 @@
                 appConfig.notice = newNotice;
             }
             if (newPin) {
-                appConfig.pin = newPin; // 새 비밀번호 지정
+                appConfig.pin = newPin;
             }
 
+            saveData();
             applyUIWithConfig();
-            await pushToCloud(); // 클라우드에 즉시 강제 반영
             closeSettingsModal();
-            showToast("비밀번호가 변경되어 클라우드에 즉시 저장되었습니다!");
+            showToast("환경설정 및 비밀번호가 안전하게 저장되었습니다.");
         }
 
-        async function clearCompletedOrders() {
-            orders = orders.filter(o => o.status !== 'completed');
+        function clearAllOrders() {
+            orders = [];
+            saveData();
             renderOrders();
-            await pushToCloud();
+            updateBudgetUI();
             closeSettingsModal();
-            showToast("'비치 완료'된 내역이 일괄 정리되었습니다.");
-        }
-
-        function updateDashboardStats() {
-            const pendingCount = orders.filter(o => o.status === 'pending').length;
-            const orderedCount = orders.filter(o => o.status === 'ordered').length;
-            const completedCount = orders.filter(o => o.status === 'completed').length;
-
-            document.getElementById('statPending').innerText = `${pendingCount}건`;
-            document.getElementById('statOrdered').innerText = `${orderedCount}건`;
-            document.getElementById('statCompleted').innerText = `${completedCount}건`;
-
-            const activeOrders = orders.filter(o => o.status !== 'completed');
-            if (activeOrders.length > 0) {
-                const top = [...activeOrders].sort((a, b) => b.likes - a.likes)[0];
-                document.getElementById('statTopItem').innerText = `${top.name} (👍${top.likes})`;
-            } else {
-                document.getElementById('statTopItem').innerText = "대기 품목 없음";
-            }
+            showToast("전체 신청 내역이 초기화되었습니다.");
         }
 
         function getVendorLabel(url) {
@@ -832,18 +835,14 @@
         }
 
         function renderOrders() {
-            updateDashboardStats();
-
             const sortType = document.getElementById('sortOrder').value;
-            const statusFilter = document.getElementById('filterStatus').value;
             const catFilter = document.getElementById('filterCategory').value;
             const listEl = document.getElementById('orderList');
             listEl.innerHTML = '';
 
             let filtered = orders.filter(o => {
-                const matchStatus = statusFilter === 'all' || o.status === statusFilter;
                 const matchCat = catFilter === 'all' || o.category === catFilter;
-                return matchStatus && matchCat;
+                return matchCat;
             });
 
             if (sortType === 'popular') {
@@ -857,22 +856,13 @@
             if (filtered.length === 0) {
                 listEl.innerHTML = `
                     <div class="bg-white rounded-xl p-12 text-center text-slate-400 border border-slate-200/90 text-sm">
-                        해당 조건의 신청 내역이 없습니다.
+                        등록된 신청 내역이 없습니다. 원하는 간식을 신청해 보세요!
                     </div>
                 `;
                 return;
             }
 
             filtered.forEach(o => {
-                let statusBadge = '';
-                if (o.status === 'pending') {
-                    statusBadge = '<span class="text-[11px] bg-[#0083CA]/10 text-[#0083CA] border border-[#0083CA]/25 px-2 py-0.5 rounded-md font-bold">⏳ 접수 대기</span>';
-                } else if (o.status === 'ordered') {
-                    statusBadge = '<span class="text-[11px] bg-[#159E8A]/10 text-[#0F766E] border border-[#159E8A]/25 px-2 py-0.5 rounded-md font-bold">🚚 발주 완료</span>';
-                } else if (o.status === 'completed') {
-                    statusBadge = '<span class="text-[11px] bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25 px-2 py-0.5 rounded-md font-bold">✅ 비치 완료</span>';
-                }
-
                 const isLiked = myLikedIds.includes(o.id);
                 const likeBtnStyle = isLiked
                     ? "bg-[#0083CA] text-white border-[#0083CA]"
@@ -892,7 +882,6 @@
                             </div>
                             <div class="space-y-1 flex-1 min-w-0">
                                 <div class="flex flex-wrap items-center gap-1.5">
-                                    ${statusBadge}
                                     <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">${o.category}</span>
                                     <span class="text-xs text-slate-400">· ${o.author} (${o.date || '오늘'})</span>
                                 </div>
@@ -920,15 +909,22 @@
                     `;
                 }
 
+                if (o.price > 0) {
+                    html += `
+                        <div class="mt-2 text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1.5">
+                            <span>💳 구매 완료 금액:</span>
+                            <span class="text-[#0083CA] font-bold">${o.price.toLocaleString()}원</span>
+                        </div>
+                    `;
+                }
+
                 if (isAdmin) {
                     html += `
                         <div class="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
-                            <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="text-[11px] font-bold text-slate-400 mr-1">상태 변경:</span>
-                                <button onclick="updateStatus(${o.id}, 'pending')" class="text-xs px-2.5 py-1 rounded-md font-semibold border transition ${o.status === 'pending' ? 'bg-[#0083CA] text-white border-[#0083CA]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">접수 대기</button>
-                                <button onclick="updateStatus(${o.id}, 'ordered')" class="text-xs px-2.5 py-1 rounded-md font-semibold border transition ${o.status === 'ordered' ? 'bg-[#159E8A] text-white border-[#159E8A]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">발주 완료</button>
-                                <button onclick="updateStatus(${o.id}, 'completed')" class="text-xs px-2.5 py-1 rounded-md font-semibold border transition ${o.status === 'completed' ? 'bg-[#43A842] text-white border-[#43A842]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">비치 완료</button>
+                            <div class="flex items-center space-x-2">
+                                <span class="text-[11px] font-bold text-slate-400">담당자 관리:</span>
                                 <button onclick="openMemoModal(${o.id})" class="text-xs px-2.5 py-1 rounded-md font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50">💬 안내메모</button>
+                                <button onclick="openPriceModal(${o.id})" class="text-xs px-2.5 py-1 rounded-md font-semibold border border-emerald-300 text-emerald-700 bg-emerald-50 hover:bg-emerald-100">💰 금액입력(${o.price ? o.price.toLocaleString() + '원' : '미입력'})</button>
                             </div>
                             <div class="flex items-center space-x-1">
                                 <button onclick="registerToPreset('${o.name.replace(/'/g, "\\'")}', '${o.category}')" class="text-xs px-2.5 py-1 text-[#0F766E] hover:bg-[#159E8A]/10 rounded-md font-semibold transition">+ 단골등록</button>
@@ -944,14 +940,13 @@
         }
 
         function copyPendingOrders() {
-            const list = orders.filter(o => o.status === 'pending');
-            if (list.length === 0) {
-                showToast("현재 접수 대기 중인 품목이 없습니다.");
+            if (orders.length === 0) {
+                showToast("현재 발주할 신청 내역이 없습니다.");
                 return;
             }
-            let text = "[DadamLabs 탕비실·비품 발주 대기 목록]\n\n";
-            list.forEach((o, i) => {
-                text += `${i + 1}. [${o.category}] ${o.name} (공감 ${o.likes} / 신청: ${o.author})\n`;
+            let text = "[DadamLabs 매주 화·목 정기 발주 목록]\n\n";
+            orders.forEach((o, i) => {
+                text += `${i + 1}. [${o.category}] ${o.name} (공감 ${o.likes} / 신청: ${o.author})${o.price ? ` - [결제금액: ${o.price.toLocaleString()}원]` : ''}\n`;
                 if (o.link) text += `   - 구매링크: ${o.link}\n`;
             });
 
@@ -961,17 +956,13 @@
             tempArea.select();
             document.execCommand('copy');
             document.body.removeChild(tempArea);
-            showToast("대기 목록이 클립보드에 복사되었습니다!");
+            showToast("발주 목록이 클립보드에 복사되었습니다!");
         }
 
         applyUIWithConfig();
         renderPresets();
         renderOrders();
-        pullFromCloud(true);
-
-        setInterval(() => {
-            pullFromCloud(false);
-        }, 3000);
+        updateBudgetUI();
     </script>
 </body>
 </html>
