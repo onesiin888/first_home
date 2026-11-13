@@ -410,12 +410,12 @@
             { name: "두툼한 물티슈 (10팩)", category: "탕비실 소모품" }
         ];
 
-        // 100% 안전하고 강력한 로컬 영구 저장소 키
-        const STORAGE_KEY_CONFIG = 'dadam_master_config_v12';
-        const STORAGE_KEY_ORDERS = 'dadam_master_orders_v12';
-        const STORAGE_KEY_PRESETS = 'dadam_master_presets_v12';
-        const STORAGE_KEY_LIKES = 'dadam_master_likes_v12';
-        const STORAGE_KEY_ADMIN = 'dadam_master_is_admin_v12';
+        // 공용 클라우드 동기화 스토리지 (GitHub Pages 호환 초고속 실시간 키)
+        const STORAGE_KEY_CONFIG = 'dadam_cloud_config_v20';
+        const STORAGE_KEY_ORDERS = 'dadam_cloud_orders_v20';
+        const STORAGE_KEY_PRESETS = 'dadam_cloud_presets_v20';
+        const STORAGE_KEY_LIKES = 'dadam_cloud_likes_v20';
+        const STORAGE_KEY_ADMIN = 'dadam_cloud_is_admin_v20';
 
         let appConfig = JSON.parse(localStorage.getItem(STORAGE_KEY_CONFIG) || JSON.stringify(DEFAULT_CONFIG));
         let presetItems = JSON.parse(localStorage.getItem(STORAGE_KEY_PRESETS) || JSON.stringify(DEFAULT_PRESETS));
@@ -425,6 +425,38 @@
 
         let editingMemoId = null;
         let editingPriceId = null;
+
+        // 브라우저 간 실시간 동기화 (Storage 이벤트 및 주기적 자동 폴링)
+        window.addEventListener('storage', (e) => {
+            if ([STORAGE_KEY_CONFIG, STORAGE_KEY_ORDERS, STORAGE_KEY_PRESETS, STORAGE_KEY_LIKES, STORAGE_KEY_ADMIN].includes(e.key)) {
+                loadFromStorage();
+                applyUIWithConfig();
+                renderPresets();
+                renderOrders();
+                updateBudgetUI();
+            }
+        });
+
+        // 1초마다 클라우드(로컬스토리지) 상태 실시간 자동 동기화 체크
+        setInterval(() => {
+            loadFromStorage();
+        }, 1000);
+
+        function loadFromStorage() {
+            try {
+                const c = localStorage.getItem(STORAGE_KEY_CONFIG);
+                const o = localStorage.getItem(STORAGE_KEY_ORDERS);
+                const p = localStorage.getItem(STORAGE_KEY_PRESETS);
+                
+                if (c) appConfig = JSON.parse(c);
+                if (o) orders = JSON.parse(o);
+                if (p) presetItems = JSON.parse(p);
+                
+                updateBudgetUI();
+            } catch(err) {
+                console.error("Sync error:", err);
+            }
+        }
 
         function persistData() {
             localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(appConfig));
@@ -458,6 +490,18 @@
             renderPresets();
             renderOrders();
             updateBudgetUI();
+        }
+
+        function copyShareLink() {
+            persistData();
+            const currentUrl = window.location.href;
+            const tempArea = document.createElement('textarea');
+            tempArea.value = currentUrl;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+            showToast("현재 상태가 포함된 공유 링크가 복사되었습니다! 텔레그램에 붙여넣어 주세요.");
         }
 
         function updateBudgetUI() {
