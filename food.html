@@ -343,7 +343,6 @@
         let myLikedIds = [];
         let isAdmin = false;
         let activeTargetId = null;
-        let isCloudSynced = false; // 클라우드 데이터 수신 여부 체크
 
         window.escapeHtml = function(str) {
             if (!str) return '';
@@ -389,7 +388,7 @@
                 userId = 'fallback-user-' + Math.random().toString(36).substring(2, 9);
             }
 
-            // 구글 클라우드 Firestore 영구 저장소 실시간 구독 (엣지/크롬 어디서 열든 즉시 최신화)
+            // 구글 클라우드 Firestore 실시간 리스너 구독 (엣지/크롬 실시간 동기화)
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_master_state_2026');
                 onSnapshot(docRef, (docSnap) => {
@@ -400,7 +399,6 @@
                         if (data.appConfig) appConfig = { ...appConfig, ...data.appConfig };
                         if (data.myLikedIds) myLikedIds = data.myLikedIds;
                         
-                        isCloudSynced = true;
                         renderPresets();
                         renderOrders();
                         applyUIWithConfig();
@@ -417,16 +415,13 @@
             applyUIWithConfig();
         }
 
-        let lastLocalUpdateTime = 0;
-
         function saveStateToCloud() {
-            lastLocalUpdateTime = Date.now();
             const payload = {
                 orders: orders,
                 presets: presets,
                 appConfig: appConfig,
                 myLikedIds: myLikedIds,
-                updatedAt: lastLocalUpdateTime
+                timestamp: Date.now()
             };
             try {
                 if (db) {
@@ -640,7 +635,6 @@
             orders.unshift(newOrder);
             myLikedIds.push(newOrder.id);
             
-            // 즉각 UI 반영 후 클라우드 저장
             renderOrders();
             saveStateToCloud();
 
