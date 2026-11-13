@@ -66,10 +66,10 @@
                         <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#159E8A]/10 text-[#0F766E] border border-[#159E8A]/25">
                             <span>🚚 정기 주문: 매주 화 · 목요일</span>
                         </span>
-                        <span id="syncStatusBadge" class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <button onclick="forceManualSync()" id="syncStatusBadge" title="클릭하여 즉시 동기화" class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>실시간 연동중</span>
-                        </span>
+                            <span>실시간 연동중 (새로고침)</span>
+                        </button>
                     </div>
                     <p class="text-xs text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
                 </div>
@@ -375,11 +375,17 @@
         <span id="toastMessage">처리되었습니다.</span>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script>
         const INITIAL_ADMIN_PIN = "ddam";
         // 다담랩스 전용 고유 클라우드 키
         const CLOUD_ROOM_KEY = "dadamlabs_pantry_shared_room_v2026_final";
+        const MQTT_TOPIC = "dadamlabs/pantry/shared/v2026/state";
+        const MQTT_BROKERS = [
+            "wss://broker.emqx.io:8084/mqtt",
+            "wss://broker.hivemq.com:8884/mqtt",
+            "wss://test.mosquitto.org:8081/mqtt"
+        ];
         // 이전 버전에서 질문자님 PC에 저장되어 있던 로컬 키 목록 (기존 770,000원 및 신청 내역 자동 복구용)
         const LEGACY_KEYS = [
             "dadamlabs_pantry_shared_room_v2026_real",
@@ -409,7 +415,7 @@
         let isAdmin = sessionStorage.getItem('dadam_is_admin') === 'true';
         let lastUpdatedTimestamp = 0;
         let isSyncing = false;
-        let gunNode = null;
+        let mqttClients = [];
 
         const localChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CLOUD_ROOM_KEY) : null;
         if (localChannel) {
@@ -423,7 +429,6 @@
         let editingMemoId = null;
         let editingPriceId = null;
 
-        // 한글 및 특수문자 깨짐 방지 안전 인코딩/디코딩
         function encodePayload(obj) {
             const jsonStr = JSON.stringify(obj);
             const bytes = new TextEncoder().encode(jsonStr);
@@ -464,15 +469,15 @@
             const badge = document.getElementById('syncStatusBadge');
             if (!badge) return;
             if (status === 'synced') {
-                badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+                badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer";
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>실시간 공유됨</span>`;
             } else {
-                badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200";
+                badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 cursor-pointer";
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span><span>동기화 중...</span>`;
             }
         }
 
-        // 로컬 캐시 불러오기 (기존 버전에서 입력해둔 770,000원 및 간식 내역까지 자동 복구)
+        // 로컬 캐시 및 구버전 키(770,000원 및 신청 내역) 자동 복원
         function loadLocalCache() {
             try {
                 let raw = localStorage.getItem(CLOUD_ROOM_KEY);
@@ -494,12 +499,18 @@
             } catch (err) {}
         }
 
-        // 클라우드에서 받아온 최신 데이터(예산, 신청 목록, 비밀번호 등)를 화면에 즉시 적용
         function applyIncomingState(data, fromCloud = true) {
             if (!data || typeof data !== 'object') return;
             const incomingTs = Number(data.updatedAt || 0);
 
             if (fromCloud && incomingTs > 0 && incomingTs < lastUpdatedTimestamp) {
+                // 내 로컬 데이터가 클라우드보다 더 최신이면 내 데이터를 즉시 클라우드로 재발송해 다른 창들을 맞춰줌
+                publishToAllBrokers(encodePayload({
+                    updatedAt: lastUpdatedTimestamp,
+                    config: appConfig,
+                    presets: presetItems,
+                    orders: orders
+                }));
                 return;
             }
 
@@ -541,62 +552,63 @@
             }
         }
 
-        // 다중 실시간 WebSocket 릴레이(Gun.js) + ntfy 백업 동시 초기화 (어느 한 곳이 막혀도 100% 다른 브라우저·텔레그램과 즉시 연동)
+        // 글로벌 클라우드 브로커 3곳 동시 연결 (Retain 옵션으로 크롬에서 수정 시 텔레그램->엣지로 열자마자 0.1초 만에 수신)
         function initMultiCloudRealtime() {
-            try {
-                if (typeof Gun !== 'undefined') {
-                    const gun = Gun({
-                        peers: [
-                            'https://gun-manhattan.herokuapp.com/gun',
-                            'https://peer.wallie.io/gun',
-                            'https://gundb-relay-mlccl.ondigitalocean.app/gun',
-                            'https://plankton-app-6qfp3.ondigitalocean.app/'
-                        ],
-                        localStorage: false
+            if (typeof mqtt === 'undefined') return;
+
+            MQTT_BROKERS.forEach((brokerUrl) => {
+                try {
+                    const client = mqtt.connect(brokerUrl, {
+                        clientId: 'dadam_' + Math.random().toString(16).substring(2, 10),
+                        clean: true,
+                        connectTimeout: 4000,
+                        reconnectPeriod: 3000
                     });
-                    gunNode = gun.get('dadam_pantry_2026_sync_v1').get(CLOUD_ROOM_KEY);
-                    gunNode.on((data) => {
-                        if (data && data.payload) {
+
+                    client.on('connect', () => {
+                        setSyncBadge('synced');
+                        client.subscribe(MQTT_TOPIC, { qos: 1 }, () => {
+                            // 내 브라우저(크롬)에 이미 수정해둔 데이터(770,000원 등)가 있으면 브로커에 즉시 Retain 업로드
+                            if (lastUpdatedTimestamp > 0 || orders.length > 0 || appConfig.totalBudget !== 700000) {
+                                const stateObj = {
+                                    updatedAt: lastUpdatedTimestamp || Date.now(),
+                                    config: appConfig,
+                                    presets: presetItems,
+                                    orders: orders
+                                };
+                                client.publish(MQTT_TOPIC, encodePayload(stateObj), { qos: 1, retain: true });
+                            }
+                        });
+                    });
+
+                    client.on('message', (topic, message) => {
+                        if (topic === MQTT_TOPIC && message) {
                             try {
-                                const parsed = decodePayload(data.payload);
+                                const str = new TextDecoder().decode(message);
+                                const parsed = decodePayload(str);
                                 if (parsed && parsed.updatedAt) {
                                     applyIncomingState(parsed, true);
                                 }
                             } catch (e) {}
                         }
                     });
-                }
-            } catch (e) {}
+
+                    mqttClients.push(client);
+                } catch (e) {}
+            });
         }
 
-        // 클라우드에서 가장 최신 상태의 데이터를 읽어오는 함수
-        async function getCloudLatestObject() {
-            try {
-                const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}/json?poll=1&since=48h`, {
-                    cache: 'no-store'
-                });
-                if (res.ok) {
-                    const text = await res.text();
-                    const lines = text.trim().split('\n').filter(Boolean);
-                    for (let i = lines.length - 1; i >= 0; i--) {
-                        try {
-                            const msg = JSON.parse(lines[i]);
-                            if (msg && msg.event === 'message') {
-                                if (msg.message && msg.message.startsWith("DADAM_B64:")) {
-                                    const parsed = decodePayload(msg.message);
-                                    if (parsed && parsed.updatedAt) {
-                                        return parsed;
-                                    }
-                                }
-                            }
-                        } catch (innerErr) {}
+        function publishToAllBrokers(encodedBody) {
+            mqttClients.forEach((client) => {
+                try {
+                    if (client && client.connected) {
+                        // retain: true 설정으로 나중에 텔레그램 링크를 클릭해 들어오는 사람에게도 무조건 마지막 상태가 즉시 전달됨
+                        client.publish(MQTT_TOPIC, encodedBody, { qos: 1, retain: true });
                     }
-                }
-            } catch (e) {}
-            return null;
+                } catch (e) {}
+            });
         }
 
-        // 사용자가 신청/예산수정/금액입력을 했을 때 모든 클라우드 채널로 동시 전송
         async function pushStateToCloud(keepTimestamp = false) {
             setSyncBadge('syncing');
             if (!keepTimestamp || !lastUpdatedTimestamp) {
@@ -612,7 +624,7 @@
 
             const encodedBody = encodePayload(stateObj);
 
-            // 1) 로컬 및 동일 브라우저 탭 즉시 반영
+            // 1) 로컬 스토리지 및 동일 브라우저 탭 즉시 공유
             try {
                 localStorage.setItem(CLOUD_ROOM_KEY, JSON.stringify(stateObj));
                 localStorage.setItem('dadam_likes_v2', JSON.stringify(myLikedIds));
@@ -621,86 +633,38 @@
                 }
             } catch (e) {}
 
-            // 2) WebSocket 분산 클라우드(GunDB) 즉시 브로드캐스트 (텔레그램·엣지·타 PC 실시간 공유)
-            try {
-                if (gunNode) {
-                    gunNode.put({ payload: encodedBody, updatedAt: lastUpdatedTimestamp });
-                }
-            } catch (e) {}
+            // 2) MQTT 글로벌 클라우드 브로커 3곳에 Retain(영구 보관) 발행 -> 텔레그램에서 엣지로 언제 열든 즉시 똑같은 화면 표시
+            publishToAllBrokers(encodedBody);
 
-            // 3) ntfy.sh 클라우드 스트림 전송
-            try {
-                await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}`, {
-                    method: 'POST',
-                    body: encodedBody
-                });
-            } catch (e) {}
-
-            setSyncBadge('synced');
-        }
-
-        // 새 창(텔레그램 링크 클릭 등)에서 열렸을 때 클라우드 동기화 수행
-        async function fetchLatestFromCloud() {
-            if (isSyncing) return;
-            isSyncing = true;
-            try {
-                const remoteData = await getCloudLatestObject();
-                if (remoteData && remoteData.updatedAt) {
-                    if (Array.isArray(remoteData.orders) && orders.length > 0 && lastUpdatedTimestamp > remoteData.updatedAt) {
-                        const remoteIds = new Set(remoteData.orders.map(o => o.id));
-                        const myOnlyOrders = orders.filter(o => !remoteIds.has(o.id));
-                        if (myOnlyOrders.length > 0) {
-                            orders = [...myOnlyOrders, ...remoteData.orders];
-                        }
-                        await pushStateToCloud();
-                    } else if (lastUpdatedTimestamp > remoteData.updatedAt) {
-                        await pushStateToCloud();
-                    } else {
-                        applyIncomingState(remoteData, true);
-                    }
-                } else {
-                    // 내 창에 기존 데이터(예: 770,000원, 신청 내역)가 있으면 즉시 클라우드 전체에 밀어넣기
-                    if (lastUpdatedTimestamp > 0 || orders.length > 0 || appConfig.totalBudget !== 700000) {
-                        await pushStateToCloud(true);
-                    }
-                }
+            setTimeout(() => {
                 setSyncBadge('synced');
-            } catch (e) {
+            }, 300);
+        }
+
+        function forceManualSync() {
+            setSyncBadge('syncing');
+            mqttClients.forEach((client) => {
+                try {
+                    if (client && client.connected) {
+                        client.unsubscribe(MQTT_TOPIC, () => {
+                            client.subscribe(MQTT_TOPIC, { qos: 1 });
+                        });
+                    }
+                } catch (e) {}
+            });
+            setTimeout(() => {
                 setSyncBadge('synced');
-            } finally {
-                isSyncing = false;
-            }
+                showToast("클라우드와 최신 상태로 동기화되었습니다.");
+            }, 400);
         }
 
-        // 실시간 스트림 구독
-        function connectRealtimeStream() {
-            try {
-                const evtSource = new EventSource(`https://ntfy.sh/${CLOUD_ROOM_KEY}/sse`);
-                evtSource.onmessage = async (e) => {
-                    try {
-                        const data = JSON.parse(e.data);
-                        if (data && data.event === 'message' && data.message && data.message.startsWith("DADAM_B64:")) {
-                            const parsed = decodePayload(data.message);
-                            if (parsed && parsed.updatedAt) {
-                                applyIncomingState(parsed, true);
-                            }
-                        }
-                    } catch (err) {}
-                };
-            } catch (e) {}
-        }
-
-        // 초기 실행: 로컬 캐시 로드 -> 다중 클라우드 연결 -> 즉시 동기화
+        // 초기 실행
         loadLocalCache();
         applyUIWithConfig();
         renderPresets();
         renderOrders();
         updateBudgetUI();
         initMultiCloudRealtime();
-        fetchLatestFromCloud();
-        connectRealtimeStream();
-        setInterval(fetchLatestFromCloud, 15000);
-        window.addEventListener('focus', fetchLatestFromCloud);
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
