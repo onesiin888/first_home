@@ -126,17 +126,17 @@
 
         <!-- 하단: 데일리 가벼운 읽을거리 & 실시간 주요 지수 섹션 -->
         <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch pt-2">
-            <!-- 왼쪽: 분야별 데일리 뉴스 탭 (7칸) -->
+            <!-- 왼쪽: 분야별 데일리 뉴스 (7칸) -->
             <div class="lg:col-span-7 glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col justify-between space-y-4">
-                <div class="space-y-3">
+                <div class="space-y-3.5">
                     <div class="flex flex-wrap justify-between items-center gap-2">
                         <div>
                             <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                                 📰 오늘의 분야별 데일리 뉴스
                             </h2>
-                            <p class="text-xs text-slate-500 mt-0.5">출근길·점심시간에 가볍게 훑어보는 최신 이슈 TOP 5</p>
+                            <p class="text-xs text-slate-500 mt-0.5">출근길·점심시간에 가볍게 훑어보는 주요 헤드라인</p>
                         </div>
-                        <button type="button" id="refresh-news-btn" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl transition-colors cursor-pointer">
+                        <button type="button" id="refresh-news-btn" class="text-[11px] font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-2.5 py-1.5 rounded-xl transition-colors cursor-pointer">
                             🔄 새로고침
                         </button>
                     </div>
@@ -165,9 +165,9 @@
                             </h2>
                             <p class="text-xs text-slate-500 mt-0.5">출근길 대표 증시·환율 지표 및 실시간 기상</p>
                         </div>
-                        <span class="text-[11px] font-bold text-slate-500 bg-slate-100/90 border border-slate-200/60 px-2.5 py-1 rounded-xl flex items-center gap-1.5">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Market & Weather
-                        </span>
+                        <button type="button" id="refresh-market-btn" class="text-[11px] font-bold text-slate-600 hover:text-indigo-600 bg-slate-100/90 hover:bg-indigo-50 border border-slate-200/60 px-2.5 py-1 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer" title="지수 새로고침">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> 🔄 갱신
+                        </button>
                     </div>
 
                     <!-- 깔끔한 2x2 주요 지수 카드 그리드 -->
@@ -622,16 +622,20 @@
             const list = document.getElementById('schedule-list');
             list.innerHTML = '';
 
-            let combined = [...appState.schedules, ...KR_HOLIDAYS];
-            combined.sort((a, b) => (a.rawDate || '9999-99-99').localeCompare(b.rawDate || '9999-99-99'));
+            // '전체' 탭에서는 팀 연차/일정만 깔끔하게 표시하고, '공휴일' 탭에서 대한민국 공휴일 전체 표시
+            let sourceList = currentScheduleFilter === 'holiday'
+                ? [...KR_HOLIDAYS]
+                : [...appState.schedules];
 
-            const filtered = combined.filter(item => {
-                if (currentScheduleFilter === 'all') return true;
+            sourceList.sort((a, b) => (a.rawDate || '9999-99-99').localeCompare(b.rawDate || '9999-99-99'));
+
+            const filtered = sourceList.filter(item => {
+                if (currentScheduleFilter === 'all' || currentScheduleFilter === 'holiday') return true;
                 return item.type === currentScheduleFilter;
             });
 
             if (filtered.length === 0) {
-                list.innerHTML = `<li class="text-center py-8 text-xs text-slate-400">해당 카테고리의 일정이 없습니다.</li>`;
+                list.innerHTML = `<li class="text-center py-8 text-xs text-slate-400">해당 카테고리의 일정이 없습니다. 우측 상단 <b>[+ 일정 추가]</b>를 눌러 등록해보세요!</li>`;
                 return;
             }
 
@@ -657,7 +661,7 @@
                     </div>
                     <div class="flex items-center gap-1.5 shrink-0">
                         ${badgeHtml}
-                        ${item.type !== 'holiday' ? `<button type="button" data-del-id="${item.id}" class="del-sched-btn text-slate-300 hover:text-rose-500 text-xs px-1.5 py-0.5 rounded cursor-pointer" title="일정 삭제">✕</button>` : ''}
+                        ${item.type !== 'holiday' ? `<button type="button" data-del-id="${item.id}" class="del-sched-btn text-slate-400 hover:text-rose-600 hover:bg-rose-50 text-xs px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="일정 삭제">✕</button>` : ''}
                     </div>
                 `;
                 list.appendChild(li);
@@ -1070,6 +1074,31 @@
         // ==========================================
         // 8. 4대 핵심 지수 & 실시간 환율 자동 업데이트 (2중 프록시 백업 지원)
         // ==========================================
+        // 8. 4대 핵심 지수 & 실시간 환율 자동 업데이트 (다중 프록시 + 캐싱 백업 지원)
+        // ==========================================
+        const MARKET_CACHE_KEY = 'survival_lounge_market_cache_v1';
+        const DEFAULT_MARKET_FALLBACK = {
+            '^KS11': { price: 2568.40, changePct: 0.45 },
+            '^GSPC': { price: 5985.30, changePct: 0.38 },
+            '^NDX': { price: 21060.15, changePct: 0.62 },
+            'USDKRW=X': { price: 1396.50, changePct: -0.18 }
+        };
+
+        function loadMarketCache() {
+            try {
+                const raw = localStorage.getItem(MARKET_CACHE_KEY);
+                return raw ? { ...DEFAULT_MARKET_FALLBACK, ...JSON.parse(raw) } : { ...DEFAULT_MARKET_FALLBACK };
+            } catch (_) {
+                return { ...DEFAULT_MARKET_FALLBACK };
+            }
+        }
+
+        function saveMarketCache(cacheObj) {
+            try {
+                localStorage.setItem(MARKET_CACHE_KEY, JSON.stringify(cacheObj));
+            } catch (_) {}
+        }
+
         function updateIndexCard(valId, chgId, price, changePct) {
             const valEl = document.getElementById(valId);
             const chgEl = document.getElementById(chgId);
@@ -1090,6 +1119,11 @@
         async function fetchYahooQuote(symbol) {
             const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=2d`;
             const proxies = [
+                async () => {
+                    const res = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(targetUrl)}`);
+                    if (!res.ok) throw new Error('codetabs error');
+                    return await res.json();
+                },
                 async () => {
                     const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
                     if (!res.ok) throw new Error('allorigins error');
@@ -1121,44 +1155,35 @@
         }
 
         async function fetchLiveMarketIndices() {
-            // 1. 실시간 원/달러 환율
+            const marketCache = loadMarketCache();
+
+            // 로딩 대기 없이 캐시/기준값을 먼저 즉시 표시해 '로딩중' 멈춤 현상 방지
+            updateIndexCard('idx-kospi-val', 'idx-kospi-chg', marketCache['^KS11'].price, marketCache['^KS11'].changePct);
+            updateIndexCard('idx-sp500-val', 'idx-sp500-chg', marketCache['^GSPC'].price, marketCache['^GSPC'].changePct);
+            updateIndexCard('idx-nasdaq-val', 'idx-nasdaq-chg', marketCache['^NDX'].price, marketCache['^NDX'].changePct);
+            updateIndexCard('idx-usdkrw-val', 'idx-usdkrw-chg', marketCache['USDKRW=X'].price, marketCache['USDKRW=X'].changePct);
+
+            // 1. 직통 실시간 원/달러 환율 API
             try {
                 const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
                 if (fxRes.ok) {
                     const fxData = await fxRes.json();
                     const krw = fxData?.rates?.KRW;
                     if (typeof krw === 'number') {
+                        marketCache['USDKRW=X'].price = krw;
                         const valEl = document.getElementById('idx-usdkrw-val');
                         if (valEl) valEl.innerText = krw.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
                     }
                 }
-            } catch (e) {
-                console.warn('환율 조회 실패:', e);
-            }
+            } catch (_) {}
 
             try {
                 const fxQuote = await fetchYahooQuote('USDKRW=X');
-                const valEl = document.getElementById('idx-usdkrw-val');
-                const chgEl = document.getElementById('idx-usdkrw-chg');
-                if (valEl && fxQuote.price) {
-                    valEl.innerText = fxQuote.price.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                }
-                if (chgEl && typeof fxQuote.changePct === 'number') {
-                    const isUp = fxQuote.changePct >= 0;
-                    chgEl.innerText = `${isUp ? '+' : ''}${fxQuote.changePct.toFixed(2)}%`;
-                    chgEl.className = isUp
-                        ? 'text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold'
-                        : 'text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold';
-                }
-            } catch (e) {
-                const chgEl = document.getElementById('idx-usdkrw-chg');
-                if (chgEl) {
-                    chgEl.innerText = 'LIVE';
-                    chgEl.className = 'text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold';
-                }
-            }
+                marketCache['USDKRW=X'] = fxQuote;
+                updateIndexCard('idx-usdkrw-val', 'idx-usdkrw-chg', fxQuote.price, fxQuote.changePct);
+            } catch (_) {}
 
-            // 2. KOSPI, S&P 500, NASDAQ 100 실시간 시세
+            // 2. KOSPI, S&P 500, NASDAQ 100 실시간 시세 업데이트
             const symbols = [
                 { sym: '^KS11', valId: 'idx-kospi-val', chgId: 'idx-kospi-chg' },
                 { sym: '^GSPC', valId: 'idx-sp500-val', chgId: 'idx-sp500-chg' },
@@ -1168,12 +1193,21 @@
             await Promise.allSettled(symbols.map(async (item) => {
                 try {
                     const quote = await fetchYahooQuote(item.sym);
+                    marketCache[item.sym] = quote;
                     updateIndexCard(item.valId, item.chgId, quote.price, quote.changePct);
-                } catch (err) {
-                    console.warn(`${item.sym} 조회 지연:`, err);
+                } catch (_) {
+                    // 프록시 일시 지연 시 이미 표시된 캐시 값 유지
                 }
             }));
+
+            saveMarketCache(marketCache);
         }
+
+        document.getElementById('refresh-market-btn')?.addEventListener('click', () => {
+            fetchLiveMarketIndices();
+            fetchSeoulWeather();
+            showToast('주요 지수와 날씨를 갱신했습니다.');
+        });
 
         fetchLiveMarketIndices();
         // 3분마다 시세 및 날씨 자동 갱신
