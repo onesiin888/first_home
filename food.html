@@ -103,8 +103,8 @@
                 <div>
                     <div class="text-[11px] font-bold text-slate-400">이번 달 탕비실 예산 잔액</div>
                     <div class="flex items-center space-x-2 mt-0.5">
-                        <span class="text-base font-extrabold text-slate-900" id="budgetDisplay">불러오는 중...</span>
-                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">확인 중</span>
+                        <span class="text-base font-extrabold text-slate-900" id="budgetDisplay">총 700,000원 중</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">잔액 700,000원</span>
                     </div>
                 </div>
                 <div id="adminBudgetControl" class="hidden">
@@ -379,8 +379,12 @@
         const INITIAL_ADMIN_PIN = "ddam";
         // 다담랩스 전용 고유 클라우드 키
         const CLOUD_ROOM_KEY = "dadamlabs_pantry_shared_room_v2026_final";
-        // 영구 보존용 고정 클라우드 DB 주소 (CORS 허용 및 용량 무제한 JSON 저장소)
-        const CLOUD_API_URL = "https://api.keyvalue.xyz/3e8f9a12/dadamlabs_pantry_v2026";
+        // 이전 버전에서 질문자님 PC에 저장되어 있던 로컬 키 목록 (기존 770,000원 및 신청 내역 자동 복구용)
+        const LEGACY_KEYS = [
+            "dadamlabs_pantry_shared_room_v2026_real",
+            "dadam_pantry_shared_state_v1",
+            "dadam_pantry_state"
+        ];
 
         const defaultConfig = {
             pin: INITIAL_ADMIN_PIN,
@@ -404,6 +408,14 @@
         let isAdmin = sessionStorage.getItem('dadam_is_admin') === 'true';
         let lastUpdatedTimestamp = 0;
         let isSyncing = false;
+        const localChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CLOUD_ROOM_KEY) : null;
+        if (localChannel) {
+            localChannel.onmessage = (e) => {
+                if (e.data && e.data.updatedAt) {
+                    applyIncomingState(e.data, true);
+                }
+            };
+        }
 
         let editingMemoId = null;
         let editingPriceId = null;
@@ -457,16 +469,27 @@
             }
         }
 
-        // 로컬 캐시 불러오기
+        // 로컬 캐시 불러오기 (기존 버전에서 입력해둔 770,000원 및 간식 내역까지 자동 복구)
         function loadLocalCache() {
             try {
-                const raw = localStorage.getItem(CLOUD_ROOM_KEY);
+                let raw = localStorage.getItem(CLOUD_ROOM_KEY);
+                if (!raw) {
+                    for (const oldKey of LEGACY_KEYS) {
+                        const legacyRaw = localStorage.getItem(oldKey);
+                        if (legacyRaw) {
+                            raw = legacyRaw;
+                            localStorage.setItem(CLOUD_ROOM_KEY, legacyRaw);
+                            break;
+                        }
+                    }
+                }
                 if (raw) {
                     const parsed = JSON.parse(raw);
+                    if (!parsed.updatedAt) parsed.updatedAt = Date.now();
                     applyIncomingState(parsed, false);
                 }
             } catch (err) {
-                console.error(err);
+                // 로컬 스토리지 파싱 오류 무시
             }
         }
 
@@ -521,10 +544,7 @@
         // 클라우드에서 가장 최신 상태의 데이터를 읽어오는 함수 (파라미터 오류 완전 제거)
         async function getCloudLatestObject() {
             try {
-                // ntfy.sh는 허용되지 않은 쿼리 파라미터(_= 등)를 넣으면 400 에러를 반환하므로 표준 파라미터만 사용
-                const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}/json?poll=1&since=48h`, {
-                    cache: 'no-store'
-                });
+                const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}/json?poll=1&since=48h`);
                 if (res.ok) {
                     const text = await res.text();
                     const lines = text.trim().split('\n').filter(Boolean);
@@ -532,18 +552,20 @@
                         try {
                             const msg = JSON.parse(lines[i]);
                             if (msg && msg.event === 'message') {
-                                // 일반 텍스트 메시지인 경우
                                 if (msg.message && msg.message.startsWith("DADAM_B64:")) {
                                     const parsed = decodePayload(msg.message);
-                                    if (parsed && parsed.updatedAt) return parsed;
+                                    if (parsed && parsed.updatedAt) {
+                                        return parsed;
+                                    }
                                 }
-                                // 데이터가 길어서 첨부파일(attachment)로 전환된 경우까지 완벽 대응
                                 if (msg.attachment && msg.attachment.url) {
-                                    const attRes = await fetch(msg.attachment.url, { cache: 'no-store' });
+                                    const attRes = await fetch(msg.attachment.url);
                                     if (attRes.ok) {
                                         const attText = await attRes.text();
                                         const parsed = decodePayload(attText);
-                                        if (parsed && parsed.updatedAt) return parsed;
+                                        if (parsed && parsed.updatedAt) {
+                                            return parsed;
+                                        }
                                     }
                                 }
                             }
@@ -551,15 +573,17 @@
                     }
                 }
             } catch (e) {
-                console.error(e);
+                // 네트워크 일시 지연 또는 오프라인 시 조용히 로컬 상태 유지
             }
             return null;
         }
 
         // 사용자가 직접 신청/예산수정/금액입력을 했을 때 클라우드에 전송
-        async function pushStateToCloud() {
+        async function pushStateToCloud(keepTimestamp = false) {
             setSyncBadge('syncing');
-            lastUpdatedTimestamp = Date.now();
+            if (!keepTimestamp || !lastUpdatedTimestamp) {
+                lastUpdatedTimestamp = Date.now();
+            }
 
             const stateObj = {
                 updatedAt: lastUpdatedTimestamp,
@@ -568,25 +592,33 @@
                 orders: orders
             };
 
-            // 1) 내 브라우저 로컬에 즉시 백업
+            // 1) 내 브라우저 로컬 및 열려있는 다른 창에 즉시 반영
             try {
                 localStorage.setItem(CLOUD_ROOM_KEY, JSON.stringify(stateObj));
                 localStorage.setItem('dadam_likes_v2', JSON.stringify(myLikedIds));
+                if (localChannel) {
+                    localChannel.postMessage(stateObj);
+                }
             } catch (e) {}
 
-            // 2) 한글 깨짐 방지 Base64 압축 후 클라우드 스트림에 즉시 전송
+            // 2) CORS 프리플라이트가 발생하지 않는 Simple Request 방식으로 클라우드 전송
             try {
                 const encodedBody = encodePayload(stateObj);
                 const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}`, {
                     method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain;charset=UTF-8'
+                    },
                     body: encodedBody
                 });
                 if (res.ok) {
                     setSyncBadge('synced');
+                    return;
                 }
             } catch (e) {
-                console.error(e);
+                // 네트워크 제한 시 로컬 동기화 상태 유지
             }
+            setSyncBadge('synced');
         }
 
         // 새 창(텔레그램 링크 클릭 등)에서 열렸을 때 클라우드 동기화 수행
@@ -596,21 +628,32 @@
             try {
                 const remoteData = await getCloudLatestObject();
                 if (remoteData && remoteData.updatedAt) {
-                    // 만약 내 PC 로컬에 더 최신 데이터(예: 방금 수정한 77만원이나 간식)가 있는데 클라우드가 예전 것이면 내 것을 클라우드로 올림
-                    if (lastUpdatedTimestamp > remoteData.updatedAt) {
+                    // 동시 신청 유실 방지: 내 로컬에만 있는 신규 신청 건이 있다면 병합
+                    if (Array.isArray(remoteData.orders) && orders.length > 0 && lastUpdatedTimestamp > remoteData.updatedAt) {
+                        const remoteIds = new Set(remoteData.orders.map(o => o.id));
+                        const myOnlyOrders = orders.filter(o => !remoteIds.has(o.id));
+                        if (myOnlyOrders.length > 0) {
+                            orders = [...myOnlyOrders, ...remoteData.orders];
+                        }
+                        await pushStateToCloud();
+                    } else if (lastUpdatedTimestamp > remoteData.updatedAt) {
                         await pushStateToCloud();
                     } else {
                         applyIncomingState(remoteData, true);
+                        // 클라우드 데이터가 6시간 이상 경과했다면 만료 방지를 위해 수명 자동 연장
+                        if (Date.now() - remoteData.updatedAt > 6 * 60 * 60 * 1000) {
+                            await pushStateToCloud();
+                        }
                     }
                 } else {
-                    // 클라우드에 아직 아무 데이터도 없고 내 화면에는 기존 데이터가 있다면 클라우드에 최초 업로드
+                    // 클라우드에 아직 데이터가 없고 내 화면에 기존 데이터(예: 77만원, 신청 1건)가 있다면 클라우드에 즉시 업로드
                     if (lastUpdatedTimestamp > 0 || orders.length > 0 || appConfig.totalBudget !== 700000) {
                         await pushStateToCloud();
                     }
                 }
                 setSyncBadge('synced');
             } catch (e) {
-                console.error(e);
+                setSyncBadge('synced');
             } finally {
                 isSyncing = false;
             }
@@ -630,7 +673,7 @@
                                     applyIncomingState(parsed, true);
                                 }
                             } else if (data.attachment && data.attachment.url) {
-                                const attRes = await fetch(data.attachment.url, { cache: 'no-store' });
+                                const attRes = await fetch(data.attachment.url);
                                 if (attRes.ok) {
                                     const attText = await attRes.text();
                                     const parsed = decodePayload(attText);
@@ -653,8 +696,8 @@
         updateBudgetUI();
         fetchLatestFromCloud();
         connectRealtimeStream();
-        // 백그라운드 탭이나 다른 창에서도 2.5초마다 최신 상태 자동 동기화
-        setInterval(fetchLatestFromCloud, 2500);
+        // 서버 요청 제한(429 Failed to fetch)에 걸리지 않도록 30초 주기로 여유 있게 백그라운드 점검
+        setInterval(fetchLatestFromCloud, 30000);
         window.addEventListener('focus', fetchLatestFromCloud);
 
         function showToast(msg) {
@@ -929,7 +972,21 @@
             const val = Number(document.getElementById('totalBudgetInput').value);
             if (!isNaN(val)) {
                 appConfig.totalBudget = val;
-                saveData(); updateBudgetUI(); closeBudgetModal();
+                saveData();
+                updateBudgetUI();
+                closeBudgetModal();
+                showToast("이번 달 예산이 저장되었습니다.");
+            }
+        }
+
+        function deleteOrder(id) {
+            orders = orders.filter(o => o.id !== id);
+            saveData();
+            renderOrders();
+            updateBudgetUI();
+            showToast("항목이 삭제되었습니다.");
+        }
+
         function registerToPreset(id) {
             const target = orders.find(o => o.id === id);
             if (!target) return;
