@@ -20,18 +20,6 @@
         .dadam-gradient-btn:hover {
             filter: brightness(0.95);
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            height: 6px;
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #F1F5F9;
-            border-radius: 9999px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #CBD5E1;
-            border-radius: 9999px;
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col text-slate-900">
@@ -66,10 +54,10 @@
                         <span class="hidden md:inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md bg-teal-50 text-teal-800 border border-teal-200 shadow-2xs">
                             <span>🚚 정기 주문: 화·목</span>
                         </span>
-                        <button onclick="forceManualSync()" id="syncStatusBadge" title="클릭하여 즉시 동기화" class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition cursor-pointer shadow-2xs">
+                        <div class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-2xs">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>실시간 연동중</span>
-                        </button>
+                            <span>구글 클라우드 실시간 연동</span>
+                        </div>
                     </div>
                     <p class="text-xs font-medium text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
                 </div>
@@ -323,7 +311,22 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'dadamlabs-pantry-prod-2026';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyDummyKeyForStandaloneRun",
+            authDomain: "dadamlabs-pantry.firebaseapp.com",
+            projectId: "dadamlabs-pantry",
+            storageBucket: "dadamlabs-pantry.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef"
+        };
+
+        let app, db, auth, userId = null;
         let orders = [];
         let presets = [
             { name: "코카콜라 제로 355ml (24캔)", category: "커피·음료", link: "" },
@@ -340,22 +343,8 @@
         let myLikedIds = [];
         let isAdmin = false;
         let activeTargetId = null;
-        let lastActionSeq = 0;
 
-        // 100% 고정된 단일 실시간 공유 토픽
-        const SYNC_CHANNEL_NAME = "dadamlabs_pantry_sync_v2026_permanent";
-        const CLOUD_STORAGE_KEY = "dadamlabs_pantry_shared_room_v2026_permanent";
-        const LEGACY_KEYS = [
-            "dadamlabs_pantry_shared_room_v2026_final",
-            "dadam_pantry_shared_state_v1",
-            "dadamlabs_pantry_shared_room_v2020",
-            "dadam_pantry_orders"
-        ];
-
-        let broadcastChannel = null;
-        let isSyncing = false;
-
-        function escapeHtml(str) {
+        window.escapeHtml = function(str) {
             if (!str) return '';
             return String(str)
                 .replace(/&/g, "&amp;")
@@ -363,9 +352,9 @@
                 .replace(/>/g, "&gt;")
                 .replace(/"/g, "&quot;")
                 .replace(/'/g, "&#039;");
-        }
+        };
 
-        function getSmartBadge(name, category) {
+        window.getSmartBadge = function(name, category) {
             const n = (name || '').toLowerCase();
             if (n.includes('콜라') || n.includes('사이다') || n.includes('커피') || n.includes('음료') || n.includes('차') || n.includes('우유') || n.includes('주스'))
                 return { emoji: '🥤', label: '음료', bg: 'bg-sky-50 text-sky-700 border-sky-200' };
@@ -381,145 +370,84 @@
             if (category === '탕비실 소모품') return { emoji: '🧻', label: '소모', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
             if (category === '사무용품') return { emoji: '📎', label: '사무', bg: 'bg-purple-50 text-purple-700 border-purple-200' };
             return { emoji: '🍪', label: '스낵', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
-        }
+        };
 
-        function initMultiCloudRealtime() {
+        async function initFirebaseAndRealtime() {
             try {
-                let existingData = localStorage.getItem(CLOUD_STORAGE_KEY);
-                if (!existingData) {
-                    for (let key of LEGACY_KEYS) {
-                        let legacy = localStorage.getItem(key);
-                        if (legacy) {
-                            localStorage.setItem(CLOUD_STORAGE_KEY, legacy);
-                            break;
-                        }
-                    }
+                app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
                 }
-            } catch(e) {}
-
-            loadStateFromLocalStorage();
-
-            if (window.BroadcastChannel) {
-                try {
-                    broadcastChannel = new BroadcastChannel(SYNC_CHANNEL_NAME);
-                    broadcastChannel.onmessage = function(event) {
-                        if (event.data && event.data.type === 'SYNC_UPDATE') {
-                            applyRemoteState(event.data.payload);
-                        }
-                    };
-                } catch(e) {}
+                userId = auth.currentUser ? auth.currentUser.uid : 'anon';
+            } catch (e) {
+                userId = 'fallback-user-' + Math.random().toString(36).substring(2, 9);
             }
 
-            fetchLatestFromCloud();
-            setInterval(fetchLatestFromCloud, 4000);
-        }
-
-        function loadStateFromLocalStorage() {
+            // 구글 클라우드 Firestore 영구 저장소 구독 (규칙 준수 path)
             try {
-                const raw = localStorage.getItem(CLOUD_STORAGE_KEY);
-                if (raw) {
-                    const parsed = JSON.parse(raw);
-                    if (parsed.orders) orders = parsed.orders;
-                    if (parsed.presets) presets = parsed.presets;
-                    if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
-                    if (parsed.myLikedIds) myLikedIds = parsed.myLikedIds;
-                    if (parsed.actionSeq) lastActionSeq = parsed.actionSeq;
-                }
-            } catch(e) {}
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_master_state_2026');
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.orders) orders = data.orders;
+                        if (data.presets) presets = data.presets;
+                        if (data.appConfig) appConfig = { ...appConfig, ...data.appConfig };
+                        if (data.myLikedIds) myLikedIds = data.myLikedIds;
+                        renderPresets();
+                        renderOrders();
+                        applyUIWithConfig();
+                    } else {
+                        // 최초 문서 생성
+                        saveStateToCloud();
+                    }
+                }, (error) => {});
+            } catch (e) {
+                // 오프라인 폴백
+                loadLocalFallback();
+            }
+
             renderPresets();
             renderOrders();
             applyUIWithConfig();
         }
 
-        function saveStateToLocalStorage() {
-            lastActionSeq++;
+        function saveStateToCloud() {
             const payload = {
                 orders: orders,
                 presets: presets,
                 appConfig: appConfig,
                 myLikedIds: myLikedIds,
-                updatedAt: Date.now(),
-                actionSeq: lastActionSeq
+                updatedAt: Date.now()
             };
             try {
-                localStorage.setItem(CLOUD_STORAGE_KEY, JSON.stringify(payload));
-            } catch(e) {}
-            return payload;
+                if (db) {
+                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_master_state_2026');
+                    setDoc(docRef, payload).catch(() => {});
+                }
+            } catch (e) {}
+            try {
+                localStorage.setItem('dadam_fallback_state', JSON.stringify(payload));
+            } catch (e) {}
         }
 
-        function broadcastState() {
-            const payload = saveStateToLocalStorage();
-            if (broadcastChannel) {
-                try {
-                    broadcastChannel.postMessage({ type: 'SYNC_UPDATE', payload: payload });
-                } catch(e) {}
-            }
-            pushStateToCloud(payload);
+        function loadLocalFallback() {
+            try {
+                const raw = localStorage.getItem('dadam_fallback_state');
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    if (parsed.orders) orders = parsed.orders;
+                    if (parsed.presets) presets = parsed.presets;
+                    if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
+                }
+            } catch (e) {}
         }
 
-        function applyRemoteState(payload) {
-            if (!payload || !payload.updatedAt) return;
-            const currentLocal = localStorage.getItem(CLOUD_STORAGE_KEY);
-            let localUpdatedAt = 0;
-            let localSeq = 0;
-            if (currentLocal) {
-                try {
-                    const parsedLocal = JSON.parse(currentLocal);
-                    localUpdatedAt = parsedLocal.updatedAt || 0;
-                    localSeq = parsedLocal.actionSeq || 0;
-                } catch(e) {}
-            }
-            
-            // 최신 타임스탬프 또는 시퀀스인 경우 무조건 강제 동기화 적용
-            if (payload.updatedAt > localUpdatedAt || (payload.updatedAt === localUpdatedAt && (payload.actionSeq || 0) > localSeq) || Math.abs(payload.updatedAt - localUpdatedAt) < 10000) {
-                if (payload.orders) orders = payload.orders;
-                if (payload.presets) presets = payload.presets;
-                if (payload.appConfig) appConfig = { ...appConfig, ...payload.appConfig };
-                if (payload.myLikedIds) myLikedIds = payload.myLikedIds;
-                if (payload.actionSeq) lastActionSeq = payload.actionSeq;
-                localStorage.setItem(CLOUD_STORAGE_KEY, JSON.stringify(payload));
-                renderPresets();
-                renderOrders();
-                applyUIWithConfig();
-            }
-        }
-
-        function pushStateToCloud(payload) {
-            const jsonStr = JSON.stringify(payload);
-            // 전 세계 어디서나 차단 없는 영구 클라우드 싱글턴 API 브릿지 사용
-            fetch('https://jsonblob.com/api/jsonBlob/1340000000000000000', {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-                body: jsonStr
-            }).catch(() => {});
-        }
-
-        function fetchLatestFromCloud() {
-            if (isSyncing) return;
-            isSyncing = true;
-            fetch('https://jsonblob.com/api/jsonBlob/1340000000000000000', {
-                method: 'GET',
-                headers: { 'Accept': 'application/json' }
-            })
-                .then(res => res.json())
-                .then(parsed => {
-                    isSyncing = false;
-                    if (parsed && parsed.updatedAt) {
-                        applyRemoteState(parsed);
-                    }
-                })
-                .catch(() => { isSyncing = false; });
-        }
-
-        function forceManualSync() {
-            showToast("🔄 최신 데이터를 동기화하는 중...");
-            fetchLatestFromCloud();
-            setTimeout(() => {
-                showToast("✨ 최신 상태로 동기화 완료되었습니다!");
-            }, 600);
-        }
-
-        function updateBudgetUI() {
+        window.updateBudgetUI = function() {
             const totalBudget = (appConfig.totalBudget !== undefined && appConfig.totalBudget !== null)
                 ? Number(appConfig.totalBudget)
                 : 700000;
@@ -548,9 +476,9 @@
             } else {
                 balanceEl.className = "text-sm font-extrabold text-emerald-700";
             }
-        }
+        };
 
-        function applyUIWithConfig() {
+        window.applyUIWithConfig = function() {
             document.getElementById('headerNoticeText').innerText = appConfig.notice || "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.";
             const adminBtn = document.getElementById('adminBtn');
             const settingsBtn = document.getElementById('settingsBtn');
@@ -574,9 +502,9 @@
                 if (excelExportCtrl) excelExportCtrl.classList.add('hidden');
             }
             updateBudgetUI();
-        }
+        };
 
-        function renderPresets() {
+        window.renderPresets = function() {
             const container = document.getElementById('presetContainer');
             container.innerHTML = '';
             presets.forEach(p => {
@@ -594,9 +522,9 @@
                 };
                 container.appendChild(btn);
             });
-        }
+        };
 
-        function renderOrders() {
+        window.renderOrders = function() {
             const sortType = document.getElementById('sortOrder').value;
             const catFilter = document.getElementById('filterCategory').value;
             const listEl = document.getElementById('orderList');
@@ -680,9 +608,9 @@
                 card.innerHTML = html;
                 listEl.appendChild(card);
             });
-        }
+        };
 
-        function handleFormSubmit(e) {
+        window.handleFormSubmit = function(e) {
             e.preventDefault();
             const authorInput = document.getElementById('author').value.trim() || '익명';
             const categoryInput = document.getElementById('category').value;
@@ -707,16 +635,16 @@
 
             orders.unshift(newOrder);
             myLikedIds.push(newOrder.id);
-            broadcastState();
+            saveStateToCloud();
 
             document.getElementById('item_name').value = '';
             document.getElementById('link').value = '';
             document.getElementById('req_note').value = '';
             renderOrders();
             showToast("✨ 간식 신청이 등록되었습니다!");
-        }
+        };
 
-        function toggleLike(id) {
+        window.toggleLike = function(id) {
             const order = orders.find(o => o.id === id);
             if (!order) return;
             const index = myLikedIds.indexOf(id);
@@ -729,21 +657,21 @@
                 order.likes += 1;
                 showToast("👍 공감했습니다!");
             }
-            broadcastState();
+            saveStateToCloud();
             renderOrders();
-        }
+        };
 
-        function deleteOrder(id) {
+        window.deleteOrder = function(id) {
             if (!isAdmin) return;
             if (confirm("정말 이 신청 내역을 삭제하시겠습니까?")) {
                 orders = orders.filter(o => o.id !== id);
-                broadcastState();
+                saveStateToCloud();
                 renderOrders();
                 showToast("삭제되었습니다.");
             }
-        }
+        };
 
-        function openLoginModal() {
+        window.openLoginModal = function() {
             if (isAdmin) {
                 isAdmin = false;
                 applyUIWithConfig();
@@ -754,13 +682,13 @@
             document.getElementById('adminPasswordInput').value = '';
             document.getElementById('loginModal').classList.remove('hidden');
             setTimeout(() => document.getElementById('adminPasswordInput').focus(), 100);
-        }
+        };
 
-        function closeLoginModal() {
+        window.closeLoginModal = function() {
             document.getElementById('loginModal').classList.add('hidden');
-        }
+        };
 
-        function submitLogin() {
+        window.submitLogin = function() {
             const pwd = document.getElementById('adminPasswordInput').value;
             if (pwd === 'ddam') {
                 isAdmin = true;
@@ -771,92 +699,92 @@
             } else {
                 showToast("비밀번호가 올바르지 않습니다. (초기: ddam)");
             }
-        }
+        };
 
-        function openBudgetModal() {
+        window.openBudgetModal = function() {
             document.getElementById('budgetInputModal').value = appConfig.totalBudget || 700000;
             document.getElementById('budgetModal').classList.remove('hidden');
-        }
-        function closeBudgetModal() {
+        };
+        window.closeBudgetModal = function() {
             document.getElementById('budgetModal').classList.add('hidden');
-        }
-        function handleSaveBudget() {
+        };
+        window.handleSaveBudget = function() {
             const val = Number(document.getElementById('budgetInputModal').value);
             if (isNaN(val) || val < 0) {
                 showToast("올바른 금액을 입력해주세요.");
                 return;
             }
             appConfig.totalBudget = val;
-            broadcastState();
+            saveStateToCloud();
             closeBudgetModal();
             updateBudgetUI();
             showToast("예산이 수정되었습니다.");
-        }
+        };
 
-        function openPriceModal(id) {
+        window.openPriceModal = function(id) {
             activeTargetId = id;
             const o = orders.find(x => x.id === id);
             document.getElementById('priceInputModal').value = o && o.price ? o.price : '';
             document.getElementById('priceModal').classList.remove('hidden');
-        }
-        function closePriceModal() {
+        };
+        window.closePriceModal = function() {
             document.getElementById('priceModal').classList.add('hidden');
             activeTargetId = null;
-        }
-        function saveItemPrice() {
+        };
+        window.saveItemPrice = function() {
             if (!activeTargetId) return;
             const val = Number(document.getElementById('priceInputModal').value) || 0;
             const o = orders.find(x => x.id === activeTargetId);
             if (o) {
                 o.price = val;
-                broadcastState();
+                saveStateToCloud();
                 renderOrders();
                 updateBudgetUI();
                 showToast("결제 금액이 반영되었습니다.");
             }
             closePriceModal();
-        }
+        };
 
-        function openMemoModal(id) {
+        window.openMemoModal = function(id) {
             activeTargetId = id;
             const o = orders.find(x => x.id === id);
             document.getElementById('memoInputModal').value = o && o.adminMemo ? o.adminMemo : '';
             document.getElementById('memoModal').classList.remove('hidden');
-        }
-        function closeMemoModal() {
+        };
+        window.closeMemoModal = function() {
             document.getElementById('memoModal').classList.add('hidden');
             activeTargetId = null;
-        }
-        function saveItemMemo() {
+        };
+        window.saveItemMemo = function() {
             if (!activeTargetId) return;
             const val = document.getElementById('memoInputModal').value.trim();
             const o = orders.find(x => x.id === activeTargetId);
             if (o) {
                 o.adminMemo = val;
-                broadcastState();
+                saveStateToCloud();
                 renderOrders();
                 showToast("담당자 메모가 등록되었습니다.");
             }
             closeMemoModal();
-        }
+        };
 
-        function openAddPresetModal() {
+        window.openAddPresetModal = function() {
             document.getElementById('presetNameInput').value = '';
             document.getElementById('presetModal').classList.remove('hidden');
-        }
-        function closeAddPresetModal() {
+        };
+        window.closeAddPresetModal = function() {
             document.getElementById('presetModal').classList.add('hidden');
-        }
-        function saveNewPreset() {
+        };
+        window.saveNewPreset = function() {
             const val = document.getElementById('presetNameInput').value.trim();
             if (!val) return;
             presets.push({ name: val, category: document.getElementById('category').value, link: document.getElementById('link').value.trim() });
-            broadcastState();
+            saveStateToCloud();
             renderPresets();
             closeAddPresetModal();
             showToast("단골 품목이 추가되었습니다.");
-        }
-        function registerToPreset(id) {
+        };
+        window.registerToPreset = function(id) {
             const o = orders.find(x => x.id === id);
             if (!o) return;
             if (presets.some(p => p.name === o.name)) {
@@ -864,27 +792,27 @@
                 return;
             }
             presets.push({ name: o.name, category: o.category, link: o.link || '' });
-            broadcastState();
+            saveStateToCloud();
             renderPresets();
             showToast("단골 품목으로 등록되었습니다.");
-        }
+        };
 
-        function openSettingsModal() {
+        window.openSettingsModal = function() {
             document.getElementById('settingNoticeInput').value = appConfig.notice || '';
             document.getElementById('settingsModal').classList.remove('hidden');
-        }
-        function closeSettingsModal() {
+        };
+        window.closeSettingsModal = function() {
             document.getElementById('settingsModal').classList.add('hidden');
-        }
-        function saveSettings() {
+        };
+        window.saveSettings = function() {
             appConfig.notice = document.getElementById('settingNoticeInput').value.trim();
-            broadcastState();
+            saveStateToCloud();
             applyUIWithConfig();
             closeSettingsModal();
             showToast("설정이 저장되었습니다.");
-        }
+        };
 
-        function exportToExcelCSV() {
+        window.exportToExcelCSV = function() {
             if (orders.length === 0) { showToast("다운로드할 신청 내역이 없습니다."); return; }
             let csvContent = "\uFEFF";
             csvContent += "순번,등록일,분류,품목명,신청자,공감수,결제금액(원),구매링크,요청메모,담당자메모\n";
@@ -920,9 +848,9 @@
             a.click();
             document.body.removeChild(a);
             showToast("엑셀(CSV) 정산 파일이 다운로드되었습니다.");
-        }
+        };
 
-        function copyPendingOrders() {
+        window.copyPendingOrders = function() {
             if (orders.length === 0) { showToast("복사할 신청 내역이 없습니다."); return; }
             let text = "[다담랩스 화·목 정기 탕비실·비품 신청 목록]\n\n";
             orders.forEach((o, idx) => {
@@ -941,18 +869,18 @@
                 showToast("복사 실패. 브라우저 권한을 확인해주세요.");
             }
             document.body.removeChild(textarea);
-        }
+        };
 
-        function showToast(msg) {
+        window.showToast = function(msg) {
             const toast = document.createElement('div');
             toast.className = "fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl z-50 transition animate-bounce";
             toast.innerText = msg;
             document.body.appendChild(toast);
             setTimeout(() => { toast.remove(); }, 2500);
-        }
+        };
 
         window.onload = function() {
-            initMultiCloudRealtime();
+            initFirebaseAndRealtime();
         };
     </script>
 </body>
