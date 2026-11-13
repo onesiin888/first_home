@@ -3,166 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>생존신고 라운지 🏕️</title>
+    <title>생존신고 라운지 ☕</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet" crossorigin="anonymous">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         body {
-            font-family: 'Pretendard', sans-serif;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
             background-color: #f8fafc;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
             background-size: 24px 24px;
         }
         .glass-panel {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.6);
+            -webkit-backdrop-filter: blur(12px);
         }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 5px;
-            height: 5px;
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
         }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 2.5s infinite ease-in-out;
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen p-4 sm:p-6 lg:p-8">
+<body class="text-slate-800 antialiased min-h-screen p-4 sm:p-6 lg:p-10 flex justify-center">
 
-    <div class="max-w-7xl mx-auto space-y-6">
-        <!-- 상단 헤더 바 -->
+    <div class="max-w-7xl w-full space-y-6 sm:space-y-8">
+        <!-- 상단 헤더 & 공지 배너 -->
         <header class="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
             <div class="space-y-1.5">
-                <div class="flex items-center gap-2.5 flex-wrap">
-                    <button type="button" id="space-title-container" class="group flex items-center gap-2 text-left hover:bg-slate-100 px-2.5 py-1 -ml-2.5 rounded-2xl transition-all cursor-pointer">
-                        <h1 id="space-title-display" class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
-                            생존신고 라운지 🏕️
-                        </h1>
-                        <i class="ph-bold ph-pencil-simple text-slate-400 group-hover:text-indigo-600 text-lg transition-colors"></i>
+                <div class="flex flex-wrap items-center gap-2.5">
+                    <button id="edit-title-btn" type="button" class="group flex items-center gap-2 text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900 hover:text-indigo-600 transition-colors text-left" title="클릭해서 라운지 이름 수정">
+                        <span id="lounge-title-text">🏕️ 생존신고 라운지</span>
+                        <span class="text-xs font-bold text-slate-400 group-hover:text-indigo-500 bg-slate-100 group-hover:bg-indigo-50 px-2 py-0.5 rounded-lg transition-colors">✏️ 수정</span>
                     </button>
-                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 작동중
+                    <span id="sync-badge" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        실시간 동기화 중
                     </span>
                 </div>
-                
-                <!-- 날짜, 시간, 실시간 날씨 요약 -->
-                <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-semibold text-slate-500">
-                    <span id="current-date" class="flex items-center gap-1">
-                        <i class="ph-duotone ph-calendar-blank text-indigo-500"></i> 날짜 로딩중...
-                    </span>
+                <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-500 font-medium">
+                    <span id="current-date">날짜 로딩중...</span>
                     <span class="text-slate-300">|</span>
-                    <span class="flex items-center gap-1 text-indigo-600 font-bold bg-indigo-50/80 px-2.5 py-0.5 rounded-lg">
-                        <i class="ph-bold ph-clock"></i>
-                        <span id="clock-time">00:00:00</span>
-                    </span>
+                    <span id="current-time" class="text-indigo-600 font-bold tabular-nums">00:00:00</span>
                     <span class="text-slate-300">|</span>
-                    <span class="flex items-center gap-1 text-sky-700 bg-sky-50 border border-sky-100 px-2.5 py-0.5 rounded-lg font-bold">
-                        <span id="header-weather">☀️ 서울 날씨 불러오는중...</span>
+                    <span id="seoul-weather" class="inline-flex items-center gap-1 bg-sky-50 text-sky-700 px-2.5 py-0.5 rounded-full text-xs font-bold border border-sky-100">
+                        🌤️ 서울 날씨 확인중...
                     </span>
                 </div>
             </div>
 
-            <!-- 우측 공지사항 배너 (클릭하여 수정) -->
-            <button type="button" id="notice-container" class="w-full lg:w-auto text-left group bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 hover:from-indigo-100 hover:to-pink-100 border border-indigo-200/70 px-4 py-3 rounded-2xl shadow-sm transition-all flex items-center justify-between lg:justify-start gap-3 cursor-pointer">
+            <!-- 클릭해서 수정 가능한 공지사항 배지 -->
+            <button id="edit-notice-btn" type="button" class="w-full lg:w-auto text-left bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 hover:from-indigo-100 hover:to-purple-100 text-indigo-900 px-4 py-3 rounded-2xl font-semibold text-xs sm:text-sm shadow-sm border border-indigo-200/70 flex items-center justify-between gap-3 transition-all group cursor-pointer" title="클릭해서 공지사항 수정">
                 <div class="flex items-center gap-2.5 min-w-0">
-                    <span class="bg-indigo-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">공지</span>
-                    <p id="notice-text" class="text-xs sm:text-sm font-bold text-slate-800 truncate">
-                        오늘 점심 메뉴 추천 받습니다! 🍔 (클릭해서 공지 수정)
-                    </p>
+                    <span class="text-lg animate-pulse-soft shrink-0">📢</span>
+                    <span id="notice-text" class="truncate">오늘 점심 메뉴 추천 받습니다! (클릭해서 공지 수정)</span>
                 </div>
-                <i class="ph-bold ph-note-pencil text-indigo-500 group-hover:scale-110 transition-transform shrink-0"></i>
+                <span class="text-[11px] font-bold text-indigo-600 bg-white/80 px-2 py-0.5 rounded-lg shrink-0 group-hover:bg-white shadow-xs">수정</span>
             </button>
         </header>
 
-        <!-- 메인 대시보드 영역 -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- 메인 대시보드 레이아웃 (좌측 팀원 보드 7칸 + 우측 통합 일정판 5칸) -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
             
-            <!-- 왼쪽: 팀원 생존신고 상태 보드 (7칸) -->
-            <div class="lg:col-span-7 space-y-4">
+            <!-- 좌측: 팀원 실시간 상태 보드 (7칸) -->
+            <section class="lg:col-span-7 space-y-4">
                 <div class="flex flex-wrap justify-between items-center gap-2 px-1">
                     <div>
-                        <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                        <h2 class="text-lg sm:text-xl font-extrabold text-slate-800 flex items-center gap-2">
                             👀 팀원 실시간 상태 보드
-                            <span id="member-count-badge" class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">4명</span>
+                            <span id="member-count" class="text-xs font-bold bg-slate-200/80 text-slate-700 px-2.5 py-0.5 rounded-full">0명</span>
                         </h2>
-                        <p class="text-xs text-slate-500 mt-0.5">본인 카드를 클릭해 오늘 기분과 현재 상태를 자유롭게 변경하세요!</p>
+                        <p class="text-xs text-slate-500 mt-0.5">본인 카드를 클릭하면 기분·상태·한줄 메시지를 바꿀 수 있어요</p>
                     </div>
-                    <button type="button" id="btn-open-register" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs sm:text-sm font-extrabold px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
-                        <i class="ph-bold ph-user-plus text-base"></i> + 팀원 등록
+                    <button id="open-add-member-btn" type="button" class="bg-slate-900 hover:bg-indigo-600 text-white text-xs sm:text-sm font-bold px-3.5 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1.5 active:scale-95 cursor-pointer">
+                        <span>+ 팀원 등록</span>
                     </button>
                 </div>
 
                 <!-- 팀원 카드 그리드 -->
-                <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div id="team-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- JS로 렌더링 -->
                 </div>
-            </div>
+            </section>
 
-            <!-- 오른쪽: 팀 일정 & 연차 & 공휴일 보드 (5칸) -->
-            <div class="lg:col-span-5 space-y-5">
-                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 space-y-6">
-                    <div class="flex justify-between items-center">
-                        <div>
-                            <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
-                                📅 팀 일정 & 연차 현황
-                            </h2>
-                            <p class="text-xs text-slate-500 mt-0.5">휴가, 외근, 주요 행사 및 대한민국 공휴일</p>
-                        </div>
-                        <button type="button" id="btn-open-schedule" class="bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-xs font-extrabold px-3.5 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
-                            <i class="ph-bold ph-calendar-plus text-sm"></i> + 일정 추가
-                        </button>
+            <!-- 우측: 통합 일정 & 공휴일 안내 보드 (5칸) -->
+            <aside class="lg:col-span-5 glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 space-y-5">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-lg sm:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                            📅 팀 일정 & 공휴일
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">연차, 팀 행사, 대한민국 공휴일을 한눈에 확인하세요</p>
                     </div>
-
-                    <!-- 카테고리 탭 필터 -->
-                    <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
-                        <button type="button" data-filter="all" class="sched-tab-btn flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all">전체보기</button>
-                        <button type="button" data-filter="leave" class="sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🏖️ 휴가/반차</button>
-                        <button type="button" data-filter="event" class="sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🎉 주요일정</button>
-                        <button type="button" data-filter="holiday" class="sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🔴 공휴일</button>
-                    </div>
-
-                    <!-- 통합 일정 리스트 -->
-                    <div class="space-y-4 max-h-[540px] overflow-y-auto custom-scrollbar pr-1" id="schedule-container">
-                        <!-- JS로 렌더링 -->
-                    </div>
+                    <button id="open-add-schedule-btn" type="button" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold px-3 py-2 rounded-xl shadow-sm transition-all flex items-center gap-1 active:scale-95 cursor-pointer">
+                        <span>+ 일정 추가</span>
+                    </button>
                 </div>
-            </div>
 
+                <!-- 카테고리 필터 탭 -->
+                <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold overflow-x-auto hide-scrollbar">
+                    <button type="button" data-filter="all" class="schedule-tab flex-1 py-1.5 px-2.5 rounded-lg bg-white text-slate-900 shadow-xs transition-all whitespace-nowrap cursor-pointer">전체</button>
+                    <button type="button" data-filter="leave" class="schedule-tab flex-1 py-1.5 px-2.5 rounded-lg text-slate-500 hover:text-slate-800 transition-all whitespace-nowrap cursor-pointer">🏖️ 연차/반차</button>
+                    <button type="button" data-filter="event" class="schedule-tab flex-1 py-1.5 px-2.5 rounded-lg text-slate-500 hover:text-slate-800 transition-all whitespace-nowrap cursor-pointer">🎉 팀 일정</button>
+                    <button type="button" data-filter="holiday" class="schedule-tab flex-1 py-1.5 px-2.5 rounded-lg text-slate-500 hover:text-slate-800 transition-all whitespace-nowrap cursor-pointer">🇰🇷 공휴일</button>
+                </div>
+
+                <!-- 일정 리스트 -->
+                <ul id="schedule-list" class="space-y-2.5 max-h-[420px] overflow-y-auto pr-1">
+                    <!-- JS로 렌더링 -->
+                </ul>
+            </aside>
         </div>
 
-        <!-- 하단 2컬럼 데일리 브리핑 영역 -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            
-            <!-- 왼쪽: 분야별 데일리 뉴스 탭 카드 (7칸) -->
+        <!-- 하단: 데일리 가벼운 읽을거리 & 실시간 주요 지수 섹션 -->
+        <section class="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch pt-2">
+            <!-- 왼쪽: 분야별 데일리 뉴스 탭 (7칸) -->
             <div class="lg:col-span-7 glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col justify-between space-y-4">
                 <div class="space-y-3">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                    <div class="flex flex-wrap justify-between items-center gap-2">
                         <div>
                             <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
                                 📰 오늘의 분야별 데일리 뉴스
                             </h2>
-                            <p class="text-xs text-slate-500 mt-0.5">출근길과 점심시간에 가볍게 훑어보는 실시간 주요 헤드라인</p>
+                            <p class="text-xs text-slate-500 mt-0.5">출근길·점심시간에 가볍게 훑어보는 최신 이슈 TOP 5</p>
                         </div>
-                        <button type="button" id="btn-refresh-news" class="self-start sm:self-auto text-xs font-bold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-50 px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1 cursor-pointer">
-                            <i class="ph-bold ph-arrows-clockwise"></i> 새로고침
+                        <button type="button" id="refresh-news-btn" class="text-xs font-bold text-indigo-600 hover:text-indigo-800 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl transition-colors cursor-pointer">
+                            🔄 새로고침
                         </button>
                     </div>
 
-                    <!-- 뉴스 카테고리 탭 -->
-                    <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold" id="news-category-tabs">
-                        <button type="button" data-news-cat="tech" class="news-tab-btn flex-1 min-w-[85px] py-2 px-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all font-extrabold">💻 IT·테크</button>
-                        <button type="button" data-news-cat="business" class="news-tab-btn flex-1 min-w-[95px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">💰 경제·비즈니스</button>
-                        <button type="button" data-news-cat="entertainment" class="news-tab-btn flex-1 min-w-[90px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🎬 연예·라이프</button>
-                        <button type="button" data-news-cat="sports" class="news-tab-btn flex-1 min-w-[75px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">⚽ 스포츠</button>
+                    <!-- 뉴스 분야별 카테고리 탭 -->
+                    <div class="flex gap-1.5 bg-slate-100/90 p-1 rounded-xl text-xs font-bold overflow-x-auto hide-scrollbar">
+                        <button type="button" data-news-cat="tech" class="news-cat-tab flex-1 py-1.5 px-3 rounded-lg bg-white text-slate-900 shadow-xs transition-all whitespace-nowrap cursor-pointer">💻 IT·테크</button>
+                        <button type="button" data-news-cat="economy" class="news-cat-tab flex-1 py-1.5 px-3 rounded-lg text-slate-500 hover:text-slate-800 transition-all whitespace-nowrap cursor-pointer">💰 경제·비즈니스</button>
+                        <button type="button" data-news-cat="life" class="news-cat-tab flex-1 py-1.5 px-3 rounded-lg text-slate-500 hover:text-slate-800 transition-all whitespace-nowrap cursor-pointer">🎬 연예·라이프</button>
+                        <button type="button" data-news-cat="sports" class="news-cat-tab flex-1 py-1.5 px-3 rounded-lg text-slate-500 hover:text-slate-800 transition-all whitespace-nowrap cursor-pointer">⚽ 스포츠</button>
                     </div>
                 </div>
 
-                <!-- 뉴스 헤드라인 리스트 -->
-                <div id="news-list-container" class="space-y-2.5 min-h-[240px] flex flex-col justify-center">
-                    <!-- JS로 렌더링 -->
-                </div>
+                <ul id="daily-news-list" class="space-y-2.5 flex-1">
+                    <!-- JS로 실시간 헤드라인 렌더링 -->
+                </ul>
             </div>
 
             <!-- 오른쪽: 주요 지수 & 서울 날씨 요약 (5칸) -->
@@ -175,409 +165,745 @@
                             </h2>
                             <p class="text-xs text-slate-500 mt-0.5">출근길 대표 증시·환율 지표 및 실시간 기상</p>
                         </div>
-                        <span class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Market & Weather</span>
+                        <span class="text-[11px] font-bold text-slate-500 bg-slate-100/90 border border-slate-200/60 px-2.5 py-1 rounded-xl flex items-center gap-1.5">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Market & Weather
+                        </span>
                     </div>
 
-                    <!-- 대중적인 주요 지수 4종 카드 -->
-                    <div class="grid grid-cols-2 gap-2.5" id="market-indices-grid">
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
-                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                    <!-- 깔끔한 2x2 주요 지수 카드 그리드 -->
+                    <div class="grid grid-cols-2 gap-3" id="market-indices-grid">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-2">
                                 <span>KOSPI (코스피)</span>
-                                <span class="text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded font-extrabold">+0.68%</span>
+                                <span id="idx-kospi-chg" class="text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold">로딩중</span>
                             </div>
-                            <div class="text-base sm:text-lg font-black text-slate-900">2,614.82</div>
+                            <div id="idx-kospi-val" class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">---</div>
                         </div>
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
-                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-2">
                                 <span>S&P 500</span>
-                                <span class="text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded font-extrabold">+0.42%</span>
+                                <span id="idx-sp500-chg" class="text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold">로딩중</span>
                             </div>
-                            <div class="text-base sm:text-lg font-black text-slate-900">5,982.15</div>
+                            <div id="idx-sp500-val" class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">---</div>
                         </div>
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
-                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-2">
                                 <span>NASDAQ 100</span>
-                                <span class="text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded font-extrabold">+0.85%</span>
+                                <span id="idx-nasdaq-chg" class="text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold">로딩중</span>
                             </div>
-                            <div class="text-base sm:text-lg font-black text-slate-900">21,045.40</div>
+                            <div id="idx-nasdaq-val" class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">---</div>
                         </div>
-                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
-                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                        <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-xs font-bold text-slate-400 mb-2">
                                 <span>USD / KRW (환율)</span>
-                                <span class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-extrabold">-3.50원</span>
+                                <span id="idx-usdkrw-chg" class="text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold">LIVE</span>
                             </div>
-                            <div class="text-base sm:text-lg font-black text-slate-900">1,384.50</div>
+                            <div id="idx-usdkrw-val" class="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">---</div>
                         </div>
                     </div>
                 </div>
 
                 <!-- 실시간 서울 날씨 상세 카드 -->
-                <div class="bg-gradient-to-br from-sky-50 via-indigo-50/70 to-white p-4 rounded-2xl border border-sky-100/90 flex items-center justify-between gap-3">
+                <div class="bg-gradient-to-br from-sky-50 to-indigo-50/70 rounded-2xl p-4 border border-sky-100/80 flex items-center justify-between gap-3">
                     <div class="flex items-center gap-3">
-                        <div id="weather-card-icon" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-sky-100">
-                            ☀️
-                        </div>
+                        <div id="weather-card-icon" class="w-12 h-12 rounded-2xl bg-white shadow-xs flex items-center justify-center text-2xl shrink-0">🌤️</div>
                         <div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-xs font-extrabold text-sky-800">서울특별시 현재 날씨</span>
-                                <span id="weather-card-status" class="text-[11px] font-bold bg-white text-sky-600 px-2 py-0.5 rounded-md border border-sky-100">맑음</span>
-                            </div>
-                            <p id="weather-card-desc" class="text-xs text-slate-500 font-medium mt-1">
-                                바람 2.1m/s · 외출 및 점심 산책하기 좋은 날씨예요!
-                            </p>
+                            <div class="text-xs font-bold text-sky-700">서울 실시간 날씨</div>
+                            <div id="weather-card-desc" class="text-sm font-extrabold text-slate-800 mt-0.5">기상 정보 불러오는 중...</div>
                         </div>
                     </div>
                     <div class="text-right shrink-0">
-                        <div id="weather-card-temp" class="text-2xl font-black text-slate-900">14°C</div>
-                        <span class="text-[10px] font-bold text-slate-400">Open-Meteo 실시간</span>
+                        <div id="weather-card-temp" class="text-2xl font-black text-slate-900">--°C</div>
+                        <div id="weather-card-wind" class="text-[11px] font-semibold text-slate-500">풍속 -- km/h</div>
                     </div>
                 </div>
             </div>
-
-        </div>
+        </section>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 모달 1: 팀원 신규 등록 모달 -->
-    <!-- ========================================== -->
-    <div id="register-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div id="close-register-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                    🙋‍♂️ 새 팀원 프로필 등록
-                </h3>
-                <button type="button" id="btn-close-register-x" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
-                    <i class="ph-bold ph-x text-xl"></i>
-                </button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">이름 (또는 직급/닉네임) *</label>
-                    <input type="text" id="reg-name" placeholder="예: 김대리, 박사원" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">담당 업무 / 부서</label>
-                    <input type="text" id="reg-role" placeholder="예: 디자인, 프론트엔드, 기획" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">프로필 캐릭터 선택</label>
-                    <div id="reg-avatar-selector" class="grid grid-cols-8 gap-1.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80">
-                        <!-- JS로 아바타 렌더링 -->
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">오늘 나의 기분</label>
-                    <div id="reg-mood-selector" class="grid grid-cols-4 gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-200/80">
-                        <!-- JS로 기분 렌더링 -->
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">현재 상태 뱃지</label>
-                    <div id="reg-status-selector" class="grid grid-cols-2 gap-1.5">
-                        <!-- JS로 상태 렌더링 -->
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2 pt-2">
-                <button type="button" id="btn-cancel-register" class="w-1/3 py-3 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">취소</button>
-                <button type="button" id="btn-submit-register" class="w-2/3 py-3 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-colors">라운지에 합류하기</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ========================================== -->
-    <!-- 모달 2: 팀원 상태 변경 모달 -->
-    <!-- ========================================== -->
-    <div id="status-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div id="close-status-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div class="flex justify-between items-start">
-                <div class="flex items-center gap-3">
-                    <div id="modal-avatar" class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-3xl shadow-inner">🧑‍💻</div>
-                    <div>
-                        <h3 id="modal-name" class="text-lg font-extrabold text-slate-900">이름</h3>
-                        <p class="text-xs text-slate-400">프로필 정보 및 오늘의 상태 업데이트</p>
-                    </div>
-                </div>
-                <button type="button" id="btn-close-status-x" class="text-slate-400 hover:text-slate-700 p-1">
-                    <i class="ph-bold ph-x text-xl"></i>
-                </button>
+    <!-- ==========================================
+         모달 1: 팀원 상태 변경 및 정보 수정 모달
+         ========================================== -->
+    <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 z-10 max-h-[90vh] overflow-y-auto">
+            <button type="button" class="close-status-modal absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold cursor-pointer">✕</button>
+            
+            <div class="text-center mb-5">
+                <div id="modal-avatar" class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 flex items-center justify-center text-4xl mb-2 shadow-inner">🧑‍💻</div>
+                <h3 class="text-xl font-extrabold text-slate-900" id="modal-name">이름</h3>
+                <p class="text-xs text-slate-500 mt-0.5" id="modal-role">부서</p>
             </div>
 
             <div class="space-y-4">
                 <!-- 이름 및 부서 수정 -->
                 <div class="grid grid-cols-2 gap-2.5">
                     <div>
-                        <label class="block text-xs font-extrabold text-slate-700 mb-1">이름 / 닉네임</label>
-                        <input type="text" id="edit-name" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">이름</label>
+                        <input type="text" id="edit-member-name" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
                     </div>
                     <div>
-                        <label class="block text-xs font-extrabold text-slate-700 mb-1">담당 업무 / 부서</label>
-                        <input type="text" id="edit-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label class="block text-xs font-bold text-slate-700 mb-1">부서/담당</label>
+                        <input type="text" id="edit-member-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
                     </div>
                 </div>
 
-                <!-- 캐릭터 변경 (아바타) -->
+                <!-- 기분 선택 -->
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">프로필 캐릭터 변경</label>
-                    <div id="edit-avatar-selector" class="grid grid-cols-8 gap-1.5 bg-slate-50 p-2 rounded-2xl border border-slate-100">
-                        <!-- JS로 렌더링 -->
+                    <label class="block text-xs font-bold text-slate-700 mb-2">오늘의 기분</label>
+                    <div class="grid grid-cols-5 gap-1.5 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="😊" class="hidden peer">
+                            <span class="text-2xl peer-checked:scale-125 transition-transform">😊</span>
+                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">행복</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="🔥" class="hidden peer">
+                            <span class="text-2xl peer-checked:scale-125 transition-transform">🔥</span>
+                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">열정</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="😴" class="hidden peer">
+                            <span class="text-2xl peer-checked:scale-125 transition-transform">😴</span>
+                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">피곤</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="🫠" class="hidden peer">
+                            <span class="text-2xl peer-checked:scale-125 transition-transform">🫠</span>
+                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">녹는중</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="🤯" class="hidden peer">
+                            <span class="text-2xl peer-checked:scale-125 transition-transform">🤯</span>
+                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">멘붕</span>
+                        </label>
                     </div>
                 </div>
 
-                <!-- 오늘 기분 -->
+                <!-- 현재 상태 배지 -->
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">오늘 나의 기분</label>
-                    <div id="mood-selector" class="grid grid-cols-4 gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
-                        <!-- JS로 렌더링 -->
-                    </div>
-                </div>
-
-                <!-- 현재 상태 뱃지 -->
-                <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">현재 상태 뱃지 (화장실, 커피 등)</label>
-                    <div id="status-selector" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                        <!-- JS로 렌더링 -->
+                    <label class="block text-xs font-bold text-slate-700 mb-2">현재 상태</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🔋 풀충전 업무중" class="hidden peer">
+                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 transition-all text-xs font-bold">
+                                🔋 풀충전 업무중
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="☕ 커피 수혈중" class="hidden peer">
+                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 transition-all text-xs font-bold">
+                                ☕ 커피 수혈중
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🎧 집중 모드" class="hidden peer">
+                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all text-xs font-bold">
+                                🎧 집중 모드
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🗣️ 회의 / 미팅" class="hidden peer">
+                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:text-purple-700 transition-all text-xs font-bold">
+                                🗣️ 회의 / 미팅
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🍔 식사 / 외출" class="hidden peer">
+                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all text-xs font-bold">
+                                🍔 식사 / 외출
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🏠 재택 / 반차" class="hidden peer">
+                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 transition-all text-xs font-bold">
+                                🏠 재택 / 반차
+                            </div>
+                        </label>
                     </div>
                 </div>
 
                 <!-- 한줄 상태 메시지 -->
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">한줄 생존신고 메시지</label>
-                    <input type="text" id="modal-message" placeholder="지금 하고 있는 일이나 하고 싶은 말을 적어주세요!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">한줄 메시지</label>
+                    <input type="text" id="modal-message" maxlength="45" placeholder="지금 상황이나 한마디를 남겨주세요!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
             </div>
 
-            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
-                <button type="button" id="btn-delete-member" class="px-3.5 py-3 rounded-xl font-bold text-xs text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors flex items-center gap-1">
-                    <i class="ph-bold ph-trash"></i> 삭제
+            <div class="flex gap-2 mt-6">
+                <button type="button" id="delete-member-btn" class="px-4 py-3 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs transition-colors cursor-pointer">
+                    카드 삭제
                 </button>
-                <div class="flex gap-2 flex-1 justify-end">
-                    <button type="button" id="btn-cancel-status" class="px-4 py-3 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
-                    <button type="button" id="btn-save-status" class="px-6 py-3 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700 shadow-md">상태 저장하기</button>
-                </div>
+                <button type="button" id="save-status-btn" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-colors shadow-md text-sm cursor-pointer">
+                    상태 업데이트
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 모달 3: 일정 및 연차 추가 모달 (날짜 선택기 포함) -->
-    <!-- ========================================== -->
-    <div id="schedule-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div id="close-sched-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                    📅 새 팀 일정 / 휴가 등록
-                </h3>
-                <button type="button" id="btn-close-sched-x" class="text-slate-400 hover:text-slate-700 p-1">
-                    <i class="ph-bold ph-x text-xl"></i>
-                </button>
-            </div>
+    <!-- ==========================================
+         모달 2: 새 팀원 등록 모달
+         ========================================== -->
+    <div id="add-member-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 z-10">
+            <button type="button" class="close-add-member-modal absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold cursor-pointer">✕</button>
+            <h3 class="text-lg font-extrabold text-slate-900 mb-1">👋 새 팀원 등록</h3>
+            <p class="text-xs text-slate-500 mb-4">라운지에 표시될 내 프로필을 만들어보세요</p>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">카테고리 선택</label>
-                    <div class="grid grid-cols-3 gap-2">
-                        <label class="cursor-pointer">
-                            <input type="radio" name="sched_type" value="leave" checked class="hidden peer">
-                            <div class="text-center py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-bold peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all">
-                                🏖️ 휴가/반차
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="sched_type" value="event" class="hidden peer">
-                            <div class="text-center py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-bold peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all">
-                                🎉 주요일정/회식
-                            </div>
-                        </label>
-                        <label class="cursor-pointer">
-                            <input type="radio" name="sched_type" value="holiday" class="hidden peer">
-                            <div class="text-center py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-bold peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 transition-all">
-                                🔴 공휴일/휴무
-                            </div>
-                        </label>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">캐릭터 선택</label>
+                    <div class="grid grid-cols-6 gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-100 text-center">
+                        <label class="cursor-pointer"><input type="radio" name="new-avatar" value="🧑‍💻" checked class="hidden peer"><span class="text-2xl block p-1 rounded-lg peer-checked:bg-white peer-checked:shadow-xs">🧑‍💻</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="new-avatar" value="👩‍💼" class="hidden peer"><span class="text-2xl block p-1 rounded-lg peer-checked:bg-white peer-checked:shadow-xs">👩‍💼</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="new-avatar" value="🦊" class="hidden peer"><span class="text-2xl block p-1 rounded-lg peer-checked:bg-white peer-checked:shadow-xs">🦊</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="new-avatar" value="🐶" class="hidden peer"><span class="text-2xl block p-1 rounded-lg peer-checked:bg-white peer-checked:shadow-xs">🐶</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="new-avatar" value="🐱" class="hidden peer"><span class="text-2xl block p-1 rounded-lg peer-checked:bg-white peer-checked:shadow-xs">🐱</span></label>
+                        <label class="cursor-pointer"><input type="radio" name="new-avatar" value="🐼" class="hidden peer"><span class="text-2xl block p-1 rounded-lg peer-checked:bg-white peer-checked:shadow-xs">🐼</span></label>
                     </div>
                 </div>
-
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">날짜 선택 (달력 클릭)</label>
-                    <input type="date" id="sched-date" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">이름 / 닉네임</label>
+                    <input type="text" id="new-member-name" placeholder="예: 홍길동 프로" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
-
                 <div>
-                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">일정 내용 또는 이름</label>
-                    <input type="text" id="sched-title" placeholder="예: 이대리 오전 반차 / 전체 팀 회식" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">부서 / 담당 업무</label>
+                    <input type="text" id="new-member-role" placeholder="예: 서비스기획팀" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
             </div>
 
-            <div class="flex gap-2 pt-2">
-                <button type="button" id="btn-cancel-sched" class="w-1/3 py-3 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
-                <button type="button" id="btn-submit-sched" class="w-2/3 py-3 rounded-xl font-extrabold text-xs text-white bg-slate-900 hover:bg-slate-800 shadow-md">일정 등록하기</button>
-            </div>
+            <button type="button" id="confirm-add-member-btn" class="w-full mt-5 bg-slate-900 hover:bg-indigo-600 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-md cursor-pointer">
+                라운지 입장하기
+            </button>
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- 모달 4: 공지사항 수정 모달 -->
-    <!-- ========================================== -->
-    <div id="notice-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div id="close-notice-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-4 border border-slate-100">
-            <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-                📢 상단 한줄 공지사항 수정
-            </h3>
-            <input type="text" id="notice-input" placeholder="팀원들에게 알릴 공지나 점심 메뉴를 적어보세요!" class="w-full px-3.5 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <div class="flex gap-2 justify-end pt-2">
-                <button type="button" id="btn-cancel-notice" class="px-4 py-2.5 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
-                <button type="button" id="btn-save-notice" class="px-5 py-2.5 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700">공지 반영하기</button>
-            </div>
-        </div>
-    </div>
+    <!-- ==========================================
+         모달 3: 일정 추가 모달 (달력 날짜 선택 지원)
+         ========================================== -->
+    <div id="add-schedule-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 z-10">
+            <button type="button" class="close-schedule-modal absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold cursor-pointer">✕</button>
+            <h3 class="text-lg font-extrabold text-slate-900 mb-1">📅 새 일정 등록</h3>
+            <p class="text-xs text-slate-500 mb-4">팀원들과 공유할 연차나 주요 일정을 입력하세요</p>
 
-    <!-- ========================================== -->
-    <!-- 모달 5: 라운지 이름 변경 모달 -->
-    <!-- ========================================== -->
-    <div id="space-name-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div id="close-spacename-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-4 border border-slate-100">
-            <h3 class="text-lg font-extrabold text-slate-900">🏕️ 우리팀 라운지 이름 변경</h3>
-            <input type="text" id="space-name-input" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <div class="space-y-1.5">
-                <span class="text-[11px] font-bold text-slate-400">추천 라운지 이름 (클릭 시 자동 입력)</span>
-                <div class="flex flex-wrap gap-1.5">
-                    <button type="button" data-title="생존신고 라운지 🏕️" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">생존신고 라운지 🏕️</button>
-                    <button type="button" data-title="탕비실 베이스캠프 ☕" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">탕비실 베이스캠프 ☕</button>
-                    <button type="button" data-title="마감 구조대 아지트 🚀" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">마감 구조대 아지트 🚀</button>
-                    <button type="button" data-title="도파민 충전소 🌴" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">도파민 충전소 🌴</button>
+            <div class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">구분</label>
+                    <select id="sched-type" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="leave">🏖️ 연차 / 반차 / 재택</option>
+                        <option value="event">🎉 팀 행사 / 회의 / 생일</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">날짜 선택</label>
+                    <input type="date" id="sched-date-picker" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">내용 (이름 및 일정)</label>
+                    <input type="text" id="sched-title" placeholder="예: 김팀장 오후 반차 / 전체 회식" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
                 </div>
             </div>
-            <div class="flex gap-2 justify-end pt-2">
-                <button type="button" id="btn-cancel-spacename" class="px-4 py-2.5 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
-                <button type="button" id="btn-save-spacename" class="px-5 py-2.5 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700">변경 저장</button>
-            </div>
+
+            <button type="button" id="confirm-add-schedule-btn" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-md cursor-pointer">
+                일정 등록하기
+            </button>
         </div>
     </div>
 
-    <!-- 토스트 알림창 -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold shadow-xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
-        <i class="ph-fill ph-check-circle text-emerald-400 text-lg"></i>
-        <span id="toast-msg">반영되었습니다!</span>
+    <!-- ==========================================
+         모달 4: 공지사항 / 라운지 타이틀 수정 모달
+         ========================================== -->
+    <div id="text-edit-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
+        <div class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 z-10">
+            <button type="button" class="close-text-modal absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold cursor-pointer">✕</button>
+            <h3 class="text-lg font-extrabold text-slate-900 mb-1" id="text-modal-title">수정하기</h3>
+            <p class="text-xs text-slate-500 mb-4" id="text-modal-desc">팀원 모두에게 실시간으로 반영됩니다</p>
+
+            <input type="text" id="text-modal-input" maxlength="60" class="w-full px-3.5 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm font-semibold">
+
+            <button type="button" id="confirm-text-edit-btn" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-colors text-sm shadow-md cursor-pointer">
+                저장하기
+            </button>
+        </div>
     </div>
 
-    <!-- 메인 스크립트 (클라우드 실시간 영구 저장 연동 + 날씨/뉴스 피드) -->
+    <!-- 토스트 알림 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-full text-xs sm:text-sm font-semibold shadow-xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
+        <span class="text-emerald-400">✓</span>
+        <span id="toast-msg">저장되었습니다.</span>
+    </div>
+
+    <!-- ==========================================
+         실시간 데이터 동기화 & 인터랙션 스크립트
+         ========================================== -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, addDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 깔끔하게 정돈된 캐릭터/동물 이모지 목록
-        const fixedAvatars = [
-            '👩‍💼', '👨‍💼', '🧑‍💻', '👩‍🎨', '🕵️‍♂️', '🦸‍♀️', '🧙‍♂️', '🧑‍🚀',
-            '🐶', '🐱', '🦊', '🐼', '🐰', '🐯', '🐨', '🐸'
+        // 1. 기본 샘플 데이터 및 대한민국 2026년 공휴일 데이터
+        const DEFAULT_MEMBERS = [
+            { id: 'm1', name: '김팀장', role: '기획팀', avatar: '👩‍💼', bg: 'bg-blue-100', mood: '😴', status: '☕ 커피 수혈중', message: '오전 회의 풀입니다... 커피 필수!', order: 1 },
+            { id: 'm2', name: '이대리', role: '개발팀', avatar: '🧑‍💻', bg: 'bg-emerald-100', mood: '🔥', status: '🎧 집중 모드', message: '배포 전 집중 코딩 중입니다 💻', order: 2 },
+            { id: 'm3', name: '박사원', role: '디자인팀', avatar: '🦊', bg: 'bg-amber-100', mood: '😊', status: '🔋 풀충전 업무중', message: '시안 작업 완료! 피드백 환영해요~', order: 3 },
+            { id: 'm4', name: '최인턴', role: '마케팅팀', avatar: '🐶', bg: 'bg-purple-100', mood: '🫠', status: '🍔 식사 / 외출', message: '오늘 점심 메뉴 추천 받습니다 🙏', order: 4 }
         ];
 
-        // 다양한 기분 선택지
-        const moodOptions = [
-            { emoji: '😊', label: '행복/평온' },
-            { emoji: '🥳', label: '신남/최고' },
-            { emoji: '😎', label: '여유로움' },
-            { emoji: '😴', label: '피곤/졸림' },
-            { emoji: '🫠', label: '영혼가출' },
-            { emoji: '🤯', label: '멘붕/바쁨' },
-            { emoji: '🤬', label: '건들지마' },
-            { emoji: '🤒', label: '컨디션난조' }
+        const DEFAULT_SCHEDULES = [
+            { id: 's1', type: 'leave', date: '11/13 (금)', rawDate: '2026-11-13', title: '이대리 오전 반차' },
+            { id: 's2', type: 'leave', date: '11/16 (월)', rawDate: '2026-11-16', title: '김팀장 연차 휴가' },
+            { id: 's3', type: 'event', date: '11/20 (금)', rawDate: '2026-11-20', title: '🎂 11월 생일자 파티 (오후 4시)' },
+            { id: 's4', type: 'event', date: '11/27 (금)', rawDate: '2026-11-27', title: '🥩 팀 전체 회식 (오후 6시 30분)' }
         ];
 
-        // 실무 밀착형 상태 뱃지
-        const statusOptions = [
-            { text: '🔋 업무중', color: 'border-emerald-500 bg-emerald-50 text-emerald-700' },
-            { text: '🎧 집중모드', color: 'border-indigo-500 bg-indigo-50 text-indigo-700' },
-            { text: '💬 회의중', color: 'border-purple-500 bg-purple-50 text-purple-700' },
-            { text: '☕ 커피수혈', color: 'border-amber-500 bg-amber-50 text-amber-700' },
-            { text: '🌿 자리비움', color: 'border-teal-500 bg-teal-50 text-teal-700' },
-            { text: '🚗 외근중', color: 'border-blue-500 bg-blue-50 text-blue-700' },
-            { text: '🚽 화장실행', color: 'border-sky-500 bg-sky-50 text-sky-700' },
-            { text: '🏃‍♂️ 퇴근완료', color: 'border-pink-500 bg-pink-50 text-pink-700' }
+        const KR_HOLIDAYS = [
+            { id: 'h-1', type: 'holiday', date: '01/01 (목)', rawDate: '2026-01-01', title: '🇰🇷 신정 (새해 첫날)' },
+            { id: 'h-2', type: 'holiday', date: '02/16~18', rawDate: '2026-02-17', title: '🇰🇷 설날 연휴' },
+            { id: 'h-3', type: 'holiday', date: '03/01 (일)', rawDate: '2026-03-01', title: '🇰🇷 삼일절 (3/2 대체공휴일)' },
+            { id: 'h-4', type: 'holiday', date: '05/05 (화)', rawDate: '2026-05-05', title: '🇰🇷 어린이날' },
+            { id: 'h-5', type: 'holiday', date: '05/24 (일)', rawDate: '2026-05-24', title: '🇰🇷 부처님오신날 (5/25 대체공휴일)' },
+            { id: 'h-6', type: 'holiday', date: '06/06 (토)', rawDate: '2026-06-06', title: '🇰🇷 현충일' },
+            { id: 'h-7', type: 'holiday', date: '08/15 (토)', rawDate: '2026-08-15', title: '🇰🇷 광복절 (8/17 대체공휴일)' },
+            { id: 'h-8', type: 'holiday', date: '09/24~26', rawDate: '2026-09-25', title: '🇰🇷 추석 연휴' },
+            { id: 'h-9', type: 'holiday', date: '10/03 (토)', rawDate: '2026-10-03', title: '🇰🇷 개천절 (10/5 대체공휴일)' },
+            { id: 'h-10', type: 'holiday', date: '10/09 (금)', rawDate: '2026-10-09', title: '🇰🇷 한글날' },
+            { id: 'h-11', type: 'holiday', date: '12/25 (금)', rawDate: '2026-12-25', title: '🎄 성탄절 (크리스마스)' }
         ];
 
-        // 초기 기본 데이터
-        const defaultMembers = [
-            { id: 'm1', name: '김팀장', role: '기획/총괄', avatar: '👩‍💼', mood: '😴', status: '☕ 커피수혈', message: '오전 회의 달리는 중입니다...' },
-            { id: 'm2', name: '이대리', role: '개발팀', avatar: '🧑‍💻', mood: '🤯', status: '🎧 집중모드', message: '배포 전 집중모드입니다!' },
-            { id: 'm3', name: '박사원', role: '디자인', avatar: '🐱', mood: '🥳', status: '🔋 업무중', message: '시안 컨펌 완료! 기분 최고~' },
-            { id: 'm4', name: '최인턴', role: '마케팅', avatar: '🐶', mood: '🫠', status: '💬 회의중', message: '주간 미팅 진행 중이에요' }
-        ];
+        // 2. 상태 변수 및 로컬 백업 로드
+        const STORAGE_KEY = 'survival_lounge_state_v3';
+        let appState = {
+            title: '🏕️ 생존신고 라운지',
+            notice: '오늘 점심 메뉴 추천 받습니다! (클릭해서 공지 수정)',
+            members: [...DEFAULT_MEMBERS],
+            schedules: [...DEFAULT_SCHEDULES]
+        };
 
-        const defaultSchedules = [
-            { id: 's1', type: 'leave', date: '2026-11-13', title: '이대리 (오후 반차)' },
-            { id: 's2', type: 'leave', date: '2026-11-16', title: '김팀장 (연차 휴가)' },
-            { id: 's3', type: 'event', date: '2026-11-20', title: '🎂 11월 팀원 생일파티 (오후 4시)' },
-            { id: 's4', type: 'event', date: '2026-11-27', title: '🥩 전체 팀 회식 (삼겹살)' },
-            { id: 'h1', type: 'holiday', date: '2026-12-25', title: '🎄 크리스마스 (공휴일)' },
-            { id: 'h2', type: 'holiday', date: '2027-01-01', title: '☀️ 신정 새해 첫날 (공휴일)' },
-            { id: 'h3', type: 'holiday', date: '2027-02-06', title: '🧧 설날 연휴 (공휴일)' },
-            { id: 'h4', type: 'holiday', date: '2027-03-01', title: '🇰🇷 삼일절 (공휴일)' }
-        ];
-
-        const STORAGE_KEY = 'survival_lounge_state_v5';
-
-        function loadLocalBackup() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY) || (window.name && window.name.startsWith('{') ? window.name : null);
-                if (raw) return JSON.parse(raw);
-            } catch (e) {
-                console.warn('로컬 백업 로드 실패:', e);
+        try {
+            const savedRaw = localStorage.getItem(STORAGE_KEY) || (window.name && window.name.startsWith('{') ? window.name : null);
+            if (savedRaw) {
+                const parsed = JSON.parse(savedRaw);
+                if (parsed && Array.isArray(parsed.members)) {
+                    appState = { ...appState, ...parsed };
+                }
             }
-            return null;
+        } catch (e) {
+            console.warn('로컬 스토리지 읽기 생략:', e);
         }
 
-        function saveLocalBackup(payload) {
+        function persistLocalBackup() {
             try {
-                const serialized = JSON.stringify(payload);
+                const serialized = JSON.stringify(appState);
                 localStorage.setItem(STORAGE_KEY, serialized);
                 window.name = serialized;
             } catch (e) {
-                try {
-                    window.name = JSON.stringify(payload);
-                } catch (_) {}
+                console.warn('로컬 백업 저장 생략:', e);
             }
         }
 
-        const cachedState = loadLocalBackup();
-
-        // 상태 변수
-        let teamMembers = cachedState && Array.isArray(cachedState.teamMembers) ? cachedState.teamMembers : [...defaultMembers];
-        let schedules = cachedState && Array.isArray(cachedState.schedules) ? cachedState.schedules : [...defaultSchedules];
-        let spaceTitle = cachedState && cachedState.spaceTitle ? cachedState.spaceTitle : '생존신고 라운지 🏕️';
-        let noticeText = cachedState && cachedState.noticeText ? cachedState.noticeText : '오늘 점심 메뉴 추천 받습니다! 🍔 (클릭해서 공지 수정)';
-
         let currentScheduleFilter = 'all';
-        let currentEditingId = null;
-        let regSelectedAvatar = fixedAvatars[0];
-        let regSelectedMood = moodOptions[0].emoji;
-        let regSelectedStatus = statusOptions[0].text;
-        let editSelectedAvatar = fixedAvatars[0];
-        let selectedMood = moodOptions[0].emoji;
-        let selectedStatus = statusOptions[0].text;
+        let editingMemberId = null;
+        let currentTextEditMode = null;
 
-        // Firebase 설정 및 초기화
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-lounge-app';
-        let db = null;
-        let auth = null;
-        let currentUser = null;
-        let stateDocRef = null;
+        // 3. 시계 & 날씨 업데이트
+        function updateDateTime() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+            const timeStr = now.toLocaleTimeString('ko-KR', { hour12: false });
+            document.getElementById('current-date').innerText = dateStr;
+            document.getElementById('current-time').innerText = timeStr;
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000);
 
-        async function initCloudSync() {
+        async function fetchSeoulWeather() {
             try {
-                if (typeof __firebase_config === 'undefined') return;
+                const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weather_code,wind_speed_10m&timezone=Asia%2FSeoul');
+                const data = await res.json();
+                if (data && data.current) {
+                    const temp = Math.round(data.current.temperature_2m);
+                    const wind = Math.round(data.current.wind_speed_10m);
+                    const code = data.current.weather_code;
+                    let icon = '☀️';
+                    let desc = '맑음';
+                    if (code >= 1 && code <= 3) { icon = '⛅'; desc = '구름 조금'; }
+                    else if (code >= 45 && code <= 48) { icon = '🌫️'; desc = '안개'; }
+                    else if (code >= 51 && code <= 67) { icon = '🌧️'; desc = '비 내림'; }
+                    else if (code >= 71 && code <= 77) { icon = '❄️'; desc = '눈 내림'; }
+                    else if (code >= 80) { icon = '🌦️'; desc = '소나기'; }
+
+                    document.getElementById('seoul-weather').innerText = `${icon} 서울 ${temp}°C (${desc})`;
+                    document.getElementById('weather-card-icon').innerText = icon;
+                    document.getElementById('weather-card-desc').innerText = `${desc} · 출근길 쾌적함`;
+                    document.getElementById('weather-card-temp').innerText = `${temp}°C`;
+                    document.getElementById('weather-card-wind').innerText = `풍속 ${wind} km/h`;
+                }
+            } catch (e) {
+                document.getElementById('seoul-weather').innerText = '🌤️ 서울 맑음';
+                document.getElementById('weather-card-desc').innerText = '맑고 쾌청한 날씨';
+            }
+        }
+
+        // 4. UI 렌더링 함수
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toast-msg').innerText = msg;
+            toast.classList.remove('opacity-0');
+            setTimeout(() => toast.classList.add('opacity-0'), 2200);
+        }
+
+        function renderHeader() {
+            document.getElementById('lounge-title-text').innerText = appState.title;
+            document.getElementById('notice-text').innerText = appState.notice;
+        }
+
+        function renderMembers() {
+            const grid = document.getElementById('team-grid');
+            const countBadge = document.getElementById('member-count');
+            countBadge.innerText = `${appState.members.length}명`;
+            grid.innerHTML = '';
+
+            if (appState.members.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full glass-panel rounded-2xl p-8 text-center border border-dashed border-slate-300">
+                        <p class="text-sm text-slate-500 font-medium">아직 등록된 팀원이 없습니다. 우측 상단 <b>[+ 팀원 등록]</b>을 눌러주세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            appState.members.forEach(member => {
+                const card = document.createElement('div');
+                card.className = "glass-panel rounded-2xl p-4 sm:p-5 shadow-xs hover:shadow-md border border-slate-200/80 hover:border-indigo-300 transition-all duration-200 cursor-pointer group relative";
+                
+                card.innerHTML = `
+                    <button type="button" class="quick-delete-member absolute top-3 right-3 w-7 h-7 rounded-lg bg-slate-100/80 hover:bg-rose-100 text-slate-400 hover:text-rose-600 flex items-center justify-center text-xs opacity-80 sm:opacity-0 group-hover:opacity-100 transition-all cursor-pointer z-10" title="팀원 카드 삭제">
+                        🗑️
+                    </button>
+                    <div class="flex items-center gap-3.5 mb-3.5 pr-6">
+                        <div class="relative w-13 h-13 ${member.bg || 'bg-indigo-100'} rounded-2xl flex items-center justify-center text-3xl shrink-0 group-hover:scale-105 transition-transform">
+                            ${member.avatar}
+                            <span class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-white rounded-full shadow-xs border border-slate-100 flex items-center justify-center text-sm">
+                                ${member.mood}
+                            </span>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="flex items-center gap-1.5">
+                                <h3 class="font-extrabold text-slate-900 text-base truncate">${member.name}</h3>
+                                <span class="text-[11px] font-semibold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded-md shrink-0">${member.role}</span>
+                            </div>
+                            <div class="mt-1.5">
+                                <span class="inline-block bg-indigo-50/80 text-indigo-700 border border-indigo-100 px-2.5 py-0.5 rounded-lg text-xs font-bold">
+                                    ${member.status}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50/90 rounded-xl p-3 text-xs sm:text-sm text-slate-700 border border-slate-100 relative">
+                        <p class="break-keep leading-relaxed">"${member.message}"</p>
+                    </div>
+                `;
+
+                card.querySelector('.quick-delete-member').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteMemberById(member.id);
+                });
+
+                card.addEventListener('click', () => openStatusModal(member));
+                grid.appendChild(card);
+            });
+        }
+
+        function renderSchedules() {
+            const list = document.getElementById('schedule-list');
+            list.innerHTML = '';
+
+            let combined = [...appState.schedules, ...KR_HOLIDAYS];
+            combined.sort((a, b) => (a.rawDate || '9999-99-99').localeCompare(b.rawDate || '9999-99-99'));
+
+            const filtered = combined.filter(item => {
+                if (currentScheduleFilter === 'all') return true;
+                return item.type === currentScheduleFilter;
+            });
+
+            if (filtered.length === 0) {
+                list.innerHTML = `<li class="text-center py-8 text-xs text-slate-400">해당 카테고리의 일정이 없습니다.</li>`;
+                return;
+            }
+
+            filtered.forEach(item => {
+                const li = document.createElement('li');
+                let badgeHtml = '';
+                let rowBg = 'bg-white border-slate-100';
+
+                if (item.type === 'leave') {
+                    badgeHtml = `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-orange-100 text-orange-700 shrink-0">연차/휴가</span>`;
+                } else if (item.type === 'event') {
+                    badgeHtml = `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 shrink-0">팀 일정</span>`;
+                } else {
+                    badgeHtml = `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-100 text-rose-700 shrink-0">공휴일</span>`;
+                    rowBg = 'bg-rose-50/40 border-rose-100';
+                }
+
+                li.className = `${rowBg} p-3 rounded-xl border flex items-center justify-between gap-2.5 group transition-colors`;
+                li.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="text-xs font-extrabold text-slate-500 bg-slate-100 px-2 py-1 rounded-lg shrink-0 tabular-nums">${item.date}</span>
+                        <span class="text-xs sm:text-sm font-bold text-slate-800 truncate">${item.title}</span>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        ${badgeHtml}
+                        ${item.type !== 'holiday' ? `<button type="button" data-del-id="${item.id}" class="del-sched-btn text-slate-300 hover:text-rose-500 text-xs px-1.5 py-0.5 rounded cursor-pointer" title="일정 삭제">✕</button>` : ''}
+                    </div>
+                `;
+                list.appendChild(li);
+            });
+
+            document.querySelectorAll('.del-sched-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    const targetId = btn.getAttribute('data-del-id');
+                    appState.schedules = appState.schedules.filter(s => s.id !== targetId);
+                    persistLocalBackup();
+                    renderSchedules();
+                    showToast('일정이 삭제되었습니다.');
+                    await syncToCloud();
+                });
+            });
+        }
+
+        // 5. 모달 열기 / 닫기 로직
+        function openStatusModal(member) {
+            editingMemberId = member.id;
+            document.getElementById('modal-avatar').innerText = member.avatar;
+            document.getElementById('modal-name').innerText = member.name;
+            document.getElementById('modal-role').innerText = member.role;
+            document.getElementById('edit-member-name').value = member.name;
+            document.getElementById('edit-member-role').value = member.role;
+            document.getElementById('modal-message').value = member.message;
+
+            document.querySelectorAll('input[name="mood"]').forEach(r => r.checked = (r.value === member.mood));
+            document.querySelectorAll('input[name="status"]').forEach(r => r.checked = (r.value === member.status));
+
+            const modal = document.getElementById('status-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeStatusModal() {
+            const modal = document.getElementById('status-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function deleteMemberById(targetId) {
+            appState.members = appState.members.filter(m => m.id !== targetId);
+            persistLocalBackup();
+            renderMembers();
+            closeStatusModal();
+            showToast('팀원 카드가 삭제되었습니다.');
+            await syncToCloud();
+        }
+
+        // 모달 이벤트 바인딩
+        document.querySelectorAll('.close-status-modal, #status-modal .modal-backdrop').forEach(el => {
+            el.addEventListener('click', closeStatusModal);
+        });
+
+        document.getElementById('save-status-btn').addEventListener('click', async () => {
+            const mood = document.querySelector('input[name="mood"]:checked');
+            const status = document.querySelector('input[name="status"]:checked');
+            const newName = document.getElementById('edit-member-name').value.trim();
+            const newRole = document.getElementById('edit-member-role').value.trim();
+            const message = document.getElementById('modal-message').value.trim();
+
+            const idx = appState.members.findIndex(m => m.id === editingMemberId);
+            if (idx !== -1) {
+                if (newName) appState.members[idx].name = newName;
+                if (newRole) appState.members[idx].role = newRole;
+                if (mood) appState.members[idx].mood = mood.value;
+                if (status) appState.members[idx].status = status.value;
+                appState.members[idx].message = message || '오늘도 화이팅!';
+                persistLocalBackup();
+                renderMembers();
+                closeStatusModal();
+                showToast('상태가 업데이트되었습니다!');
+                await syncToCloud();
+            }
+        });
+
+        document.getElementById('delete-member-btn').addEventListener('click', () => {
+            if (editingMemberId) {
+                deleteMemberById(editingMemberId);
+            }
+        });
+
+        // 새 팀원 추가 모달
+        const addMemberModal = document.getElementById('add-member-modal');
+        document.getElementById('open-add-member-btn').addEventListener('click', () => {
+            document.getElementById('new-member-name').value = '';
+            document.getElementById('new-member-role').value = '';
+            addMemberModal.classList.remove('hidden');
+            addMemberModal.classList.add('flex');
+        });
+        document.querySelectorAll('.close-add-member-modal, #add-member-modal .modal-backdrop').forEach(el => {
+            el.addEventListener('click', () => {
+                addMemberModal.classList.add('hidden');
+                addMemberModal.classList.remove('flex');
+            });
+        });
+        document.getElementById('confirm-add-member-btn').addEventListener('click', async () => {
+            const name = document.getElementById('new-member-name').value.trim();
+            const role = document.getElementById('new-member-role').value.trim() || '팀원';
+            const avatar = document.querySelector('input[name="new-avatar"]:checked')?.value || '🧑‍💻';
+            if (!name) {
+                showToast('이름이나 닉네임을 입력해주세요!');
+                return;
+            }
+            const bgs = ['bg-blue-100', 'bg-emerald-100', 'bg-amber-100', 'bg-purple-100', 'bg-pink-100'];
+            appState.members.push({
+                id: 'm-' + Date.now(),
+                name,
+                role,
+                avatar,
+                bg: bgs[appState.members.length % bgs.length],
+                mood: '😊',
+                status: '🔋 풀충전 업무중',
+                message: '반갑습니다! 오늘도 화이팅!',
+                order: appState.members.length + 1
+            });
+            persistLocalBackup();
+            renderMembers();
+            addMemberModal.classList.add('hidden');
+            addMemberModal.classList.remove('flex');
+            showToast(`${name}님이 라운지에 등록되었습니다!`);
+            await syncToCloud();
+        });
+
+        // 일정 추가 모달 (달력 날짜 선택기 연동)
+        const addScheduleModal = document.getElementById('add-schedule-modal');
+        document.getElementById('open-add-schedule-btn').addEventListener('click', () => {
+            const todayIso = new Date().toISOString().split('T')[0];
+            document.getElementById('sched-date-picker').value = todayIso;
+            document.getElementById('sched-title').value = '';
+            addScheduleModal.classList.remove('hidden');
+            addScheduleModal.classList.add('flex');
+        });
+        document.querySelectorAll('.close-schedule-modal, #add-schedule-modal .modal-backdrop').forEach(el => {
+            el.addEventListener('click', () => {
+                addScheduleModal.classList.add('hidden');
+                addScheduleModal.classList.remove('flex');
+            });
+        });
+        document.getElementById('confirm-add-schedule-btn').addEventListener('click', async () => {
+            const type = document.getElementById('sched-type').value;
+            const rawDate = document.getElementById('sched-date-picker').value;
+            const title = document.getElementById('sched-title').value.trim();
+            if (!rawDate || !title) {
+                showToast('날짜와 일정 내용을 모두 입력해주세요!');
+                return;
+            }
+            const dObj = new Date(rawDate + 'T00:00:00');
+            const days = ['일', '월', '화', '수', '목', '금', '토'];
+            const mm = String(dObj.getMonth() + 1).padStart(2, '0');
+            const dd = String(dObj.getDate()).padStart(2, '0');
+            const formattedDate = `${mm}/${dd} (${days[dObj.getDay()]})`;
+
+            appState.schedules.push({
+                id: 's-' + Date.now(),
+                type,
+                date: formattedDate,
+                rawDate,
+                title
+            });
+            persistLocalBackup();
+            renderSchedules();
+            addScheduleModal.classList.add('hidden');
+            addScheduleModal.classList.remove('flex');
+            showToast('새 일정이 등록되었습니다!');
+            await syncToCloud();
+        });
+
+        // 일정 필터 탭 전환
+        document.querySelectorAll('.schedule-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.schedule-tab').forEach(t => {
+                    t.classList.remove('bg-white', 'text-slate-900', 'shadow-xs');
+                    t.classList.add('text-slate-500');
+                });
+                tab.classList.add('bg-white', 'text-slate-900', 'shadow-xs');
+                tab.classList.remove('text-slate-500');
+                currentScheduleFilter = tab.getAttribute('data-filter');
+                renderSchedules();
+            });
+        });
+
+        // 공지사항 & 라운지 타이틀 수정 모달
+        const textEditModal = document.getElementById('text-edit-modal');
+        document.getElementById('edit-title-btn').addEventListener('click', () => {
+            currentTextEditMode = 'title';
+            document.getElementById('text-modal-title').innerText = '🏕️ 라운지 이름 변경';
+            document.getElementById('text-modal-input').value = appState.title;
+            textEditModal.classList.remove('hidden');
+            textEditModal.classList.add('flex');
+        });
+        document.getElementById('edit-notice-btn').addEventListener('click', () => {
+            currentTextEditMode = 'notice';
+            document.getElementById('text-modal-title').innerText = '📢 상단 공지사항 수정';
+            document.getElementById('text-modal-input').value = appState.notice;
+            textEditModal.classList.remove('hidden');
+            textEditModal.classList.add('flex');
+        });
+        document.querySelectorAll('.close-text-modal, #text-edit-modal .modal-backdrop').forEach(el => {
+            el.addEventListener('click', () => {
+                textEditModal.classList.add('hidden');
+                textEditModal.classList.remove('flex');
+            });
+        });
+        document.getElementById('confirm-text-edit-btn').addEventListener('click', async () => {
+            const val = document.getElementById('text-modal-input').value.trim();
+            if (!val) return;
+            if (currentTextEditMode === 'title') appState.title = val;
+            if (currentTextEditMode === 'notice') appState.notice = val;
+            persistLocalBackup();
+            renderHeader();
+            textEditModal.classList.add('hidden');
+            textEditModal.classList.remove('flex');
+            showToast('변경 내용이 저장되었습니다!');
+            await syncToCloud();
+        });
+
+        // 6. 실시간 클라우드 동기화 (Firebase Firestore)
+        let dbDocRef = null;
+        let isCloudReady = false;
+
+        async function syncToCloud() {
+            if (!isCloudReady || !dbDocRef) return;
+            try {
+                await setDoc(dbDocRef, {
+                    title: appState.title,
+                    notice: appState.notice,
+                    members: appState.members,
+                    schedules: appState.schedules,
+                    updatedAt: Date.now()
+                });
+            } catch (e) {
+                console.warn('클라우드 저장 대기:', e);
+            }
+        }
+
+        async function initRealtimeCloud() {
+            try {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) return;
                 const firebaseConfig = JSON.parse(__firebase_config);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'survival-lounge-shared';
                 const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
 
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
@@ -585,745 +911,276 @@
                     await signInAnonymously(auth);
                 }
 
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    if (user) {
-                        stateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'lounge_board', 'main_state');
-                        
-                        onSnapshot(stateDocRef, (snapshot) => {
-                            if (snapshot.exists()) {
-                                const data = snapshot.data();
-                                if (Array.isArray(data.teamMembers)) teamMembers = data.teamMembers;
-                                if (Array.isArray(data.schedules)) schedules = data.schedules;
-                                if (data.spaceTitle) spaceTitle = data.spaceTitle;
-                                if (data.noticeText) noticeText = data.noticeText;
-                                
-                                saveLocalBackup({ teamMembers, schedules, spaceTitle, noticeText });
-                                renderHeaderInfo();
-                                renderMembers();
-                                renderSchedules();
-                            } else {
-                                saveToCloud();
-                            }
-                        }, (error) => {
-                            console.error("실시간 동기화 오류:", error);
-                        });
+                dbDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'lounge_state', 'main');
+                isCloudReady = true;
+
+                onSnapshot(dbDocRef, (snap) => {
+                    if (snap.exists()) {
+                        const cloudData = snap.data();
+                        if (cloudData) {
+                            appState.title = cloudData.title || appState.title;
+                            appState.notice = cloudData.notice || appState.notice;
+                            if (Array.isArray(cloudData.members)) appState.members = cloudData.members;
+                            if (Array.isArray(cloudData.schedules)) appState.schedules = cloudData.schedules;
+                            persistLocalBackup();
+                            renderHeader();
+                            renderMembers();
+                            renderSchedules();
+                        }
+                    } else {
+                        syncToCloud();
                     }
                 });
             } catch (err) {
-                console.error("클라우드 초기화 오류:", err);
+                console.warn('로컬 모드로 실행 중:', err);
             }
         }
 
-        // 클라우드 + 브라우저 영구 저장 함수
-        async function saveToCloud() {
-            const payload = {
-                teamMembers,
-                schedules,
-                spaceTitle,
-                noticeText,
-                updatedAt: Date.now()
-            };
-            saveLocalBackup(payload);
-
-            if (!currentUser || !stateDocRef) return;
-            try {
-                await setDoc(stateDocRef, payload);
-            } catch (e) {
-                console.error("저장 실패:", e);
-            }
-        }
-
-        // 실시간 시계 및 날짜 업데이트
-        function startClock() {
-            const update = () => {
-                const now = new Date();
-                const dateEl = document.getElementById('current-date');
-                if (dateEl) {
-                    dateEl.innerHTML = `<i class="ph-duotone ph-calendar-blank text-indigo-500"></i> ` + 
-                        now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-                }
-                const timeEl = document.getElementById('clock-time');
-                if (timeEl) {
-                    timeEl.innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-                }
-            };
-            update();
-            setInterval(update, 1000);
-        }
-
-        // 토스트 알림 표시
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            const msgEl = document.getElementById('toast-msg');
-            if (!toast || !msgEl) return;
-            msgEl.innerText = msg;
-            toast.classList.remove('opacity-0', 'translate-y-2');
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-2');
-            }, 2200);
-        }
-
-        // 헤더 텍스트 렌더링
-        function renderHeaderInfo() {
-            document.getElementById('space-title-display').innerText = spaceTitle;
-            document.getElementById('notice-text').innerText = noticeText;
-        }
-
-        // 팀원 카드 렌더링
-        function renderMembers() {
-            const grid = document.getElementById('members-grid');
-            const countBadge = document.getElementById('member-count-badge');
-            if (countBadge) countBadge.innerText = `${teamMembers.length}명`;
-            if (!grid) return;
-
-            grid.innerHTML = '';
-
-            if (teamMembers.length === 0) {
-                grid.innerHTML = `
-                    <div class="col-span-2 text-center py-12 bg-white/60 rounded-3xl border border-dashed border-slate-300 text-slate-400 text-sm">
-                        아직 등록된 팀원이 없습니다.<br>우측 상단 <b>[+ 팀원 등록]</b> 버튼을 눌러 첫 번째로 합류해보세요!
-                    </div>
-                `;
-                return;
-            }
-
-            teamMembers.forEach(member => {
-                const statusObj = statusOptions.find(s => s.text === member.status) || statusOptions[0];
-                const card = document.createElement('div');
-                card.className = "glass-panel rounded-3xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer border border-slate-200/70 flex flex-col justify-between group relative";
-                card.onclick = () => openStatusModal(member.id);
-
-                card.innerHTML = `
-                    <div>
-                        <div class="flex items-start justify-between gap-2 mb-3.5">
-                            <div class="flex items-center gap-3 min-w-0">
-                                <div class="w-14 h-14 bg-slate-100 group-hover:bg-indigo-50 rounded-2xl flex items-center justify-center text-3xl shadow-inner transition-colors relative shrink-0">
-                                    ${member.avatar || '🧑‍💻'}
-                                    <span class="absolute -bottom-1 -right-1 bg-white rounded-full w-6 h-6 flex items-center justify-center text-sm shadow border border-slate-100" title="오늘 기분">
-                                        ${member.mood || '😊'}
-                                    </span>
-                                </div>
-                                <div class="min-w-0">
-                                    <h3 class="font-extrabold text-slate-900 text-base group-hover:text-indigo-600 transition-colors truncate">
-                                        ${member.name}
-                                    </h3>
-                                    <span class="text-xs font-semibold text-slate-400 block truncate">${member.role || '팀원'}</span>
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-1 shrink-0">
-                                <span class="text-[11px] font-bold text-slate-400 group-hover:text-indigo-500 bg-slate-100 group-hover:bg-indigo-50 px-2 py-1 rounded-lg transition-colors">
-                                    상태변경
-                                </span>
-                                <button type="button" class="card-delete-btn text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-xl transition-colors" title="이 팀원 삭제">
-                                    <i class="ph-bold ph-trash text-base"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div class="mb-3">
-                            <span class="inline-block text-xs font-extrabold px-3 py-1 rounded-xl border ${statusObj.color}">
-                                ${member.status}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="bg-slate-50/90 rounded-2xl p-3 text-xs font-medium text-slate-600 border border-slate-100">
-                        "${member.message || '오늘도 화이팅!'}"
-                    </div>
-                `;
-
-                const delBtn = card.querySelector('.card-delete-btn');
-                delBtn.onclick = (e) => {
-                    e.stopPropagation();
-                    teamMembers = teamMembers.filter(m => m.id !== member.id);
-                    renderMembers();
-                    saveToCloud();
-                    showToast(`${member.name} 카드가 삭제되었습니다.`);
-                };
-
-                grid.appendChild(card);
-            });
-        }
-
-        // 일정 및 공휴일 렌더링
-        function renderSchedules() {
-            const container = document.getElementById('schedule-container');
-            if (!container) return;
-            container.innerHTML = '';
-
-            const sorted = [...schedules].sort((a, b) => a.date.localeCompare(b.date));
-            const filtered = sorted.filter(item => currentScheduleFilter === 'all' ? true : item.type === currentScheduleFilter);
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">해당 카테고리에 등록된 일정이 없습니다.</div>`;
-                return;
-            }
-
-            filtered.forEach(item => {
-                let badgeHtml = '';
-                if (item.type === 'leave') {
-                    badgeHtml = `<span class="bg-orange-50 text-orange-600 border border-orange-200 text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">🏖️ 휴가/반차</span>`;
-                } else if (item.type === 'holiday') {
-                    badgeHtml = `<span class="bg-rose-50 text-rose-600 border border-rose-200 text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">🔴 공휴일</span>`;
-                } else {
-                    badgeHtml = `<span class="bg-indigo-50 text-indigo-600 border border-indigo-200 text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">🎉 주요일정</span>`;
-                }
-
-                const row = document.createElement('div');
-                row.className = "flex items-center justify-between gap-2 bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-slate-200 transition-all";
-                row.innerHTML = `
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        ${badgeHtml}
-                        <div class="min-w-0">
-                            <p class="text-xs sm:text-sm font-extrabold text-slate-800 truncate">${item.title}</p>
-                            <p class="text-[11px] font-bold text-slate-400">${item.date}</p>
-                        </div>
-                    </div>
-                    <button type="button" data-id="${item.id}" class="delete-sched-btn text-slate-300 hover:text-rose-500 p-1.5 rounded-lg transition-colors shrink-0" title="일정 삭제">
-                        <i class="ph-bold ph-trash text-sm"></i>
-                    </button>
-                `;
-                row.querySelector('.delete-sched-btn').onclick = () => {
-                    schedules = schedules.filter(s => s.id !== item.id);
-                    renderSchedules();
-                    saveToCloud();
-                    showToast("일정이 삭제되었습니다.");
-                };
-                container.appendChild(row);
-            });
-        }
-
-        // 모달 내부 선택기 생성
-        function buildModalSelectors() {
-            // 1. 신규 등록용 아바타 그리드
-            const regAvGrid = document.getElementById('reg-avatar-selector');
-            regAvGrid.innerHTML = '';
-            fixedAvatars.forEach(av => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `text-2xl p-1.5 rounded-xl hover:bg-white transition-all flex items-center justify-center reg-av-item ${av === regSelectedAvatar ? 'bg-white ring-2 ring-indigo-600 shadow-sm' : ''}`;
-                btn.innerText = av;
-                btn.onclick = () => {
-                    regSelectedAvatar = av;
-                    document.querySelectorAll('.reg-av-item').forEach(el => el.classList.remove('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm'));
-                    btn.classList.add('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
-                };
-                regAvGrid.appendChild(btn);
-            });
-
-            // 1-2. 신규 등록용 기분 선택기
-            const regMoodGrid = document.getElementById('reg-mood-selector');
-            regMoodGrid.innerHTML = '';
-            moodOptions.forEach(m => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `reg-mood-item flex flex-col items-center p-1.5 rounded-xl border transition-all ${m.emoji === regSelectedMood ? 'bg-white border-indigo-600 shadow-sm' : 'border-transparent opacity-70 hover:opacity-100'}`;
-                btn.innerHTML = `<span class="text-xl">${m.emoji}</span><span class="text-[10px] font-bold text-slate-500">${m.label}</span>`;
-                btn.onclick = () => {
-                    regSelectedMood = m.emoji;
-                    document.querySelectorAll('.reg-mood-item').forEach(el => {
-                        el.className = 'reg-mood-item flex flex-col items-center p-1.5 rounded-xl border border-transparent opacity-70 hover:opacity-100 transition-all';
-                    });
-                    btn.className = 'reg-mood-item flex flex-col items-center p-1.5 rounded-xl border bg-white border-indigo-600 shadow-sm transition-all';
-                };
-                regMoodGrid.appendChild(btn);
-            });
-
-            // 1-3. 신규 등록용 상태 선택기
-            const regStatusGrid = document.getElementById('reg-status-selector');
-            regStatusGrid.innerHTML = '';
-            statusOptions.forEach(s => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `reg-status-item text-center py-2 px-2 rounded-xl border text-xs font-bold transition-all truncate ${s.text === regSelectedStatus ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`;
-                btn.innerText = s.text;
-                btn.onclick = () => {
-                    regSelectedStatus = s.text;
-                    document.querySelectorAll('.reg-status-item').forEach(el => {
-                        el.className = 'reg-status-item text-center py-2 px-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all truncate';
-                    });
-                    btn.className = 'reg-status-item text-center py-2 px-2 rounded-xl border border-indigo-600 bg-indigo-50 text-xs font-extrabold text-indigo-700 transition-all truncate';
-                };
-                regStatusGrid.appendChild(btn);
-            });
-
-            // 2. 상태 수정용 아바타 그리드
-            const editAvGrid = document.getElementById('edit-avatar-selector');
-            editAvGrid.innerHTML = '';
-            fixedAvatars.forEach(av => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.className = `text-xl p-1 rounded-xl hover:bg-white transition-all flex items-center justify-center edit-av-item`;
-                btn.setAttribute('data-av', av);
-                btn.innerText = av;
-                btn.onclick = () => {
-                    editSelectedAvatar = av;
-                    document.getElementById('modal-avatar').innerText = av;
-                    document.querySelectorAll('.edit-av-item').forEach(el => el.classList.remove('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm'));
-                    btn.classList.add('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
-                };
-                editAvGrid.appendChild(btn);
-            });
-
-            // 3. 상태 수정용 기분 선택기
-            const moodGrid = document.getElementById('mood-selector');
-            moodGrid.innerHTML = '';
-            moodOptions.forEach(m => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.setAttribute('data-mood', m.emoji);
-                btn.className = "mood-item flex flex-col items-center p-2 rounded-xl border border-transparent hover:bg-white transition-all";
-                btn.innerHTML = `
-                    <span class="text-2xl mb-1">${m.emoji}</span>
-                    <span class="text-[10px] font-bold text-slate-500">${m.label}</span>
-                `;
-                btn.onclick = () => {
-                    selectedMood = m.emoji;
-                    highlightMoodAndStatus();
-                };
-                moodGrid.appendChild(btn);
-            });
-
-            // 4. 상태 수정용 상태 뱃지 선택기
-            const statusGrid = document.getElementById('status-selector');
-            statusGrid.innerHTML = '';
-            statusOptions.forEach(s => {
-                const btn = document.createElement('button');
-                btn.type = 'button';
-                btn.setAttribute('data-status', s.text);
-                btn.className = "status-item text-center py-2.5 px-2 rounded-xl border border-slate-200 bg-white text-xs font-extrabold text-slate-600 hover:border-slate-300 transition-all truncate";
-                btn.innerText = s.text;
-                btn.onclick = () => {
-                    selectedStatus = s.text;
-                    highlightMoodAndStatus();
-                };
-                statusGrid.appendChild(btn);
-            });
-        }
-
-        function highlightMoodAndStatus() {
-            document.querySelectorAll('.mood-item').forEach(btn => {
-                if (btn.getAttribute('data-mood') === selectedMood) {
-                    btn.className = "mood-item flex flex-col items-center p-2 rounded-xl bg-white border-2 border-indigo-600 shadow-sm transition-all scale-105";
-                } else {
-                    btn.className = "mood-item flex flex-col items-center p-2 rounded-xl border border-transparent opacity-60 hover:opacity-100 hover:bg-white transition-all";
-                }
-            });
-
-            document.querySelectorAll('.status-item').forEach(btn => {
-                if (btn.getAttribute('data-status') === selectedStatus) {
-                    btn.className = "status-item text-center py-2.5 px-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-xs font-extrabold text-indigo-700 shadow-sm transition-all truncate";
-                } else {
-                    btn.className = "status-item text-center py-2.5 px-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all truncate";
-                }
-            });
-        }
-
-        // 팀원 카드 클릭 -> 상태 모달 열기
-        function openStatusModal(memberId) {
-            const member = teamMembers.find(m => m.id === memberId);
-            if (!member) return;
-
-            currentEditingId = memberId;
-            editSelectedAvatar = member.avatar || fixedAvatars[0];
-            selectedMood = member.mood || moodOptions[0].emoji;
-            selectedStatus = member.status || statusOptions[0].text;
-
-            document.getElementById('modal-avatar').innerText = editSelectedAvatar;
-            document.getElementById('modal-name').innerText = `${member.name} (${member.role || '팀원'})`;
-            document.getElementById('edit-name').value = member.name || '';
-            document.getElementById('edit-role').value = member.role || '';
-            document.getElementById('modal-message').value = member.message || '';
-
-            document.querySelectorAll('.edit-av-item').forEach(el => {
-                if (el.getAttribute('data-av') === editSelectedAvatar) {
-                    el.classList.add('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
-                } else {
-                    el.classList.remove('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
-                }
-            });
-
-            highlightMoodAndStatus();
-            document.getElementById('status-modal').classList.remove('hidden');
-        }
-
-        // 모든 버튼 이벤트 연결
-        function bindEvents() {
-            // 1. 팀원 등록 모달 열기/닫기/저장
-            document.getElementById('btn-open-register').onclick = () => {
-                document.getElementById('reg-name').value = '';
-                document.getElementById('reg-role').value = '';
-                document.getElementById('register-modal').classList.remove('hidden');
-            };
-            ['close-register-backdrop', 'btn-close-register-x', 'btn-cancel-register'].forEach(id => {
-                document.getElementById(id).onclick = () => document.getElementById('register-modal').classList.add('hidden');
-            });
-            document.getElementById('btn-submit-register').onclick = () => {
-                const name = document.getElementById('reg-name').value.trim();
-                const role = document.getElementById('reg-role').value.trim() || '팀원';
-                if (!name) {
-                    showToast("이름 또는 닉네임을 입력해주세요!");
-                    return;
-                }
-                teamMembers.push({
-                    id: 'm_' + Date.now(),
-                    name,
-                    role,
-                    avatar: regSelectedAvatar,
-                    mood: regSelectedMood,
-                    status: regSelectedStatus,
-                    message: '반갑습니다! 오늘도 화이팅!'
-                });
-                renderMembers();
-                saveToCloud();
-                document.getElementById('register-modal').classList.add('hidden');
-                showToast(`${name}님이 라운지에 등록되었습니다!`);
-            };
-
-            // 2. 상태 수정 모달 닫기/저장/삭제
-            ['close-status-backdrop', 'btn-close-status-x', 'btn-cancel-status'].forEach(id => {
-                document.getElementById(id).onclick = () => document.getElementById('status-modal').classList.add('hidden');
-            });
-            document.getElementById('btn-save-status').onclick = () => {
-                const idx = teamMembers.findIndex(m => m.id === currentEditingId);
-                if (idx !== -1) {
-                    const newName = document.getElementById('edit-name').value.trim();
-                    const newRole = document.getElementById('edit-role').value.trim();
-                    if (newName) teamMembers[idx].name = newName;
-                    if (newRole) teamMembers[idx].role = newRole;
-                    teamMembers[idx].avatar = editSelectedAvatar;
-                    teamMembers[idx].mood = selectedMood;
-                    teamMembers[idx].status = selectedStatus;
-                    teamMembers[idx].message = document.getElementById('modal-message').value.trim() || '오늘도 화이팅!';
-                    renderMembers();
-                    saveToCloud();
-                    showToast("상태가 실시간으로 저장되었습니다!");
-                }
-                document.getElementById('status-modal').classList.add('hidden');
-            };
-            document.getElementById('btn-delete-member').onclick = () => {
-                teamMembers = teamMembers.filter(m => m.id !== currentEditingId);
-                renderMembers();
-                saveToCloud();
-                document.getElementById('status-modal').classList.add('hidden');
-                showToast("팀원 카드가 삭제되었습니다.");
-            };
-
-            // 3. 일정 추가 모달 열기/닫기/저장
-            document.getElementById('btn-open-schedule').onclick = () => {
-                document.getElementById('sched-date').value = new Date().toISOString().split('T')[0];
-                document.getElementById('sched-title').value = '';
-                document.getElementById('schedule-modal').classList.remove('hidden');
-            };
-            ['close-sched-backdrop', 'btn-close-sched-x', 'btn-cancel-sched'].forEach(id => {
-                document.getElementById(id).onclick = () => document.getElementById('schedule-modal').classList.add('hidden');
-            });
-            document.getElementById('btn-submit-sched').onclick = () => {
-                const typeRadio = document.querySelector('input[name="sched_type"]:checked');
-                const type = typeRadio ? typeRadio.value : 'leave';
-                const date = document.getElementById('sched-date').value;
-                const title = document.getElementById('sched-title').value.trim();
-
-                if (!date || !title) {
-                    showToast("날짜와 일정 내용을 모두 입력해주세요!");
-                    return;
-                }
-                schedules.push({
-                    id: 's_' + Date.now(),
-                    type,
-                    date,
-                    title
-                });
-                renderSchedules();
-                saveToCloud();
-                document.getElementById('schedule-modal').classList.add('hidden');
-                showToast("새 일정이 등록되었습니다!");
-            };
-
-            // 일정 카테고리 필터 탭
-            document.querySelectorAll('.sched-tab-btn').forEach(btn => {
-                btn.onclick = () => {
-                    currentScheduleFilter = btn.getAttribute('data-filter');
-                    document.querySelectorAll('.sched-tab-btn').forEach(b => {
-                        b.className = "sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all";
-                    });
-                    btn.className = "sched-tab-btn flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all font-extrabold";
-                    renderSchedules();
-                };
-            });
-
-            // 4. 공지사항 모달 열기/닫기/저장
-            document.getElementById('notice-container').onclick = () => {
-                document.getElementById('notice-input').value = noticeText;
-                document.getElementById('notice-modal').classList.remove('hidden');
-            };
-            ['close-notice-backdrop', 'btn-cancel-notice'].forEach(id => {
-                document.getElementById(id).onclick = () => document.getElementById('notice-modal').classList.add('hidden');
-            });
-            document.getElementById('btn-save-notice').onclick = () => {
-                const val = document.getElementById('notice-input').value.trim();
-                if (val) {
-                    noticeText = val;
-                    renderHeaderInfo();
-                    saveToCloud();
-                    showToast("공지사항이 실시간 반영되었습니다!");
-                }
-                document.getElementById('notice-modal').classList.add('hidden');
-            };
-
-            // 5. 라운지 이름 변경 모달 열기/닫기/저장
-            document.getElementById('space-title-container').onclick = () => {
-                document.getElementById('space-name-input').value = spaceTitle;
-                document.getElementById('space-name-modal').classList.remove('hidden');
-            };
-            ['close-spacename-backdrop', 'btn-cancel-spacename'].forEach(id => {
-                document.getElementById(id).onclick = () => document.getElementById('space-name-modal').classList.add('hidden');
-            });
-            document.querySelectorAll('.preset-title-btn').forEach(btn => {
-                btn.onclick = () => {
-                    document.getElementById('space-name-input').value = btn.getAttribute('data-title');
-                };
-            });
-            document.getElementById('btn-save-spacename').onclick = () => {
-                const val = document.getElementById('space-name-input').value.trim();
-                if (val) {
-                    spaceTitle = val;
-                    renderHeaderInfo();
-                    saveToCloud();
-                    showToast("라운지 이름이 실시간 변경되었습니다!");
-                }
-                document.getElementById('space-name-modal').classList.add('hidden');
-            };
-        }
-
-        // 초기 실행
-        startClock();
-        renderHeaderInfo();
-        buildModalSelectors();
+        // 초기 렌더링 실행
+        renderHeader();
         renderMembers();
         renderSchedules();
-        bindEvents();
-        initCloudSync();
+        initRealtimeCloud();
 
         // ==========================================
-        // 분야별 데일리 뉴스 (Google News RSS + 캐싱) & 서울 날씨 연동
+        // 7. 분야별 데일리 뉴스 탭 기능 (IT·테크 / 경제 / 연예·라이프 / 스포츠)
         // ==========================================
-        const NEWS_FEEDS = {
+        const NEWS_CATEGORIES = {
             tech: {
-                label: 'IT·테크',
-                url: 'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=ko&gl=KR&ceid=KR:ko',
+                query: 'IT 테크 인공지능 AI',
                 fallback: [
-                    { title: '차세대 AI 에이전트 상용화 가속… 국내외 빅테크 업무 자동화 경쟁 본격화', source: '테크데일리', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '클라우드·반도체 인프라 투자 확대, 하반기 IT 업계 핵심 키워드로 부상', source: '디지털타임스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '모바일·웹 서비스 사용자 경험(UX) 개편 트렌드, 직관적 대시보드 주목', source: 'IT조선', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '기업용 협업툴 시장 지각변동… 실시간 상태 공유 및 비동기 소통 기능 인기', source: '블로터', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '사이버 보안 위협 고도화에 제로트러스트 인증 도입 기업 전년 대비 40% 증가', source: 'ZDNet Korea', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                    { title: '생성형 AI 에이전트 시대 본격화… 업무 생산성 도구 판도 변화', source: '테크 브리핑', link: 'https://news.google.com/search?q=IT+AI&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '차세대 AI 반도체·HBM 경쟁 심화, 글로벌 빅테크 투자 확대', source: '반도체 리포트', link: 'https://news.google.com/search?q=반도체+AI&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '클라우드·보안 자동화 솔루션 도입 기업 전년 대비 40% 증가', source: '디지털 데일리', link: 'https://news.google.com/search?q=클라우드+보안&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '온디바이스 AI 탑재 신형 스마트폰·노트북 라인업 공개', source: '모바일 트렌드', link: 'https://news.google.com/search?q=온디바이스+AI&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '국내 주요 플랫폼 기업, 초개인화 추천 알고리즘 고도화 박차', source: '플랫폼 뉴스', link: 'https://news.google.com/search?q=플랫폼+IT&hl=ko&gl=KR&ceid=KR:ko' }
                 ]
             },
-            business: {
-                label: '경제·비즈니스',
-                url: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=ko&gl=KR&ceid=KR:ko',
+            economy: {
+                query: '경제 증시 금리 환율',
                 fallback: [
-                    { title: '코스피, 외국인·기관 동반 매수세에 강보합 출발… 대형 수출주 강세', source: '한국경제', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '원/달러 환율 1,380원대 등락… 글로벌 통화정책 기조에 시장 촉각', source: '매일경제', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '뉴욕증시 S&P500·나스닥 견조한 흐름 유지… 기업 실적 개선세 반영', source: '서울경제', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '직장인 점심값 부담에 구내식당·간편식 구독 서비스 이용률 역대 최고', source: '머니투데이', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '하반기 주요 산업 수출 회복세 지속… 내수 경기 활성화 대책 논의 활발', source: '연합뉴스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                    { title: '글로벌 주요 중앙은행 통화정책 방향 주목… 금융시장 숨고르기', source: '경제 브리핑', link: 'https://news.google.com/search?q=경제+금리&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '수출 호조세 이어가는 국내 주력 산업, 하반기 실적 전망 청신호', source: '산업 경제', link: 'https://news.google.com/search?q=수출+경제&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '원·달러 환율 변동성 주시 속 외국인 수급 흐름 변화 감지', source: '마켓 리포트', link: 'https://news.google.com/search?q=환율+증시&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '가치소비·가성비 트렌드 확산에 유통업계 PB 상품 경쟁 치열', source: '유통 트렌드', link: 'https://news.google.com/search?q=유통+소비&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '직장인 재테크 관심 급증… 배당주·ETF 분산투자 인기', source: '머니 라이프', link: 'https://news.google.com/search?q=ETF+재테크&hl=ko&gl=KR&ceid=KR:ko' }
                 ]
             },
-            entertainment: {
-                label: '연예·라이프',
-                url: 'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=ko&gl=KR&ceid=KR:ko',
+            life: {
+                query: '연예 영화 드라마 건강 라이프',
                 fallback: [
-                    { title: '주말 극장가 한국 영화 신작 예매율 1위 돌파… 관객 호평 이어져', source: 'OSEN', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '올가을 음원 차트 역주행 열풍… 감성 발라드와 밴드 음악 동반 강세', source: '스포츠조선', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: 'OTT 오리지널 예능 프로그램 화제성 1위… 직장인 공감 소재 통했다', source: '뉴스엔', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '서울 도심 가을 야간 문화축제 개막… 퇴근 후 가볼 만한 전시 총정리', source: '헤럴드POP', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '인기 드라마 최종회 자체 최고 시청률 경신하며 유종의 미 거둬', source: '스타뉴스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                    { title: '주말 정주행하기 좋은 화제의 신작 OTT 시리즈 TOP 5', source: '컬처 매거진', link: 'https://news.google.com/search?q=OTT+드라마&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '환절기 컨디션 관리법… 점심시간 15분 산책이 업무 집중력 높인다', source: '헬스 라이프', link: 'https://news.google.com/search?q=건강+환절기&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '가을·겨울 시즌 가볼 만한 서울 근교 감성 카페 & 드라이브 코스', source: '트래블 노트', link: 'https://news.google.com/search?q=서울+근교+여행&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '극장가 기대작 개봉 러시… 주말 예매율 1위 작품은?', source: '무비 데일리', link: 'https://news.google.com/search?q=영화+개봉&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '직장인 점심 트렌드 변화… 샐러드·포케부터 국밥까지 취향 다변화', source: '푸드 트렌드', link: 'https://news.google.com/search?q=점심+트렌드&hl=ko&gl=KR&ceid=KR:ko' }
                 ]
             },
             sports: {
-                label: '스포츠',
-                url: 'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=ko&gl=KR&ceid=KR:ko',
+                query: '스포츠 프로야구 해외축구 손흥민',
                 fallback: [
-                    { title: '해외파 축구 대표팀 주축 선수들, 주말 리그 경기서 나란히 공격포인트 활약', source: '스포탈코리아', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '프로야구 스토브리그 개막… FA 대어급 선수들의 행선지에 팬들 관심 집중', source: '스포츠서울', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '프로농구·프로배구 겨울 시즌 열기 후끈… 주말 홈경기 매진 행렬', source: '점프볼', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: '한국 여자 골프 선수들, 투어 최종전 앞두고 상위권 도약 청신호', source: 'JTBC골프', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
-                    { title: 'e스포츠 국제 대회 결승전 앞두고 국내외 팬들 응원 열기 최고조', source: '엑스포츠뉴스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                    { title: '해외축구 빅리그 주말 빅매치 예고… 코리안리거 선발 출격 기대', source: '풋볼 뉴스', link: 'https://news.google.com/search?q=해외축구+손흥민&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '프로야구 스토브리그 개막… FA 대어들의 행선지 관심 집중', source: '베이스볼 투데이', link: 'https://news.google.com/search?q=프로야구+FA&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '겨울 실내 스포츠 시즌 개막, 프로농구·배구 흥행 열기 후끈', source: '코트 리포트', link: 'https://news.google.com/search?q=프로농구+프로배구&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '직장인 러닝 열풍 지속… 도심 야간 러닝 크루 참여자 급증', source: '스포츠 라이프', link: 'https://news.google.com/search?q=러닝+마라톤&hl=ko&gl=KR&ceid=KR:ko' },
+                    { title: '국가대표팀 A매치 일정 돌입, 최정예 명단 소집 완료', source: '스포츠 헤드라인', link: 'https://news.google.com/search?q=축구+국가대표&hl=ko&gl=KR&ceid=KR:ko' }
                 ]
             }
         };
 
-        let currentNewsCategory = 'tech';
+        let currentNewsCat = 'tech';
         const newsCache = {};
 
         function renderNewsItems(items) {
-            const container = document.getElementById('news-list-container');
-            if (!container) return;
-            container.innerHTML = '';
-
+            const list = document.getElementById('daily-news-list');
+            list.innerHTML = '';
             items.slice(0, 5).forEach((item, idx) => {
-                // 구글 뉴스 제목 끝의 " - 언론사명" 분리 처리
-                let cleanTitle = item.title || '';
-                let sourceName = item.source || 'Google 뉴스';
-                const dashIdx = cleanTitle.lastIndexOf(' - ');
-                if (dashIdx > 0) {
-                    sourceName = cleanTitle.substring(dashIdx + 3).trim();
-                    cleanTitle = cleanTitle.substring(0, dashIdx).trim();
-                }
-
-                const a = document.createElement('a');
-                a.href = item.link || '#';
-                a.target = '_blank';
-                a.rel = 'noopener noreferrer';
-                a.className = "group flex items-center justify-between gap-3 bg-white hover:bg-indigo-50/60 p-3 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all shadow-sm";
-                a.innerHTML = `
-                    <div class="flex items-center gap-2.5 min-w-0">
-                        <span class="w-5 h-5 rounded-lg bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-500 text-[11px] font-black flex items-center justify-center shrink-0 transition-colors">
-                            ${idx + 1}
-                        </span>
-                        <p class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-700 truncate transition-colors">
-                            ${cleanTitle}
-                        </p>
-                    </div>
-                    <div class="flex items-center gap-1.5 shrink-0">
-                        <span class="text-[10px] font-extrabold text-slate-500 bg-slate-100 group-hover:bg-white px-2 py-0.5 rounded-md border border-slate-200/60">
-                            ${sourceName}
-                        </span>
-                        <i class="ph-bold ph-arrow-up-right text-slate-300 group-hover:text-indigo-500 text-xs"></i>
-                    </div>
+                const li = document.createElement('li');
+                li.innerHTML = `
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between gap-3 bg-white hover:bg-indigo-50/60 p-3 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span class="w-5 h-5 rounded-lg bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-500 text-[11px] font-extrabold flex items-center justify-center shrink-0 transition-colors">${idx + 1}</span>
+                            <span class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-700 truncate">${item.title}</span>
+                        </div>
+                        <span class="text-[11px] font-semibold text-slate-400 shrink-0">${item.source || '뉴스'} ↗</span>
+                    </a>
                 `;
-                container.appendChild(a);
+                list.appendChild(li);
             });
         }
 
-        async function loadNewsCategory(category, forceRefresh = false) {
-            currentNewsCategory = category;
-            const container = document.getElementById('news-list-container');
-            const feedConfig = NEWS_FEEDS[category] || NEWS_FEEDS.tech;
+        async function loadNewsCategory(catKey, forceRefresh = false) {
+            currentNewsCat = catKey;
+            const catConfig = NEWS_CATEGORIES[catKey] || NEWS_CATEGORIES.tech;
 
-            // 탭 활성 스타일 업데이트
-            document.querySelectorAll('.news-tab-btn').forEach(btn => {
-                if (btn.getAttribute('data-news-cat') === category) {
-                    btn.className = "news-tab-btn flex-1 min-w-[85px] py-2 px-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all font-extrabold";
-                } else {
-                    btn.className = "news-tab-btn flex-1 min-w-[85px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all";
-                }
-            });
-
-            if (!forceRefresh && newsCache[category]) {
-                renderNewsItems(newsCache[category]);
+            if (!forceRefresh && newsCache[catKey]) {
+                renderNewsItems(newsCache[catKey]);
                 return;
             }
 
-            if (container) {
-                container.innerHTML = `
-                    <div class="flex flex-col items-center justify-center py-10 text-slate-400 text-xs gap-2">
-                        <i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i>
-                        <span>${feedConfig.label} 최신 헤드라인을 불러오는 중입니다...</span>
-                    </div>
-                `;
-            }
+            const list = document.getElementById('daily-news-list');
+            list.innerHTML = `<li class="text-center py-8 text-xs text-slate-400">최신 헤드라인을 불러오는 중입니다...</li>`;
 
             try {
-                const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedConfig.url)}`;
+                const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(catConfig.query)}&hl=ko&gl=KR&ceid=KR:ko`;
+                const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
                 const res = await fetch(apiUrl);
-                if (!res.ok) throw new Error('RSS 응답 오류');
                 const data = await res.json();
 
-                if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
-                    newsCache[category] = data.items;
-                    if (currentNewsCategory === category) {
-                        renderNewsItems(data.items);
-                    }
-                } else {
-                    throw new Error('빈 뉴스 목록');
+                if (data && data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+                    const parsed = data.items.slice(0, 5).map(entry => {
+                        const parts = entry.title.split(' - ');
+                        const source = parts.length > 1 ? parts.pop() : '구글뉴스';
+                        const cleanTitle = parts.join(' - ');
+                        return { title: cleanTitle, source, link: entry.link };
+                    });
+                    newsCache[catKey] = parsed;
+                    renderNewsItems(parsed);
+                    return;
                 }
             } catch (err) {
-                console.warn('실시간 RSS 로드 실패, 기본 헤드라인 표시:', err);
-                newsCache[category] = feedConfig.fallback;
-                if (currentNewsCategory === category) {
-                    renderNewsItems(feedConfig.fallback);
-                }
+                console.warn('실시간 RSS 지연, 기본 헤드라인 표시:', err);
             }
+
+            newsCache[catKey] = catConfig.fallback;
+            renderNewsItems(catConfig.fallback);
         }
 
-        // Open-Meteo 실시간 서울 날씨 조회 (lat 37.5665, lon 126.9780)
-        async function fetchSeoulWeather() {
-            try {
-                const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weather_code,wind_speed_10m&timezone=Asia%2FSeoul';
-                const res = await fetch(url);
-                if (!res.ok) throw new Error('날씨 API 오류');
-                const data = await res.json();
-                if (!data.current) return;
-
-                const temp = Math.round(data.current.temperature_2m);
-                const code = data.current.weather_code;
-                const wind = data.current.wind_speed_10m;
-
-                let icon = '☀️';
-                let label = '맑음';
-                let tip = '점심 식사 후 가볍게 산책하기 좋은 날씨예요!';
-
-                if (code === 0) {
-                    icon = '☀️'; label = '맑음';
-                } else if (code >= 1 && code <= 3) {
-                    icon = '⛅'; label = '구름 조금';
-                    tip = '선선하고 활동하기 쾌적한 하늘입니다.';
-                } else if (code >= 45 && code <= 48) {
-                    icon = '🌫️'; label = '안개';
-                    tip = '시야가 다소 흐리니 이동 시 유의하세요.';
-                } else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
-                    icon = '☔'; label = '비';
-                    tip = '외출 및 퇴근길에 우산을 꼭 챙기세요!';
-                } else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) {
-                    icon = '❄️'; label = '눈';
-                    tip = '눈길 미끄럼 주의하시고 따뜻하게 입으세요!';
-                } else if (code >= 95) {
-                    icon = '⛈️'; label = '뇌우';
-                    tip = '천둥·번개를 동반한 비 소식이 있습니다.';
-                }
-
-                const headerWeather = document.getElementById('header-weather');
-                if (headerWeather) headerWeather.innerText = `${icon} 서울 ${label} ${temp}°C`;
-
-                const cardIcon = document.getElementById('weather-card-icon');
-                const cardStatus = document.getElementById('weather-card-status');
-                const cardTemp = document.getElementById('weather-card-temp');
-                const cardDesc = document.getElementById('weather-card-desc');
-
-                if (cardIcon) cardIcon.innerText = icon;
-                if (cardStatus) cardStatus.innerText = label;
-                if (cardTemp) cardTemp.innerText = `${temp}°C`;
-                if (cardDesc) cardDesc.innerText = `바람 ${wind}m/s · ${tip}`;
-            } catch (e) {
-                console.warn('서울 날씨 조회 실패:', e);
-                const headerWeather = document.getElementById('header-weather');
-                if (headerWeather) headerWeather.innerText = '☀️ 서울 맑음 14°C';
-            }
-        }
-
-        // 뉴스 탭 및 새로고침 이벤트 바인딩
-        document.querySelectorAll('.news-tab-btn').forEach(btn => {
-            btn.onclick = () => {
-                const cat = btn.getAttribute('data-news-cat');
-                loadNewsCategory(cat);
-            };
+        document.querySelectorAll('.news-cat-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.news-cat-tab').forEach(t => {
+                    t.classList.remove('bg-white', 'text-slate-900', 'shadow-xs');
+                    t.classList.add('text-slate-500');
+                });
+                tab.classList.add('bg-white', 'text-slate-900', 'shadow-xs');
+                tab.classList.remove('text-slate-500');
+                loadNewsCategory(tab.getAttribute('data-news-cat'));
+            });
         });
 
-        const refreshNewsBtn = document.getElementById('btn-refresh-news');
-        if (refreshNewsBtn) {
-            refreshNewsBtn.onclick = () => {
-                loadNewsCategory(currentNewsCategory, true);
-                showToast('최신 뉴스를 다시 불러왔습니다!');
-            };
-        }
+        document.getElementById('refresh-news-btn').addEventListener('click', () => {
+            loadNewsCategory(currentNewsCat, true);
+            showToast('최신 뉴스를 새로고침했습니다.');
+        });
 
         // 초기 뉴스 및 서울 날씨 로드
         loadNewsCategory('tech');
         fetchSeoulWeather();
+
+        // ==========================================
+        // 8. 4대 핵심 지수 & 실시간 환율 자동 업데이트 (2중 프록시 백업 지원)
+        // ==========================================
+        function updateIndexCard(valId, chgId, price, changePct) {
+            const valEl = document.getElementById(valId);
+            const chgEl = document.getElementById(chgId);
+            if (!valEl || !chgEl || typeof price !== 'number' || isNaN(price)) return;
+
+            valEl.innerText = price.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+            if (typeof changePct === 'number' && !isNaN(changePct)) {
+                const isUp = changePct >= 0;
+                const sign = isUp ? '+' : '';
+                chgEl.innerText = `${sign}${changePct.toFixed(2)}%`;
+                chgEl.className = isUp
+                    ? 'text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold'
+                    : 'text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold';
+            }
+        }
+
+        async function fetchYahooQuote(symbol) {
+            const targetUrl = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=2d`;
+            const proxies = [
+                async () => {
+                    const res = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(targetUrl)}`);
+                    if (!res.ok) throw new Error('allorigins error');
+                    const wrapped = await res.json();
+                    return JSON.parse(wrapped.contents);
+                },
+                async () => {
+                    const res = await fetch(`https://corsproxy.io/?${encodeURIComponent(targetUrl)}`);
+                    if (!res.ok) throw new Error('corsproxy error');
+                    return await res.json();
+                }
+            ];
+
+            for (const tryFetch of proxies) {
+                try {
+                    const parsed = await tryFetch();
+                    const meta = parsed?.chart?.result?.[0]?.meta;
+                    if (meta && typeof meta.regularMarketPrice === 'number') {
+                        const price = meta.regularMarketPrice;
+                        const prevClose = meta.chartPreviousClose || meta.previousClose || price;
+                        const changePct = prevClose ? ((price - prevClose) / prevClose) * 100 : 0;
+                        return { price, changePct };
+                    }
+                } catch (_) {
+                    // 다음 백업 프록시 시도
+                }
+            }
+            throw new Error('모든 시세 프록시 응답 지연');
+        }
+
+        async function fetchLiveMarketIndices() {
+            // 1. 실시간 원/달러 환율
+            try {
+                const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
+                if (fxRes.ok) {
+                    const fxData = await fxRes.json();
+                    const krw = fxData?.rates?.KRW;
+                    if (typeof krw === 'number') {
+                        const valEl = document.getElementById('idx-usdkrw-val');
+                        if (valEl) valEl.innerText = krw.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    }
+                }
+            } catch (e) {
+                console.warn('환율 조회 실패:', e);
+            }
+
+            try {
+                const fxQuote = await fetchYahooQuote('USDKRW=X');
+                const valEl = document.getElementById('idx-usdkrw-val');
+                const chgEl = document.getElementById('idx-usdkrw-chg');
+                if (valEl && fxQuote.price) {
+                    valEl.innerText = fxQuote.price.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+                if (chgEl && typeof fxQuote.changePct === 'number') {
+                    const isUp = fxQuote.changePct >= 0;
+                    chgEl.innerText = `${isUp ? '+' : ''}${fxQuote.changePct.toFixed(2)}%`;
+                    chgEl.className = isUp
+                        ? 'text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold'
+                        : 'text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold';
+                }
+            } catch (e) {
+                const chgEl = document.getElementById('idx-usdkrw-chg');
+                if (chgEl) {
+                    chgEl.innerText = 'LIVE';
+                    chgEl.className = 'text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md text-[11px] font-extrabold';
+                }
+            }
+
+            // 2. KOSPI, S&P 500, NASDAQ 100 실시간 시세
+            const symbols = [
+                { sym: '^KS11', valId: 'idx-kospi-val', chgId: 'idx-kospi-chg' },
+                { sym: '^GSPC', valId: 'idx-sp500-val', chgId: 'idx-sp500-chg' },
+                { sym: '^NDX', valId: 'idx-nasdaq-val', chgId: 'idx-nasdaq-chg' }
+            ];
+
+            await Promise.allSettled(symbols.map(async (item) => {
+                try {
+                    const quote = await fetchYahooQuote(item.sym);
+                    updateIndexCard(item.valId, item.chgId, quote.price, quote.changePct);
+                } catch (err) {
+                    console.warn(`${item.sym} 조회 지연:`, err);
+                }
+            }));
+        }
+
+        fetchLiveMarketIndices();
+        // 3분마다 시세 및 날씨 자동 갱신
+        setInterval(() => {
+            fetchLiveMarketIndices();
+            fetchSeoulWeather();
+        }, 180000);
     </script>
 </body>
 </html>
