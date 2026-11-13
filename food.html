@@ -361,7 +361,7 @@
             <form onsubmit="handleSaveBudget(event)" class="space-y-3.5">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">총 예산 (원)</label>
-                    <input type="number" id="totalBudgetInput" required placeholder="예: 300000" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <input type="number" id="totalBudgetInput" required placeholder="예: 700000" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
                     <button type="button" onclick="closeBudgetModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
@@ -377,14 +377,8 @@
 
     <script>
         const INITIAL_ADMIN_PIN = "ddam";
-        // 다담랩스 전용 고유 클라우드 키 (텔레그램 예전 링크로 접속해도 모두 이 클라우드 데이터를 공통으로 읽어옴)
-        const CLOUD_ROOM_KEY = "dadamlabs_pantry_shared_room_v2026_prod";
-
-        // 막히지 않는 다중 실시간 클라우드 DB 엔드포인트 (브라우저/텔레그램 인앱/엣지 100% 통과)
-        const CLOUD_ENDPOINTS = [
-            `https://keyvalue.immanuel.co/api/KeyVal/GetValue/x9m2k8p4/${CLOUD_ROOM_KEY}`,
-            `https://ntfy.sh/${CLOUD_ROOM_KEY}_sync/json?poll=1&since=all`
-        ];
+        // 다담랩스 전용 고유 클라우드 채널 (텔레그램 링크를 누른 모든 PC/브라우저가 이 채널의 데이터를 공유함)
+        const CLOUD_ROOM_KEY = "dadamlabs_pantry_shared_room_v2026_final";
 
         const defaultConfig = {
             pin: INITIAL_ADMIN_PIN,
@@ -407,17 +401,43 @@
         let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v2') || '[]');
         let isAdmin = sessionStorage.getItem('dadam_is_admin') === 'true';
         let lastUpdatedTimestamp = 0;
-        let isCloudLoaded = false;
 
         let editingMemoId = null;
         let editingPriceId = null;
+
+        // 한글 및 특수문자가 클라우드 전송 중 절대 깨지지 않도록 안전하게 인코딩/디코딩하는 함수
+        function encodePayload(obj) {
+            const jsonStr = JSON.stringify(obj);
+            const bytes = new TextEncoder().encode(jsonStr);
+            let binStr = "";
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binStr += String.fromCharCode(bytes[i]);
+            }
+            return "DADAM_B64:" + btoa(binStr);
+        }
+
+        function decodePayload(str) {
+            if (!str || typeof str !== 'string') return null;
+            const trimmed = str.trim();
+            if (trimmed.startsWith("DADAM_B64:")) {
+                const b64 = trimmed.slice(10);
+                const binStr = atob(b64);
+                const bytes = new Uint8Array(binStr.length);
+                for (let i = 0; i < binStr.length; i++) {
+                    bytes[i] = binStr.charCodeAt(i);
+                }
+                const jsonStr = new TextDecoder().decode(bytes);
+                return JSON.parse(jsonStr);
+            }
+            return JSON.parse(trimmed);
+        }
 
         function setSyncBadge(status) {
             const badge = document.getElementById('syncStatusBadge');
             if (!badge) return;
             if (status === 'synced') {
                 badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>실시간 연동됨</span>`;
+                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>실시간 공유됨</span>`;
             } else {
                 badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200";
                 badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span><span>동기화 중...</span>`;
@@ -437,11 +457,12 @@
             }
         }
 
-        // 클라우드에서 받아온 최신 데이터(예: 70만 원 예산, 신청 목록 등)를 화면에 즉시 적용
+        // 클라우드에서 받아온 최신 데이터(예산, 신청 목록, 비밀번호 등)를 화면에 즉시 적용
         function applyIncomingState(data, fromCloud = true) {
             if (!data || typeof data !== 'object') return;
             const incomingTs = Number(data.updatedAt || 0);
 
+            // 이미 내 화면의 데이터가 더 최신이면 무시
             if (fromCloud && incomingTs > 0 && incomingTs < lastUpdatedTimestamp) {
                 return;
             }
@@ -454,7 +475,9 @@
                 appConfig = {
                     pin: data.config.pin || INITIAL_ADMIN_PIN,
                     notice: data.config.notice || defaultConfig.notice,
-                    totalBudget: (data.config.totalBudget !== undefined) ? Number(data.config.totalBudget) : 700000
+                    totalBudget: (data.config.totalBudget !== undefined && data.config.totalBudget !== null)
+                        ? Number(data.config.totalBudget)
+                        : 700000
                 };
             }
             if (Array.isArray(data.presets)) {
@@ -478,12 +501,11 @@
             renderOrders();
             updateBudgetUI();
             if (fromCloud) {
-                isCloudLoaded = true;
                 setSyncBadge('synced');
             }
         }
 
-        // 내가 수정한 데이터(예산 70만 원, 간식 신청, 금액 차감 등)를 글로벌 클라우드 서버 2곳에 동시 저장
+        // 사용자가 직접 신청/예산수정/금액입력을 했을 때만 클라우드에 안전하게 저장
         async function pushStateToCloud() {
             setSyncBadge('syncing');
             lastUpdatedTimestamp = Date.now();
@@ -495,36 +517,34 @@
                 orders: orders
             };
 
-            const serialized = JSON.stringify(stateObj);
-
-            // 1) 내 브라우저에 즉시 백업
+            // 1) 내 브라우저 로컬에도 즉시 백업
             try {
-                localStorage.setItem(CLOUD_ROOM_KEY, serialized);
+                localStorage.setItem(CLOUD_ROOM_KEY, JSON.stringify(stateObj));
                 localStorage.setItem('dadam_likes_v2', JSON.stringify(myLikedIds));
             } catch (e) {}
 
-            // 2) 초고속 실시간 Pub/Sub 클라우드 스트림(ntfy.sh)으로 모든 접속 기기에 0.1초 만에 푸시
+            // 2) 한글 깨짐 방지 Base64 압축 후 클라우드 스트림에 즉시 전송
             try {
-                fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}_sync`, {
+                const encodedBody = encodePayload(stateObj);
+                const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}`, {
                     method: 'POST',
-                    body: serialized
-                }).then(() => setSyncBadge('synced')).catch(() => {});
-            } catch (e) {}
-
-            // 3) 영구 Key-Value 클라우드 DB에도 인코딩하여 백업 저장
-            try {
-                const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(serialized))));
-                fetch(`https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/x9m2k8p4/${CLOUD_ROOM_KEY}/${encoded}`, {
-                    method: 'POST'
-                }).then(() => setSyncBadge('synced')).catch(() => {});
-            } catch (e) {}
+                    headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
+                    body: encodedBody
+                });
+                if (res.ok) {
+                    setSyncBadge('synced');
+                }
+            } catch (e) {
+                console.error(e);
+            }
         }
 
-        // 텔레그램이나 다른 PC에서 링크를 열었을 때 클라우드에서 가장 최신 상태 불러오기
+        // 텔레그램에서 링크를 눌러 새 브라우저가 열렸을 때 클라우드의 최신 상태를 읽어옴 (절대 빈 데이터를 덮어쓰지 않음)
         async function fetchLatestFromCloud() {
-            // 1) ntfy 클라우드 히스토리에서 가장 마지막에 저장된 최신 상태 조회
             try {
-                const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}_sync/json?poll=1&since=all&t=${Date.now()}`, { cache: 'no-store' });
+                const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}/json?poll=1&since=all&_=${Date.now()}`, {
+                    cache: 'no-store'
+                });
                 if (res.ok) {
                     const text = await res.text();
                     const lines = text.trim().split('\n').filter(Boolean);
@@ -532,7 +552,7 @@
                         try {
                             const msg = JSON.parse(lines[i]);
                             if (msg && msg.event === 'message' && msg.message) {
-                                const parsed = JSON.parse(msg.message);
+                                const parsed = decodePayload(msg.message);
                                 if (parsed && parsed.updatedAt) {
                                     applyIncomingState(parsed, true);
                                     return;
@@ -541,53 +561,31 @@
                         } catch (innerErr) {}
                     }
                 }
-            } catch (e) {}
-
-            // 2) 보조 Key-Value 클라우드에서 조회
-            try {
-                const res2 = await fetch(`https://keyvalue.immanuel.co/api/KeyVal/GetValue/x9m2k8p4/${CLOUD_ROOM_KEY}?t=${Date.now()}`, { cache: 'no-store' });
-                if (res2.ok) {
-                    const rawVal = await res2.text();
-                    const cleanVal = rawVal.replace(/^"|"$/g, '');
-                    if (cleanVal && cleanVal !== "null") {
-                        const decoded = decodeURIComponent(escape(atob(decodeURIComponent(cleanVal))));
-                        const parsed = JSON.parse(decoded);
-                        if (parsed && parsed.updatedAt) {
-                            applyIncomingState(parsed, true);
-                            return;
-                        }
-                    }
-                }
-            } catch (e) {}
-
-            // 만약 클라우드에 아직 아무 데이터도 없다면 현재 데이터(70만 원 기본값 포함)를 클라우드에 최초 등록
-            if (!isCloudLoaded) {
-                isCloudLoaded = true;
-                updateBudgetUI();
                 setSyncBadge('synced');
-                if (lastUpdatedTimestamp > 0) {
-                    pushStateToCloud();
-                }
+            } catch (e) {
+                console.error(e);
             }
         }
 
-        // 실시간 스트림 구독 (누군가 수정하면 새로고침 없이 0.1초 만에 내 화면도 바뀜)
+        // 실시간 스트림 구독 (다른 사람이 간식을 신청하거나 예산을 바꾸면 0.1초 만에 내 화면도 즉시 변경됨)
         function connectRealtimeStream() {
             try {
-                const evtSource = new EventSource(`https://ntfy.sh/${CLOUD_ROOM_KEY}_sync/sse`);
+                const evtSource = new EventSource(`https://ntfy.sh/${CLOUD_ROOM_KEY}/sse`);
                 evtSource.onmessage = (e) => {
                     try {
                         const data = JSON.parse(e.data);
-                        if (data && data.message) {
-                            const parsed = JSON.parse(data.message);
-                            applyIncomingState(parsed, true);
+                        if (data && data.event === 'message' && data.message) {
+                            const parsed = decodePayload(data.message);
+                            if (parsed && parsed.updatedAt) {
+                                applyIncomingState(parsed, true);
+                            }
                         }
                     } catch (err) {}
                 };
             } catch (e) {}
         }
 
-        // 초기 실행: 로컬 캐시 확인 후 즉시 클라우드 최신 데이터 강제 수신
+        // 초기 실행: 로컬 캐시 표시 후 즉시 클라우드 최신 데이터 수신
         loadLocalCache();
         applyUIWithConfig();
         renderPresets();
@@ -595,8 +593,9 @@
         updateBudgetUI();
         fetchLatestFromCloud();
         connectRealtimeStream();
-        // 텔레그램 인앱 브라우저 등 백그라운드 제한 환경을 위해 2초마다 최신 데이터 확인
+        // 백그라운드 탭이나 다른 창에서도 2초마다 최신 상태 자동 동기화
         setInterval(fetchLatestFromCloud, 2000);
+        window.addEventListener('focus', fetchLatestFromCloud);
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
@@ -619,11 +618,13 @@
         }
 
         function updateBudgetUI() {
-            const totalBudget = appConfig.totalBudget || 300000;
+            const totalBudget = (appConfig.totalBudget !== undefined && appConfig.totalBudget !== null)
+                ? Number(appConfig.totalBudget)
+                : 700000;
             const totalSpent = orders.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
             const balance = totalBudget - totalSpent;
 
-            document.getElementById('budgetDisplay').innerText = `${totalBudget.toLocaleString()}원 중`;
+            document.getElementById('budgetDisplay').innerText = `총 ${totalBudget.toLocaleString()}원 중`;
             const balanceEl = document.getElementById('balanceDisplay');
             balanceEl.innerText = `잔액 ${balance.toLocaleString()}원`;
 
@@ -855,7 +856,9 @@
         }
 
         function openBudgetModal() {
-            document.getElementById('totalBudgetInput').value = appConfig.totalBudget || 300000;
+            document.getElementById('totalBudgetInput').value = (appConfig.totalBudget !== undefined && appConfig.totalBudget !== null)
+                ? Number(appConfig.totalBudget)
+                : 700000;
             const modal = document.getElementById('budgetModal');
             modal.classList.remove('hidden'); modal.classList.add('flex');
         }
