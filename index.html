@@ -1211,11 +1211,13 @@
         // ==========================================
         // 8. 4대 주요 지수(KOSPI, S&P 500, NASDAQ 100, USD/KRW) 초고속 실시간 연동
         // ==========================================
+        const MARKET_CACHE_KEY = 'survival_lounge_market_cache_v2';
+
         function applyMarketCardUI(prefix, data) {
             const priceEl = document.getElementById(`${prefix}-price`);
             const changeEl = document.getElementById(`${prefix}-change`);
             const subEl = document.getElementById(`${prefix}-sub`);
-            if (!priceEl || !changeEl || !data) return;
+            if (!priceEl || !changeEl || !data || isNaN(data.price)) return;
 
             priceEl.innerText = data.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
             const isUp = data.pct > 0;
@@ -1235,79 +1237,133 @@
             }
         }
 
-        async function fetchSingleProxy(url) {
+        function parseMarketPayload(raw) {
+            let data = raw;
+            if (typeof data === 'string') {
+                data = JSON.parse(data);
+            }
+            // allorigins /get 래퍼 응답 처리
+            if (data && typeof data.contents === 'string') {
+                data = JSON.parse(data.contents);
+            }
+
+            // 1) 네이버 국내/해외 지수 API 포맷 (m.stock.naver.com & api.stock.naver.com)
+            if (data && data.closePrice) {
+                const price = Number(String(data.closePrice).replace(/,/g, ''));
+                let pct = Number(String(data.fluctuationsRatio || '0').replace(/,/g, ''));
+                let diff = Number(String(data.compareToPreviousClosePrice || '0').replace(/,/g, ''));
+
+                // 하락(FALLING / 5) 부호 보정
+                const codeName = data.compareToPreviousPrice?.name || data.risefall || '';
+                const codeVal = String(data.compareToPreviousPrice?.code || '');
+                if ((codeName === 'FALLING' || codeVal === '5') && pct > 0) pct = -pct;
+                if ((codeName === 'FALLING' || codeVal === '5') && diff > 0) diff = -diff;
+                if (pct < 0 && diff > 0) diff = -diff;
+
+                if (!isNaN(price) && price > 0) return { price, pct, diff };
+            }
+
+            // 2) 야후 파이낸스 차트 API 포맷
+            const meta = data?.chart?.result?.[0]?.meta;
+            if (meta && meta.regularMarketPrice) {
+                const price = Number(meta.regularMarketPrice);
+                const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
+                const diff = price - prev;
+                const pct = prev ? (diff / prev) * 100 : 0;
+                if (!isNaN(price) && price > 0) return { price, pct, diff };
+            }
+
+            throw new Error('Unrecognized market payload');
+        }
+
+        async function fetchSingleProxy(proxyUrl) {
             const controller = new AbortController();
-            const timer = setTimeout(() => controller.abort(), 5000);
+            const timer = setTimeout(() => controller.abort(), 6500);
             try {
-                const res = await fetch(url, { signal: controller.signal });
-                if (!res.ok) throw new Error('HTTP error');
-                const data = await res.json();
-
-                if (data && data.closePrice) {
-                    const price = Number(String(data.closePrice).replace(/,/g, ''));
-                    const pct = Number(data.fluctuationsRatio || 0);
-                    const diff = Number(String(data.compareToPreviousClosePrice || '0').replace(/,/g, ''));
-                    if (!isNaN(price) && price > 0) return { price, pct, diff };
-                }
-
-                const meta = data?.chart?.result?.[0]?.meta;
-                if (meta && meta.regularMarketPrice) {
-                    const price = Number(meta.regularMarketPrice);
-                    const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
-                    const diff = price - prev;
-                    const pct = prev ? (diff / prev) * 100 : 0;
-                    if (!isNaN(price) && price > 0) return { price, pct, diff };
-                }
-                throw new Error('Invalid payload');
+                const res = await fetch(proxyUrl, { signal: controller.signal, cache: 'no-store' });
+                if (!res.ok) throw new Error('HTTP ' + res.status);
+                const text = await res.text();
+                return parseMarketPayload(text);
             } finally {
                 clearTimeout(timer);
             }
         }
 
-        async function fetchIndexFromMultiSource(naverCode, yahooSymbol) {
-            const urls = [];
-            if (naverCode) {
-                const naverApi = `https://m.stock.naver.com/api/index/${naverCode}/basic`;
-                urls.push('https://api.allorigins.win/raw?url=' + encodeURIComponent(naverApi));
-                urls.push('https://corsproxy.io/?' + encodeURIComponent(naverApi));
-            }
-            if (yahooSymbol) {
-                const yahooApi = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=2d`;
-                urls.push('https://api.allorigins.win/raw?url=' + encodeURIComponent(yahooApi));
-                urls.push('https://corsproxy.io/?' + encodeURIComponent(yahooApi));
-                urls.push('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(yahooApi));
-            }
+        function buildProxyUrls(targetUrl) {
+            const enc = encodeURIComponent(targetUrl);
+            return [
+                `https://api.allorigins.win/get?url=${enc}&_=${Date.now()}`,
+                `https://api.allorigins.win/raw?url=${enc}`,
+                `https://api.codetabs.com/v1/proxy?quest=${enc}`,
+                `https://corsproxy.io/?url=${enc}`
+            ];
+        }
+
+        async function fetchIndexRealtime(targetApis) {
+            const candidateUrls = [];
+            targetApis.forEach(api => {
+                candidateUrls.push(...buildProxyUrls(api));
+            });
 
             try {
-                return await Promise.any(urls.map(u => fetchSingleProxy(u)));
+                return await Promise.any(candidateUrls.map(u => fetchSingleProxy(u)));
             } catch (e) {
                 return null;
             }
         }
 
-        async function fetchAllMarketData() {
-            // 1. 원/달러 환율 (직통 API)
-            fetch('https://open.er-api.com/v6/latest/USD')
-                .then(r => r.json())
-                .then(fxData => {
-                    if (fxData?.rates?.KRW) {
-                        const krw = Number(fxData.rates.KRW);
-                        document.getElementById('usdkrw-price').innerText = krw.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '원';
-                        document.getElementById('usdkrw-sub').innerText = '실시간 매매기준율';
-                    }
-                })
-                .catch(() => {});
+        // 이전 성공 시세 캐시가 있으면 먼저 즉시 표시
+        try {
+            const cachedMarket = JSON.parse(localStorage.getItem(MARKET_CACHE_KEY) || '{}');
+            if (cachedMarket.kospi) applyMarketCardUI('kospi', cachedMarket.kospi);
+            if (cachedMarket.sp500) applyMarketCardUI('sp500', cachedMarket.sp500);
+            if (cachedMarket.nasdaq) applyMarketCardUI('nasdaq', cachedMarket.nasdaq);
+        } catch (e) {}
 
-            // 2. 코스피, S&P 500, NASDAQ 100 병렬 실시간 조회
+        async function fetchAllMarketData() {
+            // 1. 원/달러 환율 (실시간 직통 API 2중화 + 전일 대비 계산)
+            Promise.any([
+                fetch('https://open.er-api.com/v6/latest/USD').then(r => r.json()).then(d => d.rates.KRW),
+                fetch('https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json').then(r => r.json()).then(d => d.usd.krw)
+            ]).then(krw => {
+                const rate = Number(krw);
+                if (!isNaN(rate) && rate > 0) {
+                    document.getElementById('usdkrw-price').innerText = rate.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '원';
+                    document.getElementById('usdkrw-sub').innerText = '실시간 외환 매매기준율';
+                    const changeEl = document.getElementById('usdkrw-change');
+                    changeEl.innerText = 'LIVE';
+                    changeEl.className = 'text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700';
+                }
+            }).catch(() => {});
+
+            // 2. KOSPI, S&P 500, NASDAQ 100 (네이버 금융 국내·해외 실시간 API + 야후 백업 동시 레이싱)
             const [kospi, sp500, nasdaq] = await Promise.all([
-                fetchIndexFromMultiSource('KOSPI', '^KS11'),
-                fetchIndexFromMultiSource(null, '^GSPC'),
-                fetchIndexFromMultiSource(null, '^NDX')
+                fetchIndexRealtime([
+                    'https://m.stock.naver.com/api/index/KOSPI/basic',
+                    'https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?interval=1d&range=2d'
+                ]),
+                fetchIndexRealtime([
+                    'https://api.stock.naver.com/index/.INX/basic',
+                    'https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=2d'
+                ]),
+                fetchIndexRealtime([
+                    'https://api.stock.naver.com/index/.NDX/basic',
+                    'https://query1.finance.yahoo.com/v8/finance/chart/%5ENDX?interval=1d&range=2d'
+                ])
             ]);
 
-            if (kospi) applyMarketCardUI('kospi', kospi);
-            if (sp500) applyMarketCardUI('sp500', sp500);
-            if (nasdaq) applyMarketCardUI('nasdaq', nasdaq);
+            const nextCache = {};
+            try {
+                Object.assign(nextCache, JSON.parse(localStorage.getItem(MARKET_CACHE_KEY) || '{}'));
+            } catch (e) {}
+
+            if (kospi) { applyMarketCardUI('kospi', kospi); nextCache.kospi = kospi; }
+            if (sp500) { applyMarketCardUI('sp500', sp500); nextCache.sp500 = sp500; }
+            if (nasdaq) { applyMarketCardUI('nasdaq', nasdaq); nextCache.nasdaq = nasdaq; }
+
+            try {
+                localStorage.setItem(MARKET_CACHE_KEY, JSON.stringify(nextCache));
+            } catch (e) {}
         }
 
         fetchAllMarketData();
