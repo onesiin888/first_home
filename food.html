@@ -3,258 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>사내 탕비실 & 비품 신청 보드</title>
+    <title>달콤 바삭 사내 스낵바 & 탕비실 메뉴판</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        @import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
         body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            background-color: #f8fafc;
+            background-color: #FFFBF5; /* 따뜻한 크림 라떼 배경 */
+            background-image: radial-gradient(#F3E5D0 1px, transparent 1px);
+            background-size: 20px 20px;
+            color: #432818;
+        }
+        .font-cafe {
+            font-family: 'Jua', 'Pretendard', sans-serif;
         }
         .card-enter {
-            animation: slideUp 0.25s ease-out forwards;
+            animation: popIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        @keyframes popIn {
+            from { opacity: 0; transform: translateY(10px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
         }
-        /* 스크롤바 커스텀 */
+        .bounce-tap:active {
+            transform: scale(0.95);
+        }
+        /* 카페 메뉴판 느낌 스크롤바 */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-track { background: #FFF8EE; }
+        ::-webkit-scrollbar-thumb { background: #E6CCB2; border-radius: 9999px; }
+        ::-webkit-scrollbar-thumb:hover { background: #DDA15E; }
     </style>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col">
+<body class="min-h-screen flex flex-col selection:bg-amber-200 selection:text-amber-900">
 
-    <!-- 상단 헤더 & 담당자 모드 토글 -->
-    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <!-- 상단 카페 어닝 스타일 헤더 -->
+    <header class="bg-gradient-to-r from-[#582F0E] via-[#6F4518] to-[#582F0E] text-amber-50 sticky top-0 z-30 shadow-md border-b-4 border-amber-400">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-sm">
-                    <i class="fa-solid fa-cookie-bite text-xl"></i>
+                <div class="w-11 h-11 rounded-2xl bg-amber-400 text-[#432818] flex items-center justify-center shadow-inner text-2xl transform -rotate-6">
+                    🍩
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold text-slate-900 leading-tight">든든 탕비실 & 비품 신청함</h1>
-                    <p class="text-xs text-slate-500">필요한 간식이나 사무용품 링크를 편하게 남겨주세요!</p>
+                    <div class="flex items-center gap-2">
+                        <h1 class="text-xl sm:text-2xl font-cafe tracking-wide text-amber-50">달콤바삭 우리팀 스낵바</h1>
+                        <span class="hidden sm:inline-block bg-amber-400/20 border border-amber-300/40 text-amber-200 text-[11px] font-bold px-2 py-0.5 rounded-full">OPEN 24/7</span>
+                    </div>
+                    <p class="text-xs text-amber-200/90">먹고 싶은 과자, 음료, 라면 링크를 메뉴판에 적어주세요!</p>
                 </div>
             </div>
 
-            <!-- 우측 액션 영역: 담당자 모드 스위치 & 엑셀 복사 -->
-            <div class="flex items-center space-x-3">
-                <button onclick="copyPendingLinks()" id="bulkCopyBtn" class="hidden sm:flex items-center space-x-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition">
-                    <i class="fa-regular fa-copy"></i>
-                    <span>대기 목록 복사</span>
+            <!-- 우측 액션 영역: 장바구니 복사 & 간식 대장 모드 -->
+            <div class="flex items-center space-x-2.5">
+                <button onclick="copyPendingLinks()" class="hidden md:flex items-center space-x-1.5 text-xs font-bold bg-[#7F4F24] hover:bg-[#936639] text-amber-100 border border-amber-500/30 px-3 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-cart-shopping text-amber-300"></i>
+                    <span>주문 대기 목록 복사</span>
                 </button>
 
-                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
-                    <button id="modeUserBtn" onclick="setRoleMode(false)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 shadow-sm transition">
-                        🙋‍♂️ 일반 신청자
+                <div class="flex items-center bg-[#3D210A] p-1 rounded-xl border border-amber-800">
+                    <button id="modeUserBtn" onclick="setRoleMode(false)" class="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-[#3D210A] shadow-sm transition">
+                        😋 간식 대원
                     </button>
-                    <button id="modeAdminBtn" onclick="requestAdminAuth()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center gap-1">
+                    <button id="modeAdminBtn" onclick="requestAdminAuth()" class="px-3 py-1.5 rounded-lg text-xs font-bold text-amber-200/80 hover:text-white transition flex items-center gap-1">
                         <i id="adminLockIcon" class="fa-solid fa-lock text-[10px]"></i>
-                        <span>담당자 모드</span>
+                        <span>간식 대장</span>
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- 구조 설명 안내 배너 (접기 가능) -->
-    <div id="guideBanner" class="bg-indigo-50 border-b border-indigo-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-            <div class="flex items-start sm:items-center space-x-2.5 text-xs sm:text-sm text-indigo-900">
-                <span class="bg-indigo-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shrink-0 mt-0.5 sm:mt-0">담당자 보호 적용됨</span>
+    <!-- 오늘의 스낵바 안내판 배너 -->
+    <div id="guideBanner" class="bg-amber-100/80 border-b border-amber-200/80 backdrop-blur-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div class="flex items-center space-x-2.5 text-xs sm:text-sm text-[#582F0E]">
+                <span class="bg-orange-500 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-full shrink-0">🍯 이용 팁</span>
                 <p>
-                    우측 상단 <strong>[🔒 담당자 모드]</strong> 클릭 시 <strong>비밀번호(기본값: <code>1234</code>)</strong>를 입력해야만 열립니다! (담당자 모드 안에서 비밀번호 변경 가능)
+                    이미 올라온 간식은 <strong>[🤤 나도 먹고 싶어요!]</strong>를 눌러주세요! <strong>[🔒 간식 대장(PIN: 1234)]</strong> 모드에서 <strong>단골 메뉴판 추가/삭제</strong>가 가능합니다.
                 </p>
             </div>
-            <button onclick="document.getElementById('guideBanner').classList.add('hidden')" class="text-indigo-400 hover:text-indigo-700 text-xs shrink-0 self-end sm:self-center">
-                <i class="fa-solid fa-xmark mr-1"></i>안내 닫기
-            </button>
+            <div class="flex items-center gap-3 self-end sm:self-center shrink-0">
+                <button onclick="resetDemoData()" class="text-[11px] text-amber-800/70 hover:text-amber-950 underline">샘플 메뉴 초기화</button>
+                <button onclick="document.getElementById('guideBanner').classList.add('hidden')" class="text-amber-700 hover:text-amber-950 text-xs font-bold">
+                    <i class="fa-solid fa-xmark mr-1"></i>닫기
+                </button>
+            </div>
         </div>
     </div>
 
-    <!-- 메인 레이아웃: 좌측 신청 폼 (고정) + 우측 현황 보드 -->
-    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1 space-y-6">
+
+        <!-- [상단] ⚡ 스낵바 단골 메뉴판 (클릭 시 1초 자동입력 + 담당자 직접 추가/삭제 가능!) -->
+        <section class="bg-white rounded-3xl p-4 sm:p-5 shadow-sm border-2 border-amber-200/80 relative overflow-hidden">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">⚡</span>
+                    <h2 class="text-base sm:text-lg font-cafe text-[#432818]">우리팀 단골 인기 메뉴판</h2>
+                    <span class="text-xs font-semibold text-orange-700 bg-orange-100 px-2.5 py-0.5 rounded-full">클릭하면 주문서에 쏙!</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-amber-800/70">자주 다 떨어지는 간식·음료를 한 번에 골라보세요</span>
+                    <button id="addQuickMenuBtn" onclick="openPresetModal()" class="hidden text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white px-3 py-1 rounded-full shadow-xs transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus text-[10px]"></i> 단골 메뉴 추가
+                    </button>
+                </div>
+            </div>
+
+            <!-- 단골 메뉴 칩 리스트 -->
+            <div id="presetContainer" class="flex items-center gap-2.5 overflow-x-auto pb-1.5 pt-0.5">
+                <!-- JS 렌더링 -->
+            </div>
+        </section>
+
+        <!-- 좌/우 메인 보드 -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-            <!-- [좌측 4칸] 초간편 3초 컷 신청 폼 -->
-            <section class="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 lg:sticky lg:top-22">
-                <div class="flex items-center justify-between mb-4">
-                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                        <i class="fa-solid fa-pen-to-square text-amber-500"></i>
-                        새 물품 신청하기
-                    </h2>
-                    <span class="text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">3초 컷 입력</span>
-                </div>
-
-                <!-- 빠른 프리셋 버튼 (자주 찾는 품목) -->
-                <div class="mb-4">
-                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">⚡ 자주 찾는 단골 메뉴 (클릭 시 자동입력)</label>
-                    <div class="flex flex-wrap gap-1.5">
-                        <button type="button" onclick="fillPreset('간식/음료', '제로 콜라 355ml (1박스)', '단당류 걱정 없는 탄산 충전!')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">🥤 제로콜라</button>
-                        <button type="button" onclick="fillPreset('간식/음료', '일리 캡슐커피 디카페인', '오후에도 부담 없이 마시고 싶어요')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">☕ 캡슐커피</button>
-                        <button type="button" onclick="fillPreset('사무용품', 'A4 복사용지 (1박스)', '복합기 옆 용지가 거의 다 떨어졌어요')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">📄 A4용지</button>
-                        <button type="button" onclick="fillPreset('생활/기타', '물티슈 리필 (10팩)', '탕비실 식탁 닦는 물티슈가 다 썼습니다')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">🧻 물티슈</button>
+            <!-- [좌측 4칸] 맛있는 간식 주문서 (신청 폼) -->
+            <section class="lg:col-span-4 bg-white rounded-3xl shadow-md border-2 border-amber-200/90 overflow-hidden lg:sticky lg:top-20">
+                <!-- 주문서 상단 헤더 -->
+                <div class="bg-gradient-to-r from-amber-400 to-orange-400 px-5 py-4 text-[#3D210A] flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xl">🧁</span>
+                        <h2 class="text-lg font-cafe tracking-wide">간식·음료 위시리스트 작성</h2>
                     </div>
+                    <span class="text-[11px] font-extrabold bg-white/90 text-orange-700 px-2.5 py-0.5 rounded-full shadow-xs">3초 컷!</span>
                 </div>
 
-                <form id="requestForm" onsubmit="handleAddRequest(event)" class="space-y-4">
-                    <!-- 1. 카테고리 선택 탭 -->
+                <form id="requestForm" onsubmit="handleAddRequest(event)" class="p-5 space-y-4">
+                    <!-- 1. 먹거리 카테고리 선택 (6종) -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">카테고리 <span class="text-rose-500">*</span></label>
+                        <label class="block text-xs font-bold text-[#582F0E] mb-2">어떤 종류인가요? <span class="text-orange-600">*</span></label>
                         <div class="grid grid-cols-3 gap-2">
-                            <button type="button" onclick="selectCategory('간식/음료')" id="catBtn-간식/음료" class="cat-btn py-2 px-2 rounded-xl text-xs font-bold border-2 border-amber-500 bg-amber-50 text-amber-700 transition flex flex-col items-center gap-1">
-                                <span class="text-base">🍪</span>
-                                <span>간식/음료</span>
+                            <button type="button" onclick="selectCategory('과자·스낵')" id="catBtn-과자·스낵" class="cat-btn py-2 px-1.5 rounded-2xl text-xs font-bold border-2 border-orange-500 bg-orange-50 text-orange-800 transition flex flex-col items-center gap-1">
+                                <span class="text-lg">🍪</span>
+                                <span>과자·스낵</span>
                             </button>
-                            <button type="button" onclick="selectCategory('사무용품')" id="catBtn-사무용품" class="cat-btn py-2 px-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition flex flex-col items-center gap-1">
-                                <span class="text-base">📎</span>
-                                <span>사무용품</span>
+                            <button type="button" onclick="selectCategory('커피·음료')" id="catBtn-커피·음료" class="cat-btn py-2 px-1.5 rounded-2xl text-xs font-semibold border border-amber-200 bg-amber-50/30 text-[#582F0E] hover:bg-amber-50 transition flex flex-col items-center gap-1">
+                                <span class="text-lg">☕</span>
+                                <span>커피·음료</span>
                             </button>
-                            <button type="button" onclick="selectCategory('생활/기타')" id="catBtn-생활/기타" class="cat-btn py-2 px-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition flex flex-col items-center gap-1">
-                                <span class="text-base">🧼</span>
-                                <span>생활/기타</span>
+                            <button type="button" onclick="selectCategory('라면·간편식')" id="catBtn-라면·간편식" class="cat-btn py-2 px-1.5 rounded-2xl text-xs font-semibold border border-amber-200 bg-amber-50/30 text-[#582F0E] hover:bg-amber-50 transition flex flex-col items-center gap-1">
+                                <span class="text-lg">🍜</span>
+                                <span>라면·간편식</span>
+                            </button>
+                            <button type="button" onclick="selectCategory('아이스크림·냉동')" id="catBtn-아이스크림·냉동" class="cat-btn py-2 px-1.5 rounded-2xl text-xs font-semibold border border-amber-200 bg-amber-50/30 text-[#582F0E] hover:bg-amber-50 transition flex flex-col items-center gap-1">
+                                <span class="text-lg">🍦</span>
+                                <span>아이스·냉동</span>
+                            </button>
+                            <button type="button" onclick="selectCategory('과일·건강간식')" id="catBtn-과일·건강간식" class="cat-btn py-2 px-1.5 rounded-2xl text-xs font-semibold border border-amber-200 bg-amber-50/30 text-[#582F0E] hover:bg-amber-50 transition flex flex-col items-center gap-1">
+                                <span class="text-lg">🍓</span>
+                                <span>과일·견과</span>
+                            </button>
+                            <button type="button" onclick="selectCategory('탕비실 소모품')" id="catBtn-탕비실 소모품" class="cat-btn py-2 px-1.5 rounded-2xl text-xs font-semibold border border-amber-200 bg-amber-50/30 text-[#582F0E] hover:bg-amber-50 transition flex flex-col items-center gap-1">
+                                <span class="text-lg">🧻</span>
+                                <span>종이컵·티슈</span>
                             </button>
                         </div>
-                        <input type="hidden" id="categoryInput" value="간식/음료">
+                        <input type="hidden" id="categoryInput" value="과자·스낵">
                     </div>
 
-                    <!-- 2. 품목명 & 수량 -->
+                    <!-- 2. 메뉴 이름 & 수량 -->
                     <div class="grid grid-cols-3 gap-2.5">
                         <div class="col-span-2">
-                            <label for="itemName" class="block text-xs font-semibold text-slate-700 mb-1">품목명 <span class="text-rose-500">*</span></label>
-                            <input type="text" id="itemName" required placeholder="예: 몽쉘 카카오 1박스" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <label for="itemName" class="block text-xs font-bold text-[#582F0E] mb-1">먹고 싶은 메뉴명 <span class="text-orange-600">*</span></label>
+                            <input type="text" id="itemName" required placeholder="예: 비쵸비 / 제로콜라 355ml" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-amber-300 bg-amber-50/20 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                         </div>
                         <div>
-                            <label for="itemQty" class="block text-xs font-semibold text-slate-700 mb-1">수량</label>
-                            <input type="text" id="itemQty" value="1개(박스)" placeholder="예: 2박스" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <label for="itemQty" class="block text-xs font-bold text-[#582F0E] mb-1">희망 수량</label>
+                            <input type="text" id="itemQty" value="1박스" placeholder="예: 2박스" class="w-full px-3 py-2.5 text-sm rounded-xl border border-amber-300 bg-amber-50/20 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                         </div>
                     </div>
 
-                    <!-- 3. 구매 링크 (핵심!) -->
+                    <!-- 3. 맛/테마 태그 선택 -->
+                    <div>
+                        <label class="block text-xs font-bold text-[#582F0E] mb-1.5">맛·기분 태그 (선택)</label>
+                        <div class="flex flex-wrap gap-1.5" id="moodTagGroup">
+                            <button type="button" onclick="selectMoodTag('🍫 당충전 100%')" class="mood-btn text-xs px-2.5 py-1 rounded-full font-bold bg-orange-500 text-white transition">🍫 당충전 100%</button>
+                            <button type="button" onclick="selectMoodTag('🥨 단짠단짠 매력')" class="mood-btn text-xs px-2.5 py-1 rounded-full font-semibold bg-amber-100/70 text-[#582F0E] hover:bg-amber-200/70 transition">🥨 단짠단짠 매력</button>
+                            <button type="button" onclick="selectMoodTag('🧊 제로칼로리/부담없는')" class="mood-btn text-xs px-2.5 py-1 rounded-full font-semibold bg-amber-100/70 text-[#582F0E] hover:bg-amber-200/70 transition">🧊 제로칼로리/부담없는</button>
+                            <button type="button" onclick="selectMoodTag('⚡ 오후 3시 잠깨는 맛')" class="mood-btn text-xs px-2.5 py-1 rounded-full font-semibold bg-amber-100/70 text-[#582F0E] hover:bg-amber-200/70 transition">⚡ 오후 3시 잠깨는 맛</button>
+                            <button type="button" onclick="selectMoodTag('🍙 출출할 때 든든해요')" class="mood-btn text-xs px-2.5 py-1 rounded-full font-semibold bg-amber-100/70 text-[#582F0E] hover:bg-amber-200/70 transition">🍙 출출할 때 든든해요</button>
+                        </div>
+                        <input type="hidden" id="moodTagInput" value="🍫 당충전 100%">
+                    </div>
+
+                    <!-- 4. 쇼핑몰 구매 링크 -->
                     <div>
                         <div class="flex items-center justify-between mb-1">
-                            <label for="itemUrl" class="block text-xs font-semibold text-slate-700">구매 링크 (URL)</label>
-                            <span id="domainPreview" class="text-[11px] font-medium text-emerald-600 hidden"></span>
+                            <label for="itemUrl" class="block text-xs font-bold text-[#582F0E]">구매 링크 (쿠팡·네이버·컬리 등)</label>
+                            <span id="domainPreview" class="text-[11px] font-bold text-orange-600 hidden"></span>
                         </div>
                         <div class="relative">
-                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
-                                <i class="fa-solid fa-link text-xs"></i>
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-amber-600">
+                                <i class="fa-solid fa-cart-plus text-xs"></i>
                             </span>
-                            <input type="url" id="itemUrl" oninput="detectMallDomain(this.value)" placeholder="https:// 쿠팡, 네이버 등 상품 주소 붙여넣기" class="w-full pl-8 pr-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <input type="url" id="itemUrl" oninput="detectMallDomain(this.value)" placeholder="https:// 상품 주소 붙여넣기" class="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl border border-amber-300 bg-amber-50/20 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                         </div>
-                        <p class="text-[11px] text-slate-400 mt-1">링크를 넣어주시면 담당자가 정확히 같은 상품으로 빠르게 주문해요!</p>
                     </div>
 
-                    <!-- 4. 신청자 & 한줄 메모 -->
+                    <!-- 5. 신청자 & 맛있는 어필 한마디 -->
                     <div class="grid grid-cols-3 gap-2.5">
                         <div>
-                            <label for="requester" class="block text-xs font-semibold text-slate-700 mb-1">신청자 (선택)</label>
-                            <input type="text" id="requester" placeholder="익명 가능" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <label for="requester" class="block text-xs font-bold text-[#582F0E] mb-1">신청자</label>
+                            <input type="text" id="requester" placeholder="익명 먹보" class="w-full px-3 py-2 text-sm rounded-xl border border-amber-300 bg-amber-50/20 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                         </div>
                         <div class="col-span-2">
-                            <label for="itemMemo" class="block text-xs font-semibold text-slate-700 mb-1">한줄 코멘트 / 옵션</label>
-                            <input type="text" id="itemMemo" placeholder="예: 오리지널 말고 초코맛으로 부탁드려요!" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                            <label for="itemMemo" class="block text-xs font-bold text-[#582F0E] mb-1">맛있는 어필 / 맛 옵션</label>
+                            <input type="text" id="itemMemo" placeholder="예: 초코맛으로 부탁해요! 냉장고에 넣어두면 꿀맛" class="w-full px-3 py-2 text-sm rounded-xl border border-amber-300 bg-amber-50/20 focus:bg-white focus:outline-none focus:ring-2 focus:ring-orange-400">
                         </div>
                     </div>
 
-                    <!-- 5. 긴급 여부 체크 (비품 다 떨어졌을 때) -->
+                    <!-- 6. 탕비실 똑 떨어짐 체크 -->
                     <div class="flex items-center justify-between pt-1">
                         <label class="inline-flex items-center cursor-pointer select-none">
                             <input type="checkbox" id="isUrgent" class="sr-only peer">
-                            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative peer-checked:bg-rose-500"></div>
-                            <span class="ml-2 text-xs font-medium text-slate-600">🚨 재고 소진 임박 (긴급 요청)</span>
+                            <div class="w-9 h-5 bg-amber-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-amber-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative peer-checked:bg-rose-500"></div>
+                            <span class="ml-2 text-xs font-bold text-[#582F0E]">🚨 찬장/냉장고에 완전히 다 떨어졌어요!</span>
                         </label>
                     </div>
 
-                    <button type="submit" class="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 active:scale-[0.99] text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center justify-center space-x-2 text-sm">
-                        <i class="fa-solid fa-paper-plane"></i>
-                        <span>신청함에 등록하기</span>
+                    <button type="submit" class="bounce-tap w-full py-3.5 px-4 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold rounded-2xl shadow-md hover:shadow-lg transition flex items-center justify-center space-x-2 text-sm">
+                        <i class="fa-solid fa-utensils"></i>
+                        <span>스낵바 메뉴판에 올리기!</span>
                     </button>
                 </form>
             </section>
 
-            <!-- [우측 8칸] 실시간 현황판 & 공감 보드 -->
+            <!-- [우측 8칸] 스낵바 실시간 보드 -->
             <section class="lg:col-span-8 space-y-4">
 
-                <!-- 상단 요약 카드 3개 -->
+                <!-- 상단 현황판 카운터 3개 -->
                 <div class="grid grid-cols-3 gap-3">
-                    <div onclick="setStatusFilter('대기중')" class="cursor-pointer bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:border-amber-400 transition flex items-center justify-between">
+                    <div onclick="setStatusFilter('대기중')" class="cursor-pointer bg-white p-4 rounded-3xl border-2 border-amber-200/80 shadow-xs hover:border-orange-400 transition flex items-center justify-between">
                         <div>
-                            <p class="text-xs font-medium text-slate-500">접수 대기중</p>
-                            <p id="statPending" class="text-2xl font-extrabold text-amber-600 mt-0.5">0</p>
+                            <p class="text-xs font-bold text-amber-800/70">🛒 장바구니 대기</p>
+                            <p id="statPending" class="text-2xl sm:text-3xl font-cafe text-orange-600 mt-1">0</p>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
-                            <i class="fa-solid fa-hourglass-half"></i>
+                        <div class="w-11 h-11 rounded-2xl bg-orange-50 text-2xl flex items-center justify-center">
+                            🍯
                         </div>
                     </div>
-                    <div onclick="setStatusFilter('주문완료')" class="cursor-pointer bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-400 transition flex items-center justify-between">
+                    <div onclick="setStatusFilter('주문완료')" class="cursor-pointer bg-white p-4 rounded-3xl border-2 border-amber-200/80 shadow-xs hover:border-sky-400 transition flex items-center justify-between">
                         <div>
-                            <p class="text-xs font-medium text-slate-500">주문/배송중</p>
-                            <p id="statOrdered" class="text-2xl font-extrabold text-blue-600 mt-0.5">0</p>
+                            <p class="text-xs font-bold text-amber-800/70">🚚 맛있는 배달중</p>
+                            <p id="statOrdered" class="text-2xl sm:text-3xl font-cafe text-sky-600 mt-1">0</p>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
-                            <i class="fa-solid fa-truck-fast"></i>
+                        <div class="w-11 h-11 rounded-2xl bg-sky-50 text-2xl flex items-center justify-center">
+                            📦
                         </div>
                     </div>
-                    <div onclick="setStatusFilter('비치완료')" class="cursor-pointer bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition flex items-center justify-between">
+                    <div onclick="setStatusFilter('비치완료')" class="cursor-pointer bg-white p-4 rounded-3xl border-2 border-amber-200/80 shadow-xs hover:border-emerald-400 transition flex items-center justify-between">
                         <div>
-                            <p class="text-xs font-medium text-slate-500">탕비실 비치완료</p>
-                            <p id="statDone" class="text-2xl font-extrabold text-emerald-600 mt-0.5">0</p>
+                            <p class="text-xs font-bold text-amber-800/70">😋 탕비실 채움완료!</p>
+                            <p id="statDone" class="text-2xl sm:text-3xl font-cafe text-emerald-600 mt-1">0</p>
                         </div>
-                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
-                            <i class="fa-solid fa-circle-check"></i>
+                        <div class="w-11 h-11 rounded-2xl bg-emerald-50 text-2xl flex items-center justify-center">
+                            🎉
                         </div>
                     </div>
                 </div>
 
-                <!-- 필터 바 & 정렬 옵션 -->
-                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                    <!-- 상태/카테고리 탭 -->
-                    <div class="flex items-center space-x-1 overflow-x-auto pb-1 sm:pb-0">
-                        <button onclick="setStatusFilter('ALL')" id="filter-ALL" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white shrink-0 transition">전체 보기</button>
-                        <button onclick="setStatusFilter('대기중')" id="filter-대기중" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition">⏳ 대기중</button>
-                        <button onclick="setStatusFilter('주문완료')" id="filter-주문완료" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition">🚚 주문완료</button>
-                        <button onclick="setStatusFilter('비치완료')" id="filter-비치완료" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition">✅ 비치완료</button>
+                <!-- 카테고리 & 상태 필터 바 -->
+                <div class="bg-white p-3.5 rounded-3xl border-2 border-amber-200/80 shadow-xs space-y-3">
+                    <!-- 1열: 진행 상태 필터 + 검색/정렬 -->
+                    <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5">
+                        <div class="flex items-center space-x-1 overflow-x-auto pb-1 sm:pb-0">
+                            <button onclick="setStatusFilter('ALL')" id="filter-ALL" class="filter-btn px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#582F0E] text-white shrink-0 transition">전체 메뉴</button>
+                            <button onclick="setStatusFilter('대기중')" id="filter-대기중" class="filter-btn px-3 py-1.5 rounded-full text-xs font-bold text-[#582F0E] hover:bg-amber-100 shrink-0 transition">🍯 주문대기</button>
+                            <button onclick="setStatusFilter('주문완료')" id="filter-주문완료" class="filter-btn px-3 py-1.5 rounded-full text-xs font-bold text-[#582F0E] hover:bg-amber-100 shrink-0 transition">🚚 배달중</button>
+                            <button onclick="setStatusFilter('비치완료')" id="filter-비치완료" class="filter-btn px-3 py-1.5 rounded-full text-xs font-bold text-[#582F0E] hover:bg-amber-100 shrink-0 transition">😋 냉장고/선반 도착!</button>
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <div class="relative flex-1 sm:w-44">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-amber-500 text-xs"></i>
+                                <input type="text" id="searchInput" oninput="renderRequests()" placeholder="과자·음료 이름 검색" class="w-full pl-8 pr-3 py-1.5 text-xs rounded-full border border-amber-200 bg-amber-50/40 focus:bg-white focus:outline-none focus:border-orange-400">
+                            </div>
+                            <select id="sortSelect" onchange="renderRequests()" class="text-xs border border-amber-200 rounded-full px-3 py-1.5 bg-amber-50/60 text-[#582F0E] font-bold focus:outline-none">
+                                <option value="popular">🤤 먹고싶어요 많은 순</option>
+                                <option value="latest">🕒 방금 올라온 순</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <!-- 검색 & 정렬 -->
-                    <div class="flex items-center space-x-2">
-                        <div class="relative flex-1 sm:w-44">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="searchInput" oninput="renderRequests()" placeholder="품목 검색 (중복 확인)" class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500">
-                        </div>
-                        <select id="sortSelect" onchange="renderRequests()" class="text-xs border border-slate-200 rounded-xl px-2.5 py-1.5 bg-slate-50 text-slate-700 font-medium focus:outline-none">
-                            <option value="popular">👍 공감 많은 순</option>
-                            <option value="latest">🕒 최신 등록 순</option>
-                        </select>
+                    <!-- 2열: 먹거리 종류별 탭 필터 -->
+                    <div class="flex items-center gap-1.5 overflow-x-auto pt-2 border-t border-amber-100 text-xs">
+                        <button onclick="setCatFilter('ALL')" id="catFilter-ALL" class="cat-filter-chip px-2.5 py-1 rounded-xl font-bold bg-orange-100 text-orange-800 shrink-0">🍽️ 전체 종류</button>
+                        <button onclick="setCatFilter('과자·스낵')" id="catFilter-과자·스낵" class="cat-filter-chip px-2.5 py-1 rounded-xl font-medium text-amber-900/70 hover:bg-amber-50 shrink-0">🍪 과자·스낵</button>
+                        <button onclick="setCatFilter('커피·음료')" id="catFilter-커피·음료" class="cat-filter-chip px-2.5 py-1 rounded-xl font-medium text-amber-900/70 hover:bg-amber-50 shrink-0">☕ 커피·음료</button>
+                        <button onclick="setCatFilter('라면·간편식')" id="catFilter-라면·간편식" class="cat-filter-chip px-2.5 py-1 rounded-xl font-medium text-amber-900/70 hover:bg-amber-50 shrink-0">🍜 라면·간편식</button>
+                        <button onclick="setCatFilter('아이스크림·냉동')" id="catFilter-아이스크림·냉동" class="cat-filter-chip px-2.5 py-1 rounded-xl font-medium text-amber-900/70 hover:bg-amber-50 shrink-0">🍦 아이스·냉동</button>
+                        <button onclick="setCatFilter('과일·건강간식')" id="catFilter-과일·건강간식" class="cat-filter-chip px-2.5 py-1 rounded-xl font-medium text-amber-900/70 hover:bg-amber-50 shrink-0">🍓 과일·견과</button>
+                        <button onclick="setCatFilter('탕비실 소모품')" id="catFilter-탕비실 소모품" class="cat-filter-chip px-2.5 py-1 rounded-xl font-medium text-amber-900/70 hover:bg-amber-50 shrink-0">🧻 소모품</button>
                     </div>
                 </div>
 
-                <!-- 담당자 모드 활성화 알림바 -->
-                <div id="adminNoticeBar" class="hidden bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <!-- 간식 대장 모드 컨트롤 바 -->
+                <div id="adminNoticeBar" class="hidden bg-gradient-to-r from-[#432818] to-[#6F4518] text-amber-50 px-5 py-3.5 rounded-3xl shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 border-2 border-amber-400">
                     <div class="flex items-center space-x-2.5 text-xs sm:text-sm">
-                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
-                        <span><strong>담당자 모드 잠금 해제됨:</strong> 상태 변경, 안내 메모 작성, PIN 변경이 가능합니다.</span>
+                        <span class="text-lg">👩‍🍳</span>
+                        <span><strong>간식 대장 모드 열림:</strong> 주문 상태 변경, 단골 메뉴 등록(⭐), 배송 안내 메모를 남겨보세요!</span>
                     </div>
-                    <div class="flex items-center gap-2 self-end sm:self-center">
-                        <button onclick="openChangePinModal()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold px-3 py-1.5 rounded-lg shrink-0 transition">
+                    <div class="flex flex-wrap items-center gap-2 self-end sm:self-center">
+                        <button onclick="openPresetModal()" class="text-xs bg-amber-400 hover:bg-amber-300 text-[#432818] font-extrabold px-3 py-1.5 rounded-xl shrink-0 transition">
+                            + 단골 메뉴판 추가
+                        </button>
+                        <button onclick="openChangePinModal()" class="text-xs bg-white/15 hover:bg-white/25 text-amber-100 font-semibold px-3 py-1.5 rounded-xl shrink-0 transition">
                             🔑 비밀번호 변경
                         </button>
-                        <button onclick="copyPendingLinks()" class="text-xs bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded-lg shrink-0 transition">
-                            대기 목록 엑셀용 복사
+                        <button onclick="copyPendingLinks()" class="text-xs bg-orange-500 hover:bg-orange-600 text-white font-bold px-3 py-1.5 rounded-xl shrink-0 transition">
+                            📋 장바구니 복사
                         </button>
-                        <button onclick="setRoleMode(false)" class="text-xs bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-semibold px-2.5 py-1.5 rounded-lg shrink-0 transition">
-                            잠그기
+                        <button onclick="setRoleMode(false)" class="text-xs bg-rose-500/30 hover:bg-rose-500/50 text-rose-200 font-bold px-2.5 py-1.5 rounded-xl shrink-0 transition">
+                            닫기
                         </button>
                     </div>
                 </div>
 
-                <!-- 신청 카드 리스트 영역 -->
-                <div id="requestList" class="space-y-3">
+                <!-- 간식 카드 리스트 -->
+                <div id="requestList" class="space-y-3.5">
                     <!-- JS로 렌더링 -->
                 </div>
 
@@ -262,127 +332,455 @@
         </div>
     </main>
 
-    <!-- 하단 토스트 메시지 -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg flex items-center space-x-2">
-        <i class="fa-solid fa-circle-check text-emerald-400"></i>
-        <span id="toastMsg">처리가 완료되었습니다.</span>
+    <!-- 하단 토스트 알림 -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-[#432818] text-amber-50 text-xs sm:text-sm font-bold px-4 py-3 rounded-2xl shadow-xl border border-amber-400 flex items-center space-x-2.5">
+        <span class="text-base">🍪</span>
+        <span id="toastMsg">메뉴판에 등록되었습니다!</span>
     </div>
 
-    <!-- 담당자 PIN 번호 입력 모달 -->
-    <div id="pinModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-xs w-full p-6 shadow-xl border border-slate-200 text-center card-enter">
-            <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center mx-auto mb-3 shadow-sm">
-                <i class="fa-solid fa-user-lock text-xl"></i>
+    <!-- 간식 대장 PIN 번호 입력 모달 -->
+    <div id="pinModal" class="fixed inset-0 z-50 hidden bg-[#2A180C]/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-[#FFFBF5] rounded-3xl max-w-xs w-full p-6 shadow-2xl border-2 border-amber-300 text-center card-enter">
+            <div class="w-14 h-14 rounded-2xl bg-amber-400 text-[#432818] flex items-center justify-center mx-auto mb-3 shadow-inner text-2xl">
+                👩‍🍳
             </div>
-            <h3 id="pinModalTitle" class="text-base font-bold text-slate-900">담당자 전용 잠금 해제</h3>
-            <p id="pinModalDesc" class="text-xs text-slate-500 mt-1 mb-4">담당자 비밀번호(PIN)를 입력해 주세요.<br><span class="text-amber-600 font-semibold">(초기 테스트 번호: 1234)</span></p>
+            <h3 id="pinModalTitle" class="text-lg font-cafe text-[#432818]">간식 대장 전용 잠금 해제</h3>
+            <p id="pinModalDesc" class="text-xs text-amber-900/70 mt-1 mb-4">간식 대장 비밀번호를 입력해 주세요.<br><span class="text-orange-600 font-bold">(기본 번호: 1234)</span></p>
 
             <form onsubmit="handlePinSubmit(event)" class="space-y-3">
-                <input type="password" id="pinInput" maxlength="8" placeholder="••••" class="w-full text-center tracking-[0.5em] font-extrabold text-lg px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900">
-                <p id="pinErrorMsg" class="text-xs text-rose-500 font-semibold hidden">비밀번호가 일치하지 않습니다.</p>
+                <input type="password" id="pinInput" maxlength="8" placeholder="••••" class="w-full text-center tracking-[0.5em] font-extrabold text-lg px-4 py-2.5 rounded-2xl border-2 border-amber-300 bg-white focus:outline-none focus:border-orange-500">
+                <p id="pinErrorMsg" class="text-xs text-rose-600 font-bold hidden">비밀번호가 맞지 않아요!</p>
                 <div class="grid grid-cols-2 gap-2 pt-1">
-                    <button type="button" onclick="closePinModal()" class="py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition">취소</button>
-                    <button type="submit" class="py-2.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition">확인</button>
+                    <button type="button" onclick="closePinModal()" class="py-2.5 rounded-xl text-xs font-bold bg-amber-100 hover:bg-amber-200 text-[#582F0E] transition">취소</button>
+                    <button type="submit" class="py-2.5 rounded-xl text-xs font-bold bg-[#582F0E] hover:bg-[#432818] text-amber-50 transition">열기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 단골 메뉴 직접 추가 모달 (간식 대장용) -->
+    <div id="presetModal" class="fixed inset-0 z-50 hidden bg-[#2A180C]/60 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-[#FFFBF5] rounded-3xl max-w-sm w-full p-6 shadow-2xl border-2 border-amber-300 card-enter">
+            <div class="flex items-center justify-between mb-4">
+                <h3 class="text-lg font-cafe text-[#432818]">⚡ 새 단골 메뉴판 등록</h3>
+                <button onclick="closePresetModal()" class="text-amber-800 hover:text-amber-950"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleAddPreset(event)" class="space-y-3">
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-xs font-bold text-[#582F0E] mb-1">이모지</label>
+                        <input type="text" id="presetEmoji" value="🍪" required class="w-full text-center px-3 py-2 rounded-xl border border-amber-300 bg-white text-base">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block text-xs font-bold text-[#582F0E] mb-1">카테고리</label>
+                        <select id="presetCategory" class="w-full px-3 py-2.5 rounded-xl border border-amber-300 bg-white text-xs font-bold">
+                            <option value="과자·스낵">🍪 과자·스낵</option>
+                            <option value="커피·음료">☕ 커피·음료</option>
+                            <option value="라면·간편식">🍜 라면·간편식</option>
+                            <option value="아이스크림·냉동">🍦 아이스크림·냉동</option>
+                            <option value="과일·건강간식">🍓 과일·건강간식</option>
+                            <option value="탕비실 소모품">🧻 탕비실 소모품</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#582F0E] mb-1">버튼에 표시할 짧은 이름</label>
+                    <input type="text" id="presetLabel" required placeholder="예: 비쵸비 / 제로콜라" class="w-full px-3 py-2 text-sm rounded-xl border border-amber-300 bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#582F0E] mb-1">자동 입력될 전체 상품명</label>
+                    <input type="text" id="presetFullName" required placeholder="예: 오리온 비쵸비 (5개입 x 3박스)" class="w-full px-3 py-2 text-sm rounded-xl border border-amber-300 bg-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-[#582F0E] mb-1">단골 구매 링크 (선택)</label>
+                    <input type="url" id="presetUrl" placeholder="https:// 자주 시키는 상품 링크" class="w-full px-3 py-2 text-sm rounded-xl border border-amber-300 bg-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button type="button" onclick="closePresetModal()" class="py-2.5 rounded-xl text-xs font-bold bg-amber-100 text-[#582F0E]">취소</button>
+                    <button type="submit" class="py-2.5 rounded-xl text-xs font-bold bg-orange-500 hover:bg-orange-600 text-white">메뉴판에 추가</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
-        // 초기 샘플 데이터 (직관적인 이해를 돕기 위한 실제 시나리오 데이터)
-        let requests = [
+        const STORAGE_KEY_ITEMS = 'snackbar_requests_v2';
+        const STORAGE_KEY_PRESETS = 'snackbar_presets_v2';
+        const STORAGE_KEY_PIN = 'snackbar_admin_pin_v2';
+
+        // 기본 단골 메뉴 프리셋 (먹거리 중심)
+        const defaultPresets = [
+            { id: 'p1', emoji: '🥤', label: '제로콜라 1박스', cat: '커피·음료', fullName: '코카콜라 제로 355ml (24캔 1박스)', memo: '점심 먹고 시원하게 탄산 충전해요!', url: 'https://www.coupang.com/np/search?q=코카콜라+제로+355' },
+            { id: 'p2', emoji: '🍫', label: '오리온 비쵸비', cat: '과자·스낵', fullName: '오리온 비쵸비 통초콜릿 비스킷 (3박스)', memo: '당 떨어질 때 하나씩 까먹기 최고예요', url: 'https://www.coupang.com/np/search?q=비쵸비' },
+            { id: 'p3', emoji: '☕', label: '일리 디카페인 캡슐', cat: '커피·음료', fullName: '일리 네스프레소 호환 캡슐 디카페인 (2팩)', memo: '오후에도 잠 걱정 없이 커피 마시고 싶어요', url: 'https://search.shopping.naver.com/search/all?query=일리+디카페인+캡슐' },
+            { id: 'p4', emoji: '🍜', label: '육개장 사발면', cat: '라면·간편식', fullName: '농심 육개장 사발면 (6개입 1묶음)', memo: '비 오는 날이나 출출한 오후 간식으로 딱!', url: 'https://www.coupang.com/np/search?q=육개장+사발면' },
+            { id: 'p5', emoji: '🥨', label: '프레첼 솔티카라멜', cat: '과자·스낵', fullName: '톰스팜 버터갈릭/솔티카라멜 프레첼', memo: '단짠단짠 바삭해서 손이 계속 가요', url: 'https://www.coupang.com/np/search?q=프레첼+과자' },
+            { id: 'p6', emoji: '🥛', label: '멸균 흰우유/두유', cat: '커피·음료', fullName: '매일유업 소화가 잘되는 우유 190ml (24팩)', memo: '라떼 만들어 먹거나 아침 대용으로 좋아요!', url: 'https://www.coupang.com/np/search?q=소화가잘되는우유+멸균' }
+        ];
+
+        // 기본 맛있는 샘플 데이터
+        const defaultRequests = [
             {
-                id: 101,
-                category: '간식/음료',
+                id: 201,
+                category: '커피·음료',
                 name: '코카콜라 제로 355ml (24캔 1박스)',
                 qty: '2박스',
+                moodTag: '🧊 제로칼로리/부담없는',
                 url: 'https://www.coupang.com/np/search?q=코카콜라+제로+355',
-                mallName: '쿠팡 링크',
+                mallName: '🚀 쿠팡 로켓',
                 requester: '김대리',
-                memo: '점심 먹고 오후 2시에 마시면 잠이 확 깹니다! 냉장고에 다 떨어졌어요 😭',
+                memo: '점심 먹고 오후 2시에 얼음컵에 부어 마시면 잠이 확 깹니다! 냉장고 마지막 캔 누가 마셨어요 😭',
                 urgent: true,
-                likes: 9,
+                likes: 6,
                 likedByMe: false,
                 status: '대기중',
                 adminMemo: '',
-                createdAt: '10분 전',
+                createdAt: '15분 전',
                 timestamp: 5
             },
             {
-                id: 102,
-                category: '사무용품',
-                name: '3M 포스트잇 노란색 (76x76mm)',
-                qty: '5묶음',
-                url: 'https://search.shopping.naver.com/search/all?query=3M+포스트잇',
-                mallName: '네이버쇼핑',
-                requester: '박주임',
-                memo: '비품실 서랍에 포스트잇이 마지막 1개 남았습니다.',
+                id: 202,
+                category: '과자·스낵',
+                name: '명가 찰떡파이 & 몽쉘 카카오',
+                qty: '각 1박스',
+                moodTag: '🍫 당충전 100%',
+                url: 'https://www.coupang.com/np/search?q=명가+찰떡파이',
+                mallName: '🚀 쿠팡 로켓',
+                requester: '익명 먹보',
+                memo: '오후 4시쯤 당 떨어질 때 커피랑 찰떡궁합이에요! 냉동실에 살짝 얼려 먹으면 꿀맛입니다 ㅎㅎ',
                 urgent: false,
-                likes: 4,
-                likedByMe: false,
+                likes: 5,
+                likedByMe: true,
                 status: '대기중',
                 adminMemo: '',
                 createdAt: '1시간 전',
                 timestamp: 4
             },
             {
-                id: 103,
-                category: '간식/음료',
-                name: '오리온 비쵸비 (3박스)',
-                qty: '3박스',
-                url: 'https://www.coupang.com/np/search?q=비쵸비',
-                mallName: '쿠팡 링크',
-                requester: '익명',
-                memo: '요즘 탕비실 최고 인기 과자예요! 순삭되어서 재입고 희망합니다 ㅎㅎ',
+                id: 203,
+                category: '라면·간편식',
+                name: '오뚜기 컵누들 마라탕맛 / 매콤한맛 (소컵)',
+                qty: '1박스(15개)',
+                moodTag: '🍙 출출할 때 든든해요',
+                url: 'https://search.shopping.naver.com/search/all?query=컵누들+마라탕',
+                mallName: '🟢 네이버쇼핑',
+                requester: '박주임',
+                memo: '칼로리도 150kcal밖에 안 돼서 부담 없고, 출출할 때 국물 마시기 너무 좋아요!',
                 urgent: false,
-                likes: 12,
-                likedByMe: true,
+                likes: 4,
+                likedByMe: false,
                 status: '주문완료',
-                adminMemo: '내일(목) 로켓배송 도착 예정입니다!',
+                adminMemo: '내일(금) 오전 도착 예정입니다! 도착하면 찬장 2번째 칸에 채워둘게요 🍜',
                 createdAt: '어제',
                 timestamp: 3
             },
             {
-                id: 104,
-                category: '생활/기타',
-                name: '일리 캡슐커피 클라시코 (미디엄 로스트)',
-                qty: '2통',
-                url: 'https://search.shopping.naver.com/search/all?query=일리+캡슐커피',
-                mallName: '네이버쇼핑',
+                id: 204,
+                category: '과일·건강간식',
+                name: '하루견과 베리요거트 (1박스 30봉)',
+                qty: '1박스',
+                moodTag: '⚡ 오후 3시 잠깨는 맛',
+                url: 'https://www.kurly.com/',
+                mallName: '💜 컬리',
                 requester: '이팀장',
-                memo: '캡슐 머신 옆에 비치할 기본 원두 캡슐입니다.',
+                memo: '과자 말고 입 심심할 때 오독오독 씹어먹을 건강한 견과류도 하나 있으면 좋겠습니다!',
                 urgent: false,
-                likes: 7,
+                likes: 4,
                 likedByMe: false,
                 status: '비치완료',
-                adminMemo: '오늘 아침 탕비실 선반에 채워두었습니다 ☕',
+                adminMemo: '오늘 아침 커피머신 옆 바구니에 가득 담아두었습니다! 맛있게 드세요 🥜',
                 createdAt: '2일 전',
                 timestamp: 2
             }
         ];
 
+        let requests = [];
+        let presets = [];
         let isAdminMode = false;
         let currentStatusFilter = 'ALL';
-        let adminPin = '1234'; // 담당자 기본 비밀번호
+        let currentCatFilter = 'ALL';
+        let adminPin = '1234';
         let isChangingPin = false;
 
-        // 담당자 모드 버튼 클릭 시 인증 모달 호출
+        // 로컬 스토리지 불러오기
+        function loadStorage() {
+            try {
+                const savedReq = localStorage.getItem(STORAGE_KEY_ITEMS);
+                requests = savedReq ? JSON.parse(savedReq) : [...defaultRequests];
+
+                const savedPresets = localStorage.getItem(STORAGE_KEY_PRESETS);
+                presets = savedPresets ? JSON.parse(savedPresets) : [...defaultPresets];
+
+                const savedPin = localStorage.getItem(STORAGE_KEY_PIN);
+                if (savedPin) adminPin = savedPin;
+            } catch (e) {
+                requests = [...defaultRequests];
+                presets = [...defaultPresets];
+            }
+        }
+
+        function saveStorage() {
+            try {
+                localStorage.setItem(STORAGE_KEY_ITEMS, JSON.stringify(requests));
+                localStorage.setItem(STORAGE_KEY_PRESETS, JSON.stringify(presets));
+                localStorage.setItem(STORAGE_KEY_PIN, adminPin);
+            } catch (e) {}
+        }
+
+        function resetDemoData() {
+            requests = [...defaultRequests];
+            presets = [...defaultPresets];
+            saveStorage();
+            renderPresets();
+            renderRequests();
+            showToast('🍮 기본 샘플 스낵바 메뉴로 초기화되었습니다!');
+        }
+
+        // 단골 메뉴판 렌더링
+        function renderPresets() {
+            const container = document.getElementById('presetContainer');
+            const addBtn = document.getElementById('addQuickMenuBtn');
+            if (isAdminMode) {
+                addBtn.classList.remove('hidden');
+            } else {
+                addBtn.classList.add('hidden');
+            }
+
+            if (presets.length === 0) {
+                container.innerHTML = `<span class="text-xs text-amber-800/60 py-1">등록된 단골 메뉴가 없습니다. 간식 대장 모드에서 추가해 보세요!</span>`;
+                return;
+            }
+
+            container.innerHTML = presets.map(p => `
+                <div class="inline-flex items-center bg-amber-50/90 hover:bg-orange-100/80 border border-amber-300/80 rounded-2xl px-3 py-1.5 shrink-0 transition group">
+                    <button type="button" onclick="applyPreset('${p.id}')" class="flex items-center gap-1.5 text-xs font-bold text-[#432818]">
+                        <span class="text-base">${p.emoji}</span>
+                        <span>${p.label}</span>
+                    </button>
+                    ${isAdminMode ? `
+                        <button type="button" onclick="deletePreset('${p.id}')" class="ml-2 w-4 h-4 rounded-full bg-rose-100 hover:bg-rose-500 text-rose-600 hover:text-white text-[10px] flex items-center justify-center transition" title="단골 메뉴에서 삭제">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        function applyPreset(id) {
+            const p = presets.find(item => item.id === id);
+            if (!p) return;
+            selectCategory(p.cat);
+            document.getElementById('itemName').value = p.fullName;
+            document.getElementById('itemMemo').value = p.memo || '';
+            if (p.url) {
+                document.getElementById('itemUrl').value = p.url;
+                detectMallDomain(p.url);
+            }
+            document.getElementById('itemName').focus();
+            showToast(`${p.emoji} '${p.label}' 메뉴가 주문서에 자동 입력되었어요!`);
+        }
+
+        function deletePreset(id) {
+            presets = presets.filter(p => p.id !== id);
+            saveStorage();
+            renderPresets();
+            showToast('단골 메뉴판에서 삭제되었습니다.');
+        }
+
+        function openPresetModal() {
+            document.getElementById('presetModal').classList.remove('hidden');
+        }
+
+        function closePresetModal() {
+            document.getElementById('presetModal').classList.add('hidden');
+        }
+
+        function handleAddPreset(e) {
+            e.preventDefault();
+            const emoji = document.getElementById('presetEmoji').value.trim() || '🍪';
+            const cat = document.getElementById('presetCategory').value;
+            const label = document.getElementById('presetLabel').value.trim();
+            const fullName = document.getElementById('presetFullName').value.trim();
+            const url = document.getElementById('presetUrl').value.trim();
+
+            if (!label || !fullName) return;
+
+            presets.push({
+                id: 'p_' + Date.now(),
+                emoji,
+                label,
+                cat,
+                fullName,
+                memo: '우리팀 단골 인기 간식입니다!',
+                url
+            });
+
+            saveStorage();
+            renderPresets();
+            closePresetModal();
+            document.getElementById('presetLabel').value = '';
+            document.getElementById('presetFullName').value = '';
+            document.getElementById('presetUrl').value = '';
+            showToast(`⚡ '${label}' 메뉴가 상단 단골 메뉴판에 추가되었습니다!`);
+        }
+
+        // 신청 카드에서 바로 단골 메뉴로 1클릭 등록 (간식 대장 전용)
+        function promoteCardToPreset(id) {
+            const item = requests.find(r => r.id === id);
+            if (!item) return;
+
+            const emojiMap = {
+                '과자·스낵': '🍪',
+                '커피·음료': '☕',
+                '라면·간편식': '🍜',
+                '아이스크림·냉동': '🍦',
+                '과일·건강간식': '🍓',
+                '탕비실 소모품': '🧻'
+            };
+
+            const shortLabel = item.name.length > 12 ? item.name.substring(0, 12) + '…' : item.name;
+            presets.push({
+                id: 'p_' + Date.now(),
+                emoji: emojiMap[item.category] || '🍩',
+                label: shortLabel,
+                cat: item.category,
+                fullName: item.name,
+                memo: item.memo,
+                url: item.url
+            });
+
+            saveStorage();
+            renderPresets();
+            showToast(`⭐ '${shortLabel}' 항목이 상단 단골 메뉴판에 등록되었습니다!`);
+        }
+
+        // 카테고리 선택
+        function selectCategory(cat) {
+            document.getElementById('categoryInput').value = cat;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = 'cat-btn py-2 px-1.5 rounded-2xl text-xs font-semibold border border-amber-200 bg-amber-50/30 text-[#582F0E] hover:bg-amber-50 transition flex flex-col items-center gap-1';
+            });
+            const active = document.getElementById('catBtn-' + cat);
+            if (active) {
+                active.className = 'cat-btn py-2 px-1.5 rounded-2xl text-xs font-bold border-2 border-orange-500 bg-orange-50 text-orange-800 transition flex flex-col items-center gap-1 shadow-xs';
+            }
+        }
+
+        // 맛/기분 태그 선택
+        function selectMoodTag(tag) {
+            document.getElementById('moodTagInput').value = tag;
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                if (btn.textContent === tag) {
+                    btn.className = 'mood-btn text-xs px-2.5 py-1 rounded-full font-bold bg-orange-500 text-white transition shadow-xs';
+                } else {
+                    btn.className = 'mood-btn text-xs px-2.5 py-1 rounded-full font-semibold bg-amber-100/70 text-[#582F0E] hover:bg-amber-200/70 transition';
+                }
+            });
+        }
+
+        // 쇼핑몰 도메인 자동 인식
+        function detectMallDomain(url) {
+            const preview = document.getElementById('domainPreview');
+            if (!url) {
+                preview.classList.add('hidden');
+                return '구매 링크';
+            }
+            let mall = '🛒 쇼핑몰 링크';
+            if (url.includes('coupang.com')) mall = '🚀 쿠팡 로켓';
+            else if (url.includes('naver.com')) mall = '🟢 네이버쇼핑';
+            else if (url.includes('kurly.com')) mall = '💜 컬리';
+            else if (url.includes('ssg.com') || url.includes('emart')) mall = '🟡 쓱배송/이마트';
+            else if (url.includes('gmarket') || url.includes('auction')) mall = '🛍️ 지마켓/옥션';
+            else if (url.includes('11st.co.kr')) mall = '📦 11번가';
+
+            preview.textContent = mall + ' 인식됨!';
+            preview.classList.remove('hidden');
+            return mall;
+        }
+
+        // 새 간식 신청 등록
+        function handleAddRequest(e) {
+            e.preventDefault();
+            const category = document.getElementById('categoryInput').value;
+            const name = document.getElementById('itemName').value.trim();
+            const qty = document.getElementById('itemQty').value.trim() || '1박스';
+            const moodTag = document.getElementById('moodTagInput').value;
+            const url = document.getElementById('itemUrl').value.trim();
+            const requester = document.getElementById('requester').value.trim() || '익명 먹보';
+            const memo = document.getElementById('itemMemo').value.trim();
+            const urgent = document.getElementById('isUrgent').checked;
+
+            if (!name) return;
+
+            const mallName = url ? detectMallDomain(url) : '링크 없음';
+
+            const newItem = {
+                id: Date.now(),
+                category,
+                name,
+                qty,
+                moodTag,
+                url,
+                mallName,
+                requester,
+                memo: memo || '다 같이 맛있게 나눠 먹고 싶어요! 😋',
+                urgent,
+                likes: 1,
+                likedByMe: true,
+                status: '대기중',
+                adminMemo: '',
+                createdAt: '방금 전',
+                timestamp: Date.now()
+            };
+
+            requests.unshift(newItem);
+            saveStorage();
+
+            // 입력 폼 초기화
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQty').value = '1박스';
+            document.getElementById('itemUrl').value = '';
+            document.getElementById('itemMemo').value = '';
+            document.getElementById('isUrgent').checked = false;
+            document.getElementById('domainPreview').classList.add('hidden');
+
+            renderRequests();
+            showToast(`🍩 '${name}' 메뉴가 스낵바 위시리스트에 올라갔어요!`);
+        }
+
+        // 나도 먹고 싶어요! 토글
+        function toggleLike(id) {
+            const item = requests.find(r => r.id === id);
+            if (!item) return;
+
+            if (item.likedByMe) {
+                item.likes--;
+                item.likedByMe = false;
+            } else {
+                item.likes++;
+                item.likedByMe = true;
+                showToast(`🤤 '${item.name}' 먹고 싶어요(+1) 공감 완료!`);
+            }
+            saveStorage();
+            renderRequests();
+        }
+
+        // 간식 대장 인증 모달
         function requestAdminAuth() {
             if (isAdminMode) return;
             isChangingPin = false;
-            document.getElementById('pinModalTitle').textContent = '담당자 전용 잠금 해제';
-            document.getElementById('pinModalDesc').innerHTML = `담당자 비밀번호(PIN)를 입력해 주세요.<br><span class="text-amber-600 font-semibold">(현재 설정 번호: ${adminPin})</span>`;
+            document.getElementById('pinModalTitle').textContent = '간식 대장 전용 잠금 해제';
+            document.getElementById('pinModalDesc').innerHTML = `간식 대장 비밀번호를 입력해 주세요.<br><span class="text-orange-600 font-bold">(초기 테스트 번호: 1234)</span>`;
             document.getElementById('pinInput').value = '';
             document.getElementById('pinErrorMsg').classList.add('hidden');
             document.getElementById('pinModal').classList.remove('hidden');
             setTimeout(() => document.getElementById('pinInput').focus(), 50);
         }
 
-        // 담당자 비밀번호 변경 모달 열기
         function openChangePinModal() {
             isChangingPin = true;
-            document.getElementById('pinModalTitle').textContent = '새 담당자 비밀번호 설정';
-            document.getElementById('pinModalDesc').innerHTML = '앞으로 사용할 새로운 비밀번호(숫자/영문 4~8자리)를 입력해 주세요.';
+            document.getElementById('pinModalTitle').textContent = '간식 대장 비밀번호 변경';
+            document.getElementById('pinModalDesc').innerHTML = '앞으로 사용할 새로운 비밀번호(2~8자리)를 입력해 주세요.';
             document.getElementById('pinInput').value = '';
             document.getElementById('pinErrorMsg').classList.add('hidden');
             document.getElementById('pinModal').classList.remove('hidden');
@@ -393,7 +791,6 @@
             document.getElementById('pinModal').classList.add('hidden');
         }
 
-        // PIN 입력 확인 처리
         function handlePinSubmit(e) {
             e.preventDefault();
             const val = document.getElementById('pinInput').value.trim();
@@ -406,8 +803,9 @@
                     return;
                 }
                 adminPin = val;
+                saveStorage();
                 closePinModal();
-                showToast(`🔑 담당자 비밀번호가 '${adminPin}'(으)로 변경되었습니다!`);
+                showToast(`🔑 간식 대장 비밀번호가 변경되었습니다!`);
                 return;
             }
 
@@ -416,148 +814,13 @@
                 setRoleMode(true);
             } else {
                 const err = document.getElementById('pinErrorMsg');
-                err.textContent = '비밀번호가 일치하지 않습니다.';
+                err.textContent = '비밀번호가 일치하지 않습니다!';
                 err.classList.remove('hidden');
                 document.getElementById('pinInput').value = '';
                 document.getElementById('pinInput').focus();
             }
         }
 
-        // 카테고리 선택 처리
-        function selectCategory(cat) {
-            document.getElementById('categoryInput').value = cat;
-            const buttons = document.querySelectorAll('.cat-btn');
-            buttons.forEach(btn => {
-                btn.className = 'cat-btn py-2 px-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition flex flex-col items-center gap-1';
-            });
-            const activeBtn = document.getElementById('catBtn-' + cat);
-            if (activeBtn) {
-                activeBtn.className = 'cat-btn py-2 px-2 rounded-xl text-xs font-bold border-2 border-amber-500 bg-amber-50 text-amber-700 transition flex flex-col items-center gap-1';
-            }
-        }
-
-        // 단골 메뉴 프리셋 자동 입력
-        function fillPreset(cat, name, memo) {
-            selectCategory(cat);
-            document.getElementById('itemName').value = name;
-            document.getElementById('itemMemo').value = memo;
-            document.getElementById('itemUrl').focus();
-            showToast(`'${name}' 기본 정보가 입력되었습니다. 구매 링크만 붙여넣어 주세요!`);
-        }
-
-        // URL 입력 시 쇼핑몰 도메인 자동 인식 배지
-        function detectMallDomain(url) {
-            const preview = document.getElementById('domainPreview');
-            if (!url) {
-                preview.classList.add('hidden');
-                return '';
-            }
-            let mall = '외부 구매처';
-            if (url.includes('coupang.com')) mall = '🚀 쿠팡 링크 인식됨';
-            else if (url.includes('naver.com')) mall = '🟢 네이버쇼핑 인식됨';
-            else if (url.includes('gmarket.co.kr') || url.includes('auction.co.kr')) mall = '🛒 지마켓/옥션 인식됨';
-            else if (url.includes('11st.co.kr')) mall = '📦 11번가 인식됨';
-            else if (url.includes('kurly.com')) mall = '💜 컬리 인식됨';
-            else mall = '🔗 구매 링크 확인됨';
-
-            preview.textContent = mall;
-            preview.classList.remove('hidden');
-            return mall.replace(/^[^\s]+\s/, '').replace(' 인식됨', '');
-        }
-
-        // 새 신청 등록
-        function handleAddRequest(e) {
-            e.preventDefault();
-            const category = document.getElementById('categoryInput').value;
-            const name = document.getElementById('itemName').value.trim();
-            const qty = document.getElementById('itemQty').value.trim() || '1개';
-            const url = document.getElementById('itemUrl').value.trim();
-            const requester = document.getElementById('requester').value.trim() || '익명';
-            const memo = document.getElementById('itemMemo').value.trim();
-            const urgent = document.getElementById('isUrgent').checked;
-
-            if (!name) return;
-
-            let mallName = '링크 없음';
-            if (url) {
-                if (url.includes('coupang')) mallName = '쿠팡 링크';
-                else if (url.includes('naver')) mallName = '네이버쇼핑';
-                else mallName = '구매 링크';
-            }
-
-            const newItem = {
-                id: Date.now(),
-                category,
-                name,
-                qty,
-                url,
-                mallName,
-                requester,
-                memo: memo || '신청합니다!',
-                urgent,
-                likes: 1,
-                likedByMe: true,
-                status: '대기중',
-                adminMemo: '',
-                createdAt: '방금 전',
-                timestamp: Date.now()
-            };
-
-            requests.unshift(newItem);
-
-            // 폼 초기화
-            document.getElementById('itemName').value = '';
-            document.getElementById('itemQty').value = '1개(박스)';
-            document.getElementById('itemUrl').value = '';
-            document.getElementById('itemMemo').value = '';
-            document.getElementById('isUrgent').checked = false;
-            document.getElementById('domainPreview').classList.add('hidden');
-
-            renderRequests();
-            showToast('신청함에 등록되었습니다! 👍');
-        }
-
-        // 나도 원해요(공감) 토글
-        function toggleLike(id) {
-            const item = requests.find(r => r.id === id);
-            if (!item) return;
-
-            if (item.likedByMe) {
-                item.likes--;
-                item.likedByMe = false;
-            } else {
-                item.likes++;
-                item.likedByMe = true;
-                showToast(`'${item.name}'에 공감(+1)을 눌렀습니다!`);
-            }
-            renderRequests();
-        }
-
-        // 담당자 상태 변경
-        function changeStatus(id, newStatus) {
-            const item = requests.find(r => r.id === id);
-            if (!item) return;
-            item.status = newStatus;
-            renderRequests();
-            showToast(`상태가 [${newStatus}](으)로 변경되었습니다.`);
-        }
-
-        // 담당자 코멘트 업데이트
-        function updateAdminMemo(id, val) {
-            const item = requests.find(r => r.id === id);
-            if (!item) return;
-            item.adminMemo = val;
-            showToast('담당자 안내 메모가 저장되었습니다.');
-        }
-
-        // 항목 삭제
-        function deleteItem(id) {
-            requests = requests.filter(r => r.id !== id);
-            renderRequests();
-            showToast('항목이 삭제되었습니다.');
-        }
-
-        // 일반 / 담당자 모드 전환
         function setRoleMode(admin) {
             isAdminMode = admin;
             const userBtn = document.getElementById('modeUserBtn');
@@ -566,55 +829,90 @@
             const lockIcon = document.getElementById('adminLockIcon');
 
             if (isAdminMode) {
-                adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white shadow-sm transition flex items-center gap-1';
-                userBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 transition';
-                if (lockIcon) lockIcon.className = 'fa-solid fa-lock-open text-[10px] text-amber-400';
+                adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-[#3D210A] shadow-sm transition flex items-center gap-1';
+                userBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-amber-200/80 hover:text-white transition';
+                if (lockIcon) lockIcon.className = 'fa-solid fa-lock-open text-[10px]';
                 noticeBar.classList.remove('hidden');
-                showToast('🔓 인증 완료! 담당자 모드로 전환되었습니다.');
+                showToast('👩‍🍳 환영합니다 간식 대장님! 메뉴 관리가 활성화되었습니다.');
             } else {
-                userBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 shadow-sm transition';
-                adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center gap-1';
+                userBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-400 text-[#3D210A] shadow-sm transition';
+                adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-bold text-amber-200/80 hover:text-white transition flex items-center gap-1';
                 if (lockIcon) lockIcon.className = 'fa-solid fa-lock text-[10px]';
                 noticeBar.classList.add('hidden');
             }
+            renderPresets();
             renderRequests();
         }
 
-        // 상태 필터 변경
+        function changeStatus(id, newStatus) {
+            const item = requests.find(r => r.id === id);
+            if (!item) return;
+            item.status = newStatus;
+            saveStorage();
+            renderRequests();
+            showToast(`상태가 [${newStatus}](으)로 변경되었습니다!`);
+        }
+
+        function updateAdminMemo(id, val) {
+            const item = requests.find(r => r.id === id);
+            if (!item) return;
+            item.adminMemo = val;
+            saveStorage();
+            showToast('간식 대장 안내 코멘트가 저장되었습니다.');
+        }
+
+        function deleteItem(id) {
+            requests = requests.filter(r => r.id !== id);
+            saveStorage();
+            renderRequests();
+            showToast('메뉴가 삭제되었습니다.');
+        }
+
         function setStatusFilter(status) {
             currentStatusFilter = status;
             document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition';
+                btn.className = 'filter-btn px-3 py-1.5 rounded-full text-xs font-bold text-[#582F0E] hover:bg-amber-100 shrink-0 transition';
             });
             const active = document.getElementById('filter-' + status);
             if (active) {
-                active.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white shrink-0 transition';
+                active.className = 'filter-btn px-3.5 py-1.5 rounded-full text-xs font-bold bg-[#582F0E] text-white shrink-0 transition';
             }
             renderRequests();
         }
 
-        // 대기중인 품목 클립보드 일괄 복사 (엑셀/메신저 붙여넣기용)
+        function setCatFilter(cat) {
+            currentCatFilter = cat;
+            document.querySelectorAll('.cat-filter-chip').forEach(btn => {
+                btn.className = 'cat-filter-chip px-2.5 py-1 rounded-xl font-medium text-amber-900/70 hover:bg-amber-50 shrink-0 transition';
+            });
+            const active = document.getElementById('catFilter-' + cat);
+            if (active) {
+                active.className = 'cat-filter-chip px-2.5 py-1 rounded-xl font-bold bg-orange-100 text-orange-800 shrink-0 transition';
+            }
+            renderRequests();
+        }
+
+        // 대기중인 간식 장바구니 텍스트 복사
         function copyPendingLinks() {
             const pending = requests.filter(r => r.status === '대기중');
             if (pending.length === 0) {
-                showToast('현재 접수 대기 중인 품목이 없습니다.');
+                showToast('현재 주문 대기 중인 간식이 없어요!');
                 return;
             }
             const lines = pending.map((r, idx) =>
-                `${idx + 1}. [${r.category}] ${r.name} (${r.qty}) - 공감 ${r.likes}명\n   링크: ${r.url || '없음'}`
+                `${idx + 1}. [${r.category}] ${r.name} (${r.qty}) - 먹고싶어요 ${r.likes}표\n   구매처: ${r.url || '링크 없음'}`
             ).join('\n\n');
 
             const textArea = document.createElement('textarea');
-            textArea.value = `[탕비실/비품 구매 대기 목록 - 총 ${pending.length}건]\n\n` + lines;
+            textArea.value = `🍩 [우리팀 스낵바 주문 대기 리스트 - 총 ${pending.length}건]\n\n` + lines;
             document.body.appendChild(textArea);
             textArea.select();
             document.execCommand('copy');
             document.body.removeChild(textArea);
 
-            showToast(`대기 중인 ${pending.length}건의 품목과 링크가 복사되었습니다! (엑셀/메신저에 붙여넣기 가능)`);
+            showToast(`🛒 대기 중인 간식 ${pending.length}건의 목록과 링크가 복사되었어요!`);
         }
 
-        // 토스트 알림
         let toastTimer;
         function showToast(msg) {
             const toast = document.getElementById('toast');
@@ -626,9 +924,8 @@
             }, 3000);
         }
 
-        // 리스트 렌더링
+        // 카드 리스트 렌더링
         function renderRequests() {
-            // 상단 카운트 업데이트
             document.getElementById('statPending').textContent = requests.filter(r => r.status === '대기중').length;
             document.getElementById('statOrdered').textContent = requests.filter(r => r.status === '주문완료').length;
             document.getElementById('statDone').textContent = requests.filter(r => r.status === '비치완료').length;
@@ -638,14 +935,14 @@
 
             let filtered = requests.filter(r => {
                 const matchStatus = currentStatusFilter === 'ALL' || r.status === currentStatusFilter;
+                const matchCat = currentCatFilter === 'ALL' || r.category === currentCatFilter;
                 const matchSearch = !searchKeyword ||
                     r.name.toLowerCase().includes(searchKeyword) ||
                     r.category.toLowerCase().includes(searchKeyword) ||
                     r.memo.toLowerCase().includes(searchKeyword);
-                return matchStatus && matchSearch;
+                return matchStatus && matchCat && matchSearch;
             });
 
-            // 정렬
             filtered.sort((a, b) => {
                 if (sortType === 'popular') return b.likes - a.likes;
                 return b.timestamp - a.timestamp;
@@ -654,92 +951,99 @@
             const container = document.getElementById('requestList');
             if (filtered.length === 0) {
                 container.innerHTML = `
-                    <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-400">
-                        <i class="fa-solid fa-box-open text-3xl mb-2"></i>
-                        <p class="text-sm font-medium text-slate-600">해당 조건의 신청 내역이 없습니다.</p>
-                        <p class="text-xs mt-1">왼쪽 입력창에서 필요한 간식이나 비품 링크를 가장 먼저 등록해 보세요!</p>
+                    <div class="bg-white rounded-3xl border-2 border-dashed border-amber-200 p-12 text-center">
+                        <div class="text-4xl mb-2">🥨</div>
+                        <p class="text-sm font-bold text-[#582F0E]">아직 해당 조건의 간식 메뉴가 없어요!</p>
+                        <p class="text-xs text-amber-800/60 mt-1">왼쪽 주문서나 상단 단골 메뉴판에서 먹고 싶은 간식을 골라보세요.</p>
                     </div>
                 `;
                 return;
             }
 
+            const catEmojiMap = {
+                '과자·스낵': '🍪',
+                '커피·음료': '☕',
+                '라면·간편식': '🍜',
+                '아이스크림·냉동': '🍦',
+                '과일·건강간식': '🍓',
+                '탕비실 소모품': '🧻'
+            };
+
             container.innerHTML = filtered.map(item => {
-                // 상태 배지 스타일
                 let statusBadge = '';
                 if (item.status === '대기중') {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">⏳ 접수 대기중</span>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-amber-100 text-amber-900 border border-amber-300">🍯 장바구니 대기</span>`;
                 } else if (item.status === '주문완료') {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">🚚 주문/배송중</span>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-sky-100 text-sky-900 border border-sky-200">🚚 맛있는 배달중</span>`;
                 } else if (item.status === '비치완료') {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">✅ 비치 완료</span>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-200">😋 냉장고/선반 도착!</span>`;
                 } else {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700">보류/품절</span>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-stone-200 text-stone-700">😢 품절/다음기회에</span>`;
                 }
 
-                // 카테고리 아이콘
-                const catIcon = item.category === '간식/음료' ? '🍪' : (item.category === '사무용품' ? '📎' : '🧼');
+                const emoji = catEmojiMap[item.category] || '🍩';
 
                 return `
-                <div class="card-enter bg-white rounded-2xl border ${item.urgent && item.status === '대기중' ? 'border-rose-300 ring-1 ring-rose-100' : 'border-slate-200'} p-4 sm:p-5 shadow-sm hover:shadow transition">
-                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                <div class="card-enter bg-white rounded-3xl border-2 ${item.urgent && item.status === '대기중' ? 'border-rose-300 ring-2 ring-rose-100' : 'border-amber-200/80'} p-4 sm:p-5 shadow-xs hover:shadow-md transition">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3.5">
                         
-                        <!-- 좌측 정보 영역 -->
-                        <div class="space-y-1.5 flex-1">
+                        <!-- 좌측 간식 상세 정보 -->
+                        <div class="space-y-2 flex-1">
                             <div class="flex flex-wrap items-center gap-1.5">
                                 ${statusBadge}
-                                <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">${catIcon} ${item.category}</span>
-                                ${item.urgent ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200">🚨 긴급/재고소진</span>` : ''}
-                                <span class="text-xs text-slate-400 ml-1">${item.requester} · ${item.createdAt}</span>
+                                <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-50 text-[#582F0E] border border-amber-200">${emoji} ${item.category}</span>
+                                ${item.moodTag ? `<span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700">${item.moodTag}</span>` : ''}
+                                ${item.urgent ? `<span class="text-[11px] font-extrabold px-2 py-0.5 rounded-full bg-rose-500 text-white">🚨 재고 똑 떨어짐!</span>` : ''}
                             </div>
 
-                            <div class="flex items-baseline gap-2 pt-0.5">
-                                <h3 class="text-base font-bold text-slate-900 ${item.status === '비치완료' ? 'line-through text-slate-400' : ''}">${item.name}</h3>
-                                <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">수량: ${item.qty}</span>
+                            <div class="flex flex-wrap items-baseline gap-2 pt-0.5">
+                                <h3 class="text-base sm:text-lg font-extrabold text-[#432818] ${item.status === '비치완료' ? 'text-emerald-900' : ''}">${item.name}</h3>
+                                <span class="text-xs font-extrabold text-orange-700 bg-orange-100/80 px-2.5 py-0.5 rounded-full">수량: ${item.qty}</span>
+                                <span class="text-xs text-amber-800/60">· ${item.requester} (${item.createdAt})</span>
                             </div>
 
-                            <p class="text-xs sm:text-sm text-slate-600 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
-                                "${item.memo}"
-                            </p>
+                            <!-- 어필 코멘트 말풍선 -->
+                            <div class="text-xs sm:text-sm text-[#582F0E] bg-[#FFF8EE] px-3.5 py-2.5 rounded-2xl border border-amber-200/60">
+                                💬 "${item.memo}"
+                            </div>
 
                             ${item.adminMemo ? `
-                                <div class="flex items-center gap-2 text-xs text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100 mt-1">
-                                    <i class="fa-solid fa-bullhorn text-indigo-500"></i>
-                                    <span><strong>담당자 안내:</strong> ${item.adminMemo}</span>
+                                <div class="flex items-center gap-2 text-xs font-semibold text-emerald-900 bg-emerald-50 px-3.5 py-2 rounded-2xl border border-emerald-200 mt-1">
+                                    <span>👩‍🍳 <strong>간식 대장 알림:</strong> ${item.adminMemo}</span>
                                 </div>
                             ` : ''}
                         </div>
 
-                        <!-- 우측 액션 영역: 구매 링크 열기 & 공감(나도 원해요) 버튼 -->
-                        <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0 border-t sm:border-t-0 pt-2.5 sm:pt-0 border-slate-100">
-                            <!-- 나도 원해요 버튼 -->
-                            <button onclick="toggleLike(${item.id})" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition ${item.likedByMe ? 'bg-amber-500 text-white border-amber-500 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50 hover:border-amber-300'}">
-                                <span>👍 나도 원해요</span>
-                                <span class="px-1.5 py-0.2 rounded-full text-[11px] ${item.likedByMe ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-700'}">${item.likes}</span>
+                        <!-- 우측 버튼 영역: 나도 먹고 싶어요 & 쇼핑몰 바로가기 -->
+                        <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0 border-amber-100">
+                            <button onclick="toggleLike(${item.id})" class="bounce-tap flex items-center space-x-1.5 px-4 py-2.5 rounded-2xl text-xs font-extrabold border-2 transition ${item.likedByMe ? 'bg-orange-500 text-white border-orange-500 shadow-sm' : 'bg-amber-50/70 text-[#582F0E] border-amber-300 hover:bg-orange-100 hover:border-orange-400'}">
+                                <span class="text-sm">🤤</span>
+                                <span>나도 먹고 싶어요!</span>
+                                <span class="px-2 py-0.5 rounded-full text-xs ${item.likedByMe ? 'bg-orange-700 text-white' : 'bg-white text-orange-700'}">${item.likes}</span>
                             </button>
 
-                            <!-- 구매 링크 바로가기 버튼 -->
                             ${item.url ? `
-                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-xl transition">
-                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 text-xs font-bold text-[#582F0E] hover:text-orange-700 bg-amber-100/70 hover:bg-amber-200/80 px-3.5 py-1.5 rounded-xl transition">
                                     <span>${item.mallName} 열기</span>
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
                                 </a>
-                            ` : `<span class="text-[11px] text-slate-400">등록된 링크 없음</span>`}
+                            ` : `<span class="text-[11px] text-amber-800/50">링크 없이 이름만 신청됨</span>`}
                         </div>
                     </div>
 
-                    <!-- 담당자 전용 컨트롤 바 (담당자 모드일 때만 노출) -->
+                    <!-- 간식 대장 전용 관리 바 -->
                     ${isAdminMode ? `
-                        <div class="mt-3 pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 bg-slate-50 -mx-4 sm:-mx-5 -mb-4 sm:-mb-5 p-3 sm:px-5 rounded-b-2xl">
+                        <div class="mt-3.5 pt-3 border-t-2 border-dashed border-amber-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 bg-amber-50/60 -mx-4 sm:-mx-5 -mb-4 sm:-mb-5 p-3.5 sm:px-5 rounded-b-3xl">
                             <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="text-[11px] font-bold text-slate-500 mr-1"><i class="fa-solid fa-wrench mr-1"></i>상태 변경:</span>
-                                <button onclick="changeStatus(${item.id}, '대기중')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '대기중' ? 'bg-amber-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">대기중</button>
-                                <button onclick="changeStatus(${item.id}, '주문완료')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '주문완료' ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">🚚 주문완료</button>
-                                <button onclick="changeStatus(${item.id}, '비치완료')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '비치완료' ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">✅ 비치완료</button>
-                                <button onclick="changeStatus(${item.id}, '보류/품절')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '보류/품절' ? 'bg-slate-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">보류</button>
+                                <button onclick="changeStatus(${item.id}, '대기중')" class="px-2.5 py-1 rounded-xl text-xs font-bold ${item.status === '대기중' ? 'bg-amber-500 text-white' : 'bg-white border border-amber-300 text-[#582F0E]'}">🍯 대기중</button>
+                                <button onclick="changeStatus(${item.id}, '주문완료')" class="px-2.5 py-1 rounded-xl text-xs font-bold ${item.status === '주문완료' ? 'bg-sky-600 text-white' : 'bg-white border border-amber-300 text-[#582F0E]'}">🚚 주문완료</button>
+                                <button onclick="changeStatus(${item.id}, '비치완료')" class="px-2.5 py-1 rounded-xl text-xs font-bold ${item.status === '비치완료' ? 'bg-emerald-600 text-white' : 'bg-white border border-amber-300 text-[#582F0E]'}">😋 냉장고/선반 도착!</button>
+                                <button onclick="changeStatus(${item.id}, '보류/품절')" class="px-2.5 py-1 rounded-xl text-xs font-bold ${item.status === '보류/품절' ? 'bg-stone-600 text-white' : 'bg-white border border-amber-300 text-[#582F0E]'}">품절/패스</button>
+                                <button onclick="promoteCardToPreset(${item.id})" class="px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-200/80 hover:bg-amber-300 text-[#432818]" title="상단 단골 메뉴판에 추가">⭐ 단골 메뉴 등록</button>
                             </div>
                             <div class="flex items-center gap-1.5">
-                                <input type="text" placeholder="담당자 한줄 안내 (예: 목요일 도착)" value="${item.adminMemo}" onchange="updateAdminMemo(${item.id}, this.value)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-300 bg-white flex-1 sm:w-48 focus:outline-none focus:border-indigo-500">
-                                <button onclick="deleteItem(${item.id})" class="text-xs text-rose-500 hover:bg-rose-50 px-2 py-1 rounded-lg transition" title="삭제">
+                                <input type="text" placeholder="간식 대장 코멘트 (예: 냉장고 2칸에 넣어뒀어요!)" value="${item.adminMemo}" onchange="updateAdminMemo(${item.id}, this.value)" class="text-xs px-3 py-1.5 rounded-xl border border-amber-300 bg-white flex-1 sm:w-52 focus:outline-none focus:border-orange-500">
+                                <button onclick="deleteItem(${item.id})" class="text-xs text-rose-600 hover:bg-rose-100 px-2.5 py-1.5 rounded-xl transition" title="삭제">
                                     <i class="fa-regular fa-trash-can"></i>
                                 </button>
                             </div>
@@ -750,8 +1054,13 @@
             }).join('');
         }
 
-        // 초기 실행
         window.onload = function () {
+            loadStorage();
+            // 주소 뒤에 ?admin=1 이 있으면 바로 인증창 띄우기
+            if (window.location.search.includes('admin=1')) {
+                requestAdminAuth();
+            }
+            renderPresets();
             renderRequests();
         };
     </script>
