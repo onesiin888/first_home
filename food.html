@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DadamLabs | 탕비실 · 비품 신청 보드</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 별도 가입 없이 모든 기기/텔레그램/브라우저 간 100% 실시간 동기화를 지원하는 GunDB 클라우드 엔진 -->
-    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -105,8 +103,8 @@
                 <div>
                     <div class="text-[11px] font-bold text-slate-400">이번 달 탕비실 예산 잔액</div>
                     <div class="flex items-center space-x-2 mt-0.5">
-                        <span class="text-base font-extrabold text-slate-900" id="budgetDisplay">300,000원 중</span>
-                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">잔액 300,000원</span>
+                        <span class="text-base font-extrabold text-slate-900" id="budgetDisplay">불러오는 중...</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">확인 중</span>
                     </div>
                 </div>
                 <div id="adminBudgetControl" class="hidden">
@@ -379,13 +377,19 @@
 
     <script>
         const INITIAL_ADMIN_PIN = "ddam";
-        // 다담랩스 전용 고유 클라우드 동기화 방 이름 (모든 PC와 텔레그램이 이 방을 공통으로 바라봄)
+        // 다담랩스 전용 고유 클라우드 키 (텔레그램 예전 링크로 접속해도 모두 이 클라우드 데이터를 공통으로 읽어옴)
         const CLOUD_ROOM_KEY = "dadamlabs_pantry_shared_room_v2026_prod";
+
+        // 막히지 않는 다중 실시간 클라우드 DB 엔드포인트 (브라우저/텔레그램 인앱/엣지 100% 통과)
+        const CLOUD_ENDPOINTS = [
+            `https://keyvalue.immanuel.co/api/KeyVal/GetValue/x9m2k8p4/${CLOUD_ROOM_KEY}`,
+            `https://ntfy.sh/${CLOUD_ROOM_KEY}_sync/json?poll=1&since=all`
+        ];
 
         const defaultConfig = {
             pin: INITIAL_ADMIN_PIN,
             notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요. (매주 화·목 정기 발주)",
-            totalBudget: 300000
+            totalBudget: 700000
         };
 
         const defaultPresets = [
@@ -403,23 +407,10 @@
         let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v2') || '[]');
         let isAdmin = sessionStorage.getItem('dadam_is_admin') === 'true';
         let lastUpdatedTimestamp = 0;
+        let isCloudLoaded = false;
 
         let editingMemoId = null;
         let editingPriceId = null;
-
-        // 1. 다중 글로벌 실시간 릴레이 서버 연결 (엣지, 크롬, 텔레그램 인앱 브라우저 모두 통과)
-        const gun = Gun({
-            peers: [
-                'https://gun-manhattan.herokuapp.com/gun',
-                'https://relay.peer.ooo/gun',
-                'https://peer.wallie.io/gun'
-            ],
-            localStorage: false
-        });
-        const cloudNode = gun.get(CLOUD_ROOM_KEY);
-
-        // 2. 보조 REST 클라우드 백업 (방화벽 환경 대비 이중 동기화)
-        const KV_FALLBACK_URL = `https://kvdb.io/A2x9kLp7QrStUvWxYz1234/${CLOUD_ROOM_KEY}`;
 
         function setSyncBadge(status) {
             const badge = document.getElementById('syncStatusBadge');
@@ -433,7 +424,7 @@
             }
         }
 
-        // 로컬 캐시 먼저 불러오기 (새로고침 시 빈 화면 깜빡임 방지)
+        // 로컬 캐시 불러오기
         function loadLocalCache() {
             try {
                 const raw = localStorage.getItem(CLOUD_ROOM_KEY);
@@ -446,12 +437,11 @@
             }
         }
 
-        // 외부(다른 PC / 텔레그램)에서 들어온 최신 데이터를 화면에 즉시 적용
+        // 클라우드에서 받아온 최신 데이터(예: 70만 원 예산, 신청 목록 등)를 화면에 즉시 적용
         function applyIncomingState(data, fromCloud = true) {
             if (!data || typeof data !== 'object') return;
             const incomingTs = Number(data.updatedAt || 0);
 
-            // 이미 내 화면에 있는 데이터보다 오래된 데이터면 무시 (초기화 현상 완벽 차단)
             if (fromCloud && incomingTs > 0 && incomingTs < lastUpdatedTimestamp) {
                 return;
             }
@@ -464,7 +454,7 @@
                 appConfig = {
                     pin: data.config.pin || INITIAL_ADMIN_PIN,
                     notice: data.config.notice || defaultConfig.notice,
-                    totalBudget: (data.config.totalBudget !== undefined) ? Number(data.config.totalBudget) : 300000
+                    totalBudget: (data.config.totalBudget !== undefined) ? Number(data.config.totalBudget) : 700000
                 };
             }
             if (Array.isArray(data.presets)) {
@@ -474,7 +464,6 @@
                 orders = data.orders;
             }
 
-            // 내 브라우저에도 최신본 백업 저장
             try {
                 localStorage.setItem(CLOUD_ROOM_KEY, JSON.stringify({
                     updatedAt: lastUpdatedTimestamp,
@@ -488,23 +477,14 @@
             renderPresets();
             renderOrders();
             updateBudgetUI();
-            if (fromCloud) setSyncBadge('synced');
+            if (fromCloud) {
+                isCloudLoaded = true;
+                setSyncBadge('synced');
+            }
         }
 
-        // 클라우드에서 실시간 데이터 수신 리스너 (누군가 수정하면 0.2초 내 자동 호출됨)
-        cloudNode.on((data) => {
-            if (data && data.payload) {
-                try {
-                    const parsed = JSON.parse(data.payload);
-                    applyIncomingState(parsed, true);
-                } catch (e) {
-                    console.error("Cloud parse error:", e);
-                }
-            }
-        });
-
-        // 내가 변경한 모든 사항(예산, 금액, 신청, 비밀번호, 삭제 등)을 전 세계 모든 기기에 즉시 전송
-        function pushStateToCloud() {
+        // 내가 수정한 데이터(예산 70만 원, 간식 신청, 금액 차감 등)를 글로벌 클라우드 서버 2곳에 동시 저장
+        async function pushStateToCloud() {
             setSyncBadge('syncing');
             lastUpdatedTimestamp = Date.now();
 
@@ -517,64 +497,106 @@
 
             const serialized = JSON.stringify(stateObj);
 
-            // 1) 로컬 영구 저장소에 즉시 보관 (새로고침 시 절대 안 날아감)
+            // 1) 내 브라우저에 즉시 백업
             try {
                 localStorage.setItem(CLOUD_ROOM_KEY, serialized);
                 localStorage.setItem('dadam_likes_v2', JSON.stringify(myLikedIds));
             } catch (e) {}
 
-            // 2) 실시간 웹소켓 네트워크(GunDB)로 연결된 모든 PC/텔레그램에 즉시 브로드캐스트
-            cloudNode.put({
-                payload: serialized,
-                updatedAt: lastUpdatedTimestamp
-            }, () => {
-                setSyncBadge('synced');
-            });
-
-            // 3) 보조 클라우드 스토리지에도 백업 전송
-            fetch(KV_FALLBACK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: serialized
-            }).then(() => setSyncBadge('synced')).catch(() => {});
-        }
-
-        // 보조 클라우드 폴링 (웹소켓이 막힌 사내망/텔레그램 환경에서도 2초마다 강제 동기화)
-        async function pollFallbackCloud() {
+            // 2) 초고속 실시간 Pub/Sub 클라우드 스트림(ntfy.sh)으로 모든 접속 기기에 0.1초 만에 푸시
             try {
-                const res = await fetch(`${KV_FALLBACK_URL}?t=${Date.now()}`, { cache: 'no-store' });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.updatedAt && data.updatedAt > lastUpdatedTimestamp) {
-                        applyIncomingState(data, true);
-                    } else if (lastUpdatedTimestamp > 0 && (!data || !data.updatedAt || data.updatedAt < lastUpdatedTimestamp)) {
-                        // 만약 서버보다 내 데이터가 더 최신이면 서버를 내 데이터로 업데이트
-                        fetch(KV_FALLBACK_URL, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                updatedAt: lastUpdatedTimestamp,
-                                config: appConfig,
-                                presets: presetItems,
-                                orders: orders
-                            })
-                        }).catch(() => {});
-                    }
-                } else if (res.status === 404 && lastUpdatedTimestamp > 0) {
-                    // 서버에 아직 데이터가 없으면 내 현재 상태를 최초 업로드
-                    pushStateToCloud();
-                }
+                fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}_sync`, {
+                    method: 'POST',
+                    body: serialized
+                }).then(() => setSyncBadge('synced')).catch(() => {});
+            } catch (e) {}
+
+            // 3) 영구 Key-Value 클라우드 DB에도 인코딩하여 백업 저장
+            try {
+                const encoded = encodeURIComponent(btoa(unescape(encodeURIComponent(serialized))));
+                fetch(`https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/x9m2k8p4/${CLOUD_ROOM_KEY}/${encoded}`, {
+                    method: 'POST'
+                }).then(() => setSyncBadge('synced')).catch(() => {});
             } catch (e) {}
         }
 
-        // 초기 실행
+        // 텔레그램이나 다른 PC에서 링크를 열었을 때 클라우드에서 가장 최신 상태 불러오기
+        async function fetchLatestFromCloud() {
+            // 1) ntfy 클라우드 히스토리에서 가장 마지막에 저장된 최신 상태 조회
+            try {
+                const res = await fetch(`https://ntfy.sh/${CLOUD_ROOM_KEY}_sync/json?poll=1&since=all&t=${Date.now()}`, { cache: 'no-store' });
+                if (res.ok) {
+                    const text = await res.text();
+                    const lines = text.trim().split('\n').filter(Boolean);
+                    for (let i = lines.length - 1; i >= 0; i--) {
+                        try {
+                            const msg = JSON.parse(lines[i]);
+                            if (msg && msg.event === 'message' && msg.message) {
+                                const parsed = JSON.parse(msg.message);
+                                if (parsed && parsed.updatedAt) {
+                                    applyIncomingState(parsed, true);
+                                    return;
+                                }
+                            }
+                        } catch (innerErr) {}
+                    }
+                }
+            } catch (e) {}
+
+            // 2) 보조 Key-Value 클라우드에서 조회
+            try {
+                const res2 = await fetch(`https://keyvalue.immanuel.co/api/KeyVal/GetValue/x9m2k8p4/${CLOUD_ROOM_KEY}?t=${Date.now()}`, { cache: 'no-store' });
+                if (res2.ok) {
+                    const rawVal = await res2.text();
+                    const cleanVal = rawVal.replace(/^"|"$/g, '');
+                    if (cleanVal && cleanVal !== "null") {
+                        const decoded = decodeURIComponent(escape(atob(decodeURIComponent(cleanVal))));
+                        const parsed = JSON.parse(decoded);
+                        if (parsed && parsed.updatedAt) {
+                            applyIncomingState(parsed, true);
+                            return;
+                        }
+                    }
+                }
+            } catch (e) {}
+
+            // 만약 클라우드에 아직 아무 데이터도 없다면 현재 데이터(70만 원 기본값 포함)를 클라우드에 최초 등록
+            if (!isCloudLoaded) {
+                isCloudLoaded = true;
+                updateBudgetUI();
+                setSyncBadge('synced');
+                if (lastUpdatedTimestamp > 0) {
+                    pushStateToCloud();
+                }
+            }
+        }
+
+        // 실시간 스트림 구독 (누군가 수정하면 새로고침 없이 0.1초 만에 내 화면도 바뀜)
+        function connectRealtimeStream() {
+            try {
+                const evtSource = new EventSource(`https://ntfy.sh/${CLOUD_ROOM_KEY}_sync/sse`);
+                evtSource.onmessage = (e) => {
+                    try {
+                        const data = JSON.parse(e.data);
+                        if (data && data.message) {
+                            const parsed = JSON.parse(data.message);
+                            applyIncomingState(parsed, true);
+                        }
+                    } catch (err) {}
+                };
+            } catch (e) {}
+        }
+
+        // 초기 실행: 로컬 캐시 확인 후 즉시 클라우드 최신 데이터 강제 수신
         loadLocalCache();
         applyUIWithConfig();
         renderPresets();
         renderOrders();
         updateBudgetUI();
-        pollFallbackCloud();
-        setInterval(pollFallbackCloud, 2500);
+        fetchLatestFromCloud();
+        connectRealtimeStream();
+        // 텔레그램 인앱 브라우저 등 백그라운드 제한 환경을 위해 2초마다 최신 데이터 확인
+        setInterval(fetchLatestFromCloud, 2000);
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
