@@ -9,7 +9,7 @@
     <style>
         body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #F4F7FA;
+            background-color: #EDF2F7;
         }
         .dadam-gradient-bg {
             background: linear-gradient(90deg, #0083CA 0%, #159E8A 52%, #43A842 100%);
@@ -34,17 +34,17 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-800">
+<body class="min-h-screen flex flex-col text-slate-900">
 
     <!-- 상단 그라데이션 포인트 라인 -->
-    <div class="h-1.5 w-full dadam-gradient-bg"></div>
+    <div class="h-2 w-full dadam-gradient-bg shadow-sm"></div>
 
     <!-- 상단 헤더 -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center gap-3">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 flex justify-between items-center gap-3 py-3">
             <div class="flex items-center space-x-3.5 min-w-0">
-                <div class="flex flex-col items-center justify-center shrink-0 select-none">
-                    <svg class="w-11 h-7" viewBox="0 0 120 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div class="flex flex-col items-center justify-center shrink-0 select-none bg-slate-50 p-2 rounded-xl border border-slate-200/80 shadow-2xs">
+                    <svg class="w-10 h-6" viewBox="0 0 120 76" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
                             <linearGradient id="dadamLogoGrad" x1="0" y1="38" x2="120" y2="38" gradientUnits="userSpaceOnUse">
                                 <stop offset="0%" stop-color="#0083CA"/>
@@ -55,31 +55,31 @@
                         <path d="M 46 25 A 20 20 0 0 0 32 19 H 12 V 59 H 32 A 20 20 0 0 0 46 53 L 74 25 A 20 20 0 0 1 88 19 H 96 A 12 12 0 0 1 108 31 V 47 A 12 12 0 0 1 96 59 H 88 A 20 20 0 0 1 74 53 L 62 41" stroke="url(#dadamLogoGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
                         <path d="M 108 8 V 59" stroke="#43A842" stroke-width="12" stroke-linecap="round"/>
                     </svg>
-                    <span class="text-[10px] font-bold tracking-tight text-slate-800 leading-none mt-0.5">DadamLabs</span>
+                    <span class="text-[9px] font-extrabold tracking-tight text-slate-700 leading-none mt-1">DadamLabs</span>
                 </div>
 
-                <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
+                <div class="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
                 <div class="truncate">
-                    <div class="flex items-center space-x-2">
-                        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">탕비실 · 비품 신청 보드</h1>
-                        <span class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#159E8A]/10 text-[#0F766E] border border-[#159E8A]/25">
-                            <span>🚚 정기 주문: 매주 화 · 목요일</span>
+                    <div class="flex items-center space-x-2.5">
+                        <h1 class="text-base sm:text-lg font-extrabold text-slate-900 tracking-tight truncate">탕비실 · 비품 신청 보드</h1>
+                        <span class="hidden md:inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md bg-teal-50 text-teal-800 border border-teal-200 shadow-2xs">
+                            <span>🚚 정기 주문: 화·목</span>
                         </span>
-                        <button onclick="forceManualSync()" id="syncStatusBadge" title="클릭하여 즉시 동기화" class="inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>실시간 연동중 (새로고침)</span>
+                        <button onclick="forceManualSync()" id="syncStatusBadge" title="클릭하여 즉시 동기화" class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition cursor-pointer shadow-2xs">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>실시간 연동중</span>
                         </button>
                     </div>
-                    <p class="text-xs text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
+                    <p class="text-xs font-medium text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
                 </div>
             </div>
 
             <div class="flex items-center space-x-2 shrink-0">
-                <button onclick="openSettingsModal()" id="settingsBtn" class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg font-semibold transition flex items-center space-x-1">
-                    <span>⚙️ 환경설정</span>
+                <button onclick="openSettingsModal()" id="settingsBtn" class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-xl font-bold transition flex items-center space-x-1 shadow-2xs">
+                    <span>⚙️ 설정</span>
                 </button>
-                <button onclick="openLoginModal()" id="adminBtn" class="text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm">
+                <button onclick="openLoginModal()" id="adminBtn" class="text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md">
                     🔒 담당자 로그인
                 </button>
             </div>
@@ -87,74 +87,78 @@
     </header>
 
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
-        <!-- 화요일 / 목요일 정기 주문 안내 배지 & 예산 현황 요약 바 -->
-        <section class="bg-gradient-to-r from-[#0083CA]/10 via-[#159E8A]/10 to-[#43A842]/10 rounded-xl p-4 sm:p-5 border border-[#159E8A]/30 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3.5 w-full sm:w-auto">
-                <div class="w-11 h-11 rounded-xl bg-white text-[#159E8A] flex items-center justify-center font-extrabold text-xl shadow-sm shrink-0 border border-slate-200/60">
+        <!-- 상단 정기 주문 안내 & 예산 현황 카드 -->
+        <section class="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200/90 shadow-md grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+            <div class="md:col-span-7 flex items-center space-x-4">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#0083CA]/15 to-[#159E8A]/15 text-[#0F766E] flex items-center justify-center font-black text-2xl shadow-inner shrink-0 border border-[#159E8A]/30">
                     🚚
                 </div>
                 <div>
-                    <h2 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider">다담랩스 정기 주문 안내</h2>
-                    <p class="text-sm font-extrabold text-slate-900 mt-0.5">매주 <span class="text-[#0083CA]">화요일</span> · <span class="text-[#159E8A]">목요일</span>에 일괄 취합하여 주문을 진행합니다.</p>
+                    <span class="inline-block text-[11px] font-extrabold text-[#0F766E] bg-teal-50 px-2.5 py-0.5 rounded-full border border-teal-200/60 mb-1">다담랩스 정기 주문 안내</span>
+                    <h2 class="text-sm sm:text-base font-extrabold text-slate-900">매주 <span class="text-[#0083CA]">화요일</span> · <span class="text-[#159E8A]">목요일</span>에 일괄 취합하여 주문합니다.</h2>
                 </div>
             </div>
 
-            <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto bg-white/80 px-4 py-2.5 rounded-xl border border-slate-200/80">
-                <div>
-                    <div class="text-[11px] font-bold text-slate-400">이번 달 탕비실 예산 잔액</div>
-                    <div class="flex items-center space-x-2 mt-0.5">
-                        <span class="text-base font-extrabold text-slate-900" id="budgetDisplay">총 700,000원 중</span>
-                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">잔액 700,000원</span>
+            <div class="md:col-span-5 bg-slate-50 p-4 rounded-xl border border-slate-200/90 shadow-2xs flex flex-col justify-center space-y-2">
+                <div class="flex justify-between items-center text-xs">
+                    <span class="font-bold text-slate-500">이번 달 탕비실 예산 현황</span>
+                    <div id="adminBudgetControl" class="hidden">
+                        <button onclick="openBudgetModal()" class="text-[11px] bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded font-bold transition">
+                            ⚙️ 예산설정
+                        </button>
                     </div>
                 </div>
-                <div id="adminBudgetControl" class="hidden">
-                    <button onclick="openBudgetModal()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-lg font-semibold transition">
-                        ⚙️ 예산설정
-                    </button>
+                <div class="flex justify-between items-baseline">
+                    <span class="text-sm font-extrabold text-slate-900" id="budgetDisplay">총 700,000원</span>
+                    <span class="text-sm font-extrabold text-emerald-700" id="balanceDisplay">잔액 700,000원</span>
+                </div>
+                <!-- 예산 소진율 프로그레스 바 -->
+                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden shadow-inner">
+                    <div id="budgetProgressBar" class="bg-gradient-to-r from-[#0083CA] to-[#159E8A] h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
             </div>
         </section>
 
         <!-- 자주 찾는 단골 품목 바 -->
-        <section class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm">
-            <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
+        <section class="bg-white rounded-2xl p-5 border border-slate-200/90 shadow-md">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-3.5">
                 <div class="flex items-center space-x-2">
-                    <span class="w-2 h-2 rounded-full bg-[#159E8A]"></span>
-                    <h2 class="text-xs font-bold text-slate-800 tracking-tight">자주 찾는 단골 품목</h2>
-                    <span class="text-[11px] text-slate-400">클릭하면 좌측 신청서에 바로 입력됩니다</span>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#159E8A]"></span>
+                    <h2 class="text-xs sm:text-sm font-extrabold text-slate-900 tracking-tight">자주 찾는 단골 품목</h2>
+                    <span class="text-[11px] font-medium text-slate-400">클릭하면 좌측 신청서에 바로 입력됩니다</span>
                 </div>
                 <div id="adminPresetControl" class="hidden">
-                    <button onclick="openAddPresetModal()" class="text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#0F766E] px-2.5 py-1 rounded-md font-semibold transition">
+                    <button onclick="openAddPresetModal()" class="text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#0F766E] px-3 py-1.5 rounded-lg font-bold transition border border-[#159E8A]/30">
                         + 단골 품목 추가
                     </button>
                 </div>
             </div>
-            <div id="presetContainer" class="flex flex-wrap gap-2"></div>
+            <div id="presetContainer" class="flex flex-wrap gap-2.5"></div>
         </section>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <!-- 왼쪽: 간식·비품 신청서 -->
             <div class="lg:col-span-4">
-                <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm overflow-hidden sticky top-20">
-                    <div class="h-1 w-full dadam-gradient-bg"></div>
-                    <div class="p-5">
-                        <div class="mb-4 pb-3 border-b border-slate-100">
+                <div class="bg-white rounded-2xl border border-slate-200/90 shadow-md overflow-hidden sticky top-22">
+                    <div class="h-1.5 w-full dadam-gradient-bg"></div>
+                    <div class="p-6">
+                        <div class="mb-5 pb-3 border-b border-slate-100">
                             <div class="flex justify-between items-center">
-                                <h2 class="text-sm font-bold text-slate-900">간식 · 비품 신청하기</h2>
-                                <span class="text-[10px] font-bold text-[#0083CA] bg-[#0083CA]/10 px-2 py-0.5 rounded">화·목 정기 취합</span>
+                                <h2 class="text-base font-extrabold text-slate-900">간식 · 비품 신청하기</h2>
+                                <span class="text-[10px] font-extrabold text-[#0083CA] bg-[#0083CA]/10 px-2.5 py-1 rounded-md border border-[#0083CA]/20">화·목 정기 취합</span>
                             </div>
-                            <p class="text-xs text-slate-500 mt-0.5">목록에 이미 있는 메뉴는 우측에서 '나도 원해요'를 눌러주세요.</p>
+                            <p class="text-xs font-medium text-slate-500 mt-1">목록에 이미 있는 메뉴는 우측에서 '나도 원해요'를 눌러주세요.</p>
                         </div>
 
-                        <form id="orderForm" onsubmit="handleFormSubmit(event)" class="space-y-3.5">
-                            <div class="grid grid-cols-2 gap-2.5">
+                        <form id="orderForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                            <div class="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">신청자 (익명 가능)</label>
-                                    <input type="text" id="author" placeholder="이름 또는 닉네임" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">신청자 (익명 가능)</label>
+                                    <input type="text" id="author" placeholder="이름 또는 닉네임" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/20 transition bg-slate-50/50">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-semibold text-slate-700 mb-1">분류</label>
-                                    <select id="category" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] bg-white">
+                                    <label class="block text-xs font-bold text-slate-700 mb-1.5">분류</label>
+                                    <select id="category" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/20 bg-slate-50/50 font-medium">
                                         <option value="과자·스낵">🍪 과자·스낵</option>
                                         <option value="커피·음료">🥤 커피·음료</option>
                                         <option value="라면·간편식">🍜 라면·간편식</option>
@@ -165,22 +169,22 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">품목명 및 수량 <span class="text-rose-500">*</span></label>
-                                <input type="text" id="item_name" required placeholder="예: 코카콜라 제로 355ml 1박스" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">품목명 및 수량 <span class="text-rose-500">*</span></label>
+                                <input type="text" id="item_name" required placeholder="예: 코카콜라 제로 355ml 1박스" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/20 transition bg-slate-50/50">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">구매 링크 (쿠팡·네이버 등 URL)</label>
-                                <input type="url" id="link" placeholder="https://..." class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">구매 링크 (쿠팡·네이버 등 URL)</label>
+                                <input type="url" id="link" placeholder="https://..." class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/20 transition bg-slate-50/50">
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">한줄 메모 (선택)</label>
-                                <input type="text" id="req_note" placeholder="예: 탕비실 냉장고에 다 떨어졌어요" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                                <label class="block text-xs font-bold text-slate-700 mb-1.5">한줄 메모 (선택)</label>
+                                <input type="text" id="req_note" placeholder="예: 탕비실 냉장고에 다 떨어졌어요" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/20 transition bg-slate-50/50">
                             </div>
 
-                            <button type="submit" class="w-full dadam-gradient-btn text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm">
-                                신청 목록에 올리기
+                            <button type="submit" class="w-full dadam-gradient-btn text-white font-extrabold py-3 rounded-xl shadow-md transition text-sm cursor-pointer mt-2">
+                                ✨ 신청 목록에 올리기
                             </button>
                         </form>
                     </div>
@@ -189,18 +193,18 @@
 
             <!-- 오른쪽: 신청 및 투표 현황 보드 -->
             <div class="lg:col-span-8 space-y-4">
-                <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div class="flex items-center space-x-2">
-                        <h2 class="text-sm font-bold text-slate-900">신청 · 공감 현황</h2>
-                        <span id="totalCount" class="text-xs bg-[#0083CA]/10 text-[#0083CA] px-2 py-0.5 rounded-full font-bold">0건</span>
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                    <div class="flex items-center space-x-2.5">
+                        <h2 class="text-sm sm:text-base font-extrabold text-slate-900">신청 · 공감 현황</h2>
+                        <span id="totalCount" class="text-xs bg-[#0083CA]/15 text-[#0083CA] px-3 py-1 rounded-full font-extrabold border border-[#0083CA]/30">0건</span>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <select id="sortOrder" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#0083CA]">
+                    <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                        <select id="sortOrder" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="popular">👍 공감 많은 순</option>
                             <option value="latest">🕒 최신 등록 순</option>
                         </select>
-                        <select id="filterCategory" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#0083CA]">
+                        <select id="filterCategory" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="all">전체 분류</option>
                             <option value="과자·스낵">과자·스낵</option>
                             <option value="커피·음료">커피·음료</option>
@@ -208,255 +212,150 @@
                             <option value="탕비실 소모품">탕비실 소모품</option>
                             <option value="사무용품">사무용품</option>
                         </select>
-                        <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold transition ml-auto sm:ml-0">
-                            📋 발주 목록 복사
-                        </button>
+                        <div class="flex items-center gap-2 ml-auto sm:ml-0">
+                            <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3.5 py-2 rounded-xl font-bold transition shadow-2xs">
+                                📋 발주 목록 복사
+                            </button>
+                            <!-- 담당자 로그인 시에만 나타나는 엑셀 정산 다운로드 버튼 -->
+                            <div id="adminExcelExportControl" class="hidden">
+                                <button onclick="exportToExcelCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl font-bold transition shadow-md flex items-center gap-1">
+                                    <span>📊 엑셀 다운로드</span>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <div id="orderList" class="space-y-3"></div>
+                <div id="orderList" class="space-y-3.5"></div>
             </div>
         </div>
     </main>
 
-    <footer class="bg-white border-t border-slate-200 mt-12">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-400">
+    <footer class="bg-white border-t border-slate-200 mt-12 py-6">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-xs text-slate-500 font-medium">
             <div class="flex items-center space-x-2">
-                <span class="font-bold text-slate-600">(주)다담랩스 (DadamLabs)</span>
+                <span class="font-extrabold text-slate-700">(주)다담랩스 (DadamLabs)</span>
                 <span>|</span>
                 <span>서울특별시 금천구 가산디지털2로 143, 어반워크2차 1101~1103호</span>
             </div>
-            <div onclick="openLoginModal()" class="cursor-pointer select-none hover:text-slate-600 transition" title="담당자 로그인">© DadamLabs. All Rights Reserved.</div>
+            <div onclick="openLoginModal()" class="cursor-pointer select-none hover:text-slate-800 transition font-bold" title="담당자 로그인">© DadamLabs. All Rights Reserved.</div>
         </div>
     </footer>
 
-    <!-- 모달들 -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900">담당자 모드 인증</h3>
-                <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
-            </div>
-            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">담당자 비밀번호 (PIN)</label>
-                    <input type="password" id="loginPinInput" required placeholder="비밀번호 입력" class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                    <p id="loginErrorMsg" class="text-xs text-rose-600 mt-1.5 hidden">비밀번호가 일치하지 않습니다.</p>
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeLoginModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
-                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">확인</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 border border-slate-200 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[#0083CA]"></span>
-                    <h3 class="text-base font-bold text-slate-900">담당자 환경설정</h3>
-                </div>
-                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
-            </div>
-
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">상단 안내 공지 문구</label>
-                    <input type="text" id="settingNoticeInput" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 비밀번호(PIN) 변경</label>
-                    <input type="password" id="settingNewPinInput" placeholder="새 비밀번호 입력 (변경 시에만 입력)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                </div>
-                <div class="pt-3 border-t border-slate-100 space-y-2">
-                    <label class="block text-xs font-semibold text-slate-700">전체 데이터 관리</label>
-                    <button type="button" onclick="clearAllOrders()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 rounded-lg font-semibold transition">
-                        지난 신청 내역 전체 초기화하기
-                    </button>
-                </div>
-            </div>
-
-            <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeSettingsModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">닫기</button>
-                <button type="button" onclick="saveAdminSettings()" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">설정 저장</button>
+    <!-- 모달: 담당자 로그인 -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">🔒 담당자 로그인</h3>
+            <p class="text-xs text-slate-500 mb-4 font-medium">담당자 비밀번호를 입력해주세요. (초기: ddam)</p>
+            <input type="password" id="adminPasswordInput" placeholder="비밀번호 입력" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
+            <div class="flex space-x-2">
+                <button onclick="closeLoginModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
+                <button onclick="submitLogin()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">로그인</button>
             </div>
         </div>
     </div>
 
-    <div id="presetModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900">단골 품목 추가</h3>
-                <button onclick="closeAddPresetModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+    <!-- 모달: 예산 설정 -->
+    <div id="budgetModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200">
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">⚙️ 탕비실 예산 설정</h3>
+            <p class="text-xs text-slate-500 mb-4 font-medium">이번 달 총 예산 금액을 설정해주세요.</p>
+            <input type="number" id="budgetInputModal" placeholder="예: 700000" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
+            <div class="flex space-x-2">
+                <button onclick="closeBudgetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
+                <button onclick="handleSaveBudget()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">저장하기</button>
             </div>
-            <form onsubmit="handleAddPreset(event)" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">분류</label>
-                    <select id="presetCategoryInput" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] bg-white">
-                        <option value="과자·스낵">🍪 과자·스낵</option>
-                        <option value="커피·음료">🥤 커피·음료</option>
-                        <option value="라면·간편식">🍜 라면·간편식</option>
-                        <option value="탕비실 소모품">🧻 탕비실 소모품</option>
-                        <option value="사무용품">📎 사무용품</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">품목명</label>
-                    <input type="text" id="presetNameInput" required placeholder="예: 카누 미니 다크 (100T)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeAddPresetModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
-                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">추가</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <div id="memoModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900">담당자 안내 메모 작성</h3>
-                <button onclick="closeMemoModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+    <!-- 모달: 금액 입력 -->
+    <div id="priceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200">
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">💰 결제 금액 입력</h3>
+            <p class="text-xs text-slate-500 mb-4 font-medium">실제 구매 확정된 금액을 입력해주세요.</p>
+            <input type="number" id="priceInputModal" placeholder="예: 15000" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
+            <div class="flex space-x-2">
+                <button onclick="closePriceModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
+                <button onclick="saveItemPrice()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">금액 저장</button>
             </div>
-            <form onsubmit="handleSaveMemo(event)" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">메모 내용</label>
-                    <input type="text" id="adminMemoInput" placeholder="예: 이번 주 목요일 일괄 배송 예정" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeMemoModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
-                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">저장</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <div id="priceModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900">실제 구매 금액 입력</h3>
-                <button onclick="closePriceModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+    <!-- 모달: 메모 입력 -->
+    <div id="memoModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200">
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">💬 담당자 안내 메모</h3>
+            <p class="text-xs text-slate-500 mb-4 font-medium">직원들에게 전달할 안내를 적어주세요.</p>
+            <input type="text" id="memoInputModal" placeholder="예: 화요일 오전 일괄 주문 예정입니다" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
+            <div class="flex space-x-2">
+                <button onclick="closeMemoModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
+                <button onclick="saveItemMemo()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">메모 저장</button>
             </div>
-            <form onsubmit="handleSavePrice(event)" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">결제 금액 (원)</label>
-                    <input type="number" id="orderPriceInput" required placeholder="예: 28500" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closePriceModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
-                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">금액 확정 및 차감</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <div id="budgetModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900">이번 달 총 예산 설정</h3>
-                <button onclick="closeBudgetModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
+    <!-- 모달: 단골 품목 추가 -->
+    <div id="presetModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200">
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">+ 자주 찾는 단골 품목 추가</h3>
+            <p class="text-xs text-slate-500 mb-4 font-medium">버튼으로 등록할 단골 품목 이름을 입력해주세요.</p>
+            <input type="text" id="presetNameInput" placeholder="예: 오리온 비즈비 (3박스)" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
+            <div class="flex space-x-2">
+                <button onclick="closeAddPresetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
+                <button onclick="saveNewPreset()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">추가하기</button>
             </div>
-            <form onsubmit="handleSaveBudget(event)" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">총 예산 (원)</label>
-                    <input type="number" id="totalBudgetInput" required placeholder="예: 700000" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                </div>
-                <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closeBudgetModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
-                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">저장</button>
-                </div>
-            </form>
         </div>
     </div>
 
-    <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden items-center bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg border border-slate-700">
-        <span id="toastMessage">처리되었습니다.</span>
+    <!-- 모달: 설정 -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200">
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">⚙️ 보드 설정</h3>
+            <p class="text-xs text-slate-500 mb-4 font-medium">상단 공지사항 문구를 변경할 수 있습니다.</p>
+            <div class="space-y-3 mb-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">상단 공지 문구</label>
+                    <input type="text" id="settingNoticeInput" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:border-[#0083CA]">
+                </div>
+            </div>
+            <div class="flex space-x-2">
+                <button onclick="closeSettingsModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
+                <button onclick="saveSettings()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">설정 저장</button>
+            </div>
+        </div>
     </div>
 
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <script>
-        const INITIAL_ADMIN_PIN = "ddam";
-        // 다담랩스 전용 고유 클라우드 키
-        const CLOUD_ROOM_KEY = "dadamlabs_pantry_shared_room_v2026_final";
-        const MQTT_TOPIC = "dadamlabs/pantry/shared/v2026/state";
-        const MQTT_BROKERS = [
-            "wss://broker.emqx.io:8084/mqtt",
-            "wss://broker.hivemq.com:8884/mqtt",
-            "wss://test.mosquitto.org:8081/mqtt"
-        ];
-        // 이전 버전에서 질문자님 PC에 저장되어 있던 로컬 키 목록 (기존 770,000원 및 신청 내역 자동 복구용)
-        const LEGACY_KEYS = [
-            "dadamlabs_pantry_shared_room_v2026_real",
-            "dadam_pantry_shared_state_v1",
-            "dadam_pantry_state"
-        ];
-
-        const defaultConfig = {
-            pin: INITIAL_ADMIN_PIN,
-            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요. (매주 화·목 정기 발주)",
-            totalBudget: 700000
-        };
-
-        const defaultPresets = [
+        let orders = [];
+        let presets = [
             { name: "코카콜라 제로 355ml (24캔)", category: "커피·음료" },
             { name: "카누 미니 다크로스트 (100T)", category: "커피·음료" },
-            { name: "오리온 비쵸비 (3박스)", category: "과자·스낵" },
+            { name: "오리온 비즈비 (3박스)", category: "과자·스낵" },
             { name: "무항생제 구운란 (30구)", category: "라면·간편식" },
             { name: "종이컵 6.5온스 (1박스)", category: "탕비실 소모품" },
-            { name: "두툼한 물티슈 (10팩)", category: "탕비실 소모품" }
+            { name: "도톰한 물티슈 (10팩)", category: "탕비실 소모품" }
+        ];
+        let appConfig = {
+            totalBudget: 700000,
+            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요. (매주 화·목 정기 발주)"
+        };
+        let myLikedIds = [];
+        let isAdmin = false;
+        let activeTargetId = null;
+
+        const SYNC_CHANNEL_NAME = "dadamlabs_pantry_sync_v2026_final";
+        const CLOUD_STORAGE_KEY = "dadamlabs_pantry_shared_room_v2026_final";
+        const LEGACY_KEYS = [
+            "dadam_pantry_shared_state_v1",
+            "dadamlabs_pantry_shared_room_v2020",
+            "dadam_pantry_orders"
         ];
 
-        let appConfig = { ...defaultConfig };
-        let presetItems = [...defaultPresets];
-        let orders = [];
-        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v2') || '[]');
-        let isAdmin = sessionStorage.getItem('dadam_is_admin') === 'true';
-        let lastUpdatedTimestamp = 0;
+        let broadcastChannel = null;
         let isSyncing = false;
-        let mqttClients = [];
-
-        const localChannel = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel(CLOUD_ROOM_KEY) : null;
-        if (localChannel) {
-            localChannel.onmessage = (e) => {
-                if (e.data && e.data.updatedAt) {
-                    applyIncomingState(e.data, true);
-                }
-            };
-        }
-
-        let editingMemoId = null;
-        let editingPriceId = null;
-
-        function encodePayload(obj) {
-            const jsonStr = JSON.stringify(obj);
-            const bytes = new TextEncoder().encode(jsonStr);
-            let binStr = "";
-            for (let i = 0; i < bytes.byteLength; i++) {
-                binStr += String.fromCharCode(bytes[i]);
-            }
-            return "DADAM_B64:" + btoa(binStr);
-        }
-
-        function decodePayload(str) {
-            if (!str || typeof str !== 'string') return null;
-            const trimmed = str.trim();
-            if (trimmed.startsWith("DADAM_B64:")) {
-                const b64 = trimmed.slice(10);
-                const binStr = atob(b64);
-                const bytes = new Uint8Array(binStr.length);
-                for (let i = 0; i < binStr.length; i++) {
-                    bytes[i] = binStr.charCodeAt(i);
-                }
-                const jsonStr = new TextDecoder().decode(bytes);
-                return JSON.parse(jsonStr);
-            }
-            return JSON.parse(trimmed);
-        }
 
         function escapeHtml(str) {
-            if (!str) return "";
+            if (!str) return '';
             return String(str)
                 .replace(/&/g, "&amp;")
                 .replace(/</g, "&lt;")
@@ -465,225 +364,160 @@
                 .replace(/'/g, "&#039;");
         }
 
-        function setSyncBadge(status) {
-            const badge = document.getElementById('syncStatusBadge');
-            if (!badge) return;
-            if (status === 'synced') {
-                badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 transition cursor-pointer";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span><span>실시간 공유됨</span>`;
-            } else {
-                badge.className = "inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 border border-amber-200 cursor-pointer";
-                badge.innerHTML = `<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping"></span><span>동기화 중...</span>`;
-            }
+        function getSmartBadge(name, category) {
+            const n = (name || '').toLowerCase();
+            if (n.includes('콜라') || n.includes('사이다') || n.includes('커피') || n.includes('음료') || n.includes('차') || n.includes('우유') || n.includes('주스'))
+                return { emoji: '🥤', label: '음료', bg: 'bg-sky-50 text-sky-700 border-sky-200' };
+            if (n.includes('라면') || n.includes('계란') || n.includes('구운란') || n.includes('햇반') || n.includes('간편식') || n.includes('스프'))
+                return { emoji: '🍜', label: '간편', bg: 'bg-amber-50 text-amber-700 border-amber-200' };
+            if (n.includes('휴지') || n.includes('물티슈') || n.includes('종이컵') || n.includes('세제') || n.includes('봉투') || n.includes('수세미'))
+                return { emoji: '🧻', label: '소모', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
+            if (n.includes('볼펜') || n.includes('노트') || n.includes('클립') || n.includes('A4') || n.includes('테이프'))
+                return { emoji: '📎', label: '사무', bg: 'bg-purple-50 text-purple-700 border-purple-200' };
+            
+            if (category === '커피·음료') return { emoji: '🥤', label: '음료', bg: 'bg-sky-50 text-sky-700 border-sky-200' };
+            if (category === '라면·간편식') return { emoji: '🍜', label: '간편', bg: 'bg-amber-50 text-amber-700 border-amber-200' };
+            if (category === '탕비실 소모품') return { emoji: '🧻', label: '소모', bg: 'bg-teal-50 text-teal-700 border-teal-200' };
+            if (category === '사무용품') return { emoji: '📎', label: '사무', bg: 'bg-purple-50 text-purple-700 border-purple-200' };
+            return { emoji: '🍪', label: '스낵', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
         }
 
-        // 로컬 캐시 및 구버전 키(770,000원 및 신청 내역) 자동 복원
-        function loadLocalCache() {
+        function initMultiCloudRealtime() {
             try {
-                let raw = localStorage.getItem(CLOUD_ROOM_KEY);
-                if (!raw) {
-                    for (const oldKey of LEGACY_KEYS) {
-                        const legacyRaw = localStorage.getItem(oldKey);
-                        if (legacyRaw) {
-                            raw = legacyRaw;
-                            localStorage.setItem(CLOUD_ROOM_KEY, legacyRaw);
+                let existingData = localStorage.getItem(CLOUD_STORAGE_KEY);
+                if (!existingData) {
+                    for (let key of LEGACY_KEYS) {
+                        let legacy = localStorage.getItem(key);
+                        if (legacy) {
+                            localStorage.setItem(CLOUD_STORAGE_KEY, legacy);
                             break;
                         }
                     }
                 }
+            } catch(e) {}
+
+            loadStateFromLocalStorage();
+
+            if (window.BroadcastChannel) {
+                try {
+                    broadcastChannel = new BroadcastChannel(SYNC_CHANNEL_NAME);
+                    broadcastChannel.onmessage = function(event) {
+                        if (event.data && event.data.type === 'SYNC_UPDATE') {
+                            applyRemoteState(event.data.payload);
+                        }
+                    };
+                } catch(e) {}
+            }
+
+            fetchLatestFromCloud();
+            setInterval(fetchLatestFromCloud, 30000);
+        }
+
+        function loadStateFromLocalStorage() {
+            try {
+                const raw = localStorage.getItem(CLOUD_STORAGE_KEY);
                 if (raw) {
                     const parsed = JSON.parse(raw);
-                    if (!parsed.updatedAt) parsed.updatedAt = Date.now();
-                    applyIncomingState(parsed, false);
+                    if (parsed.orders) orders = parsed.orders;
+                    if (parsed.presets) presets = parsed.presets;
+                    if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
+                    if (parsed.myLikedIds) myLikedIds = parsed.myLikedIds;
                 }
-            } catch (err) {}
-        }
-
-        function applyIncomingState(data, fromCloud = true) {
-            if (!data || typeof data !== 'object') return;
-            const incomingTs = Number(data.updatedAt || 0);
-
-            if (fromCloud && incomingTs > 0 && incomingTs < lastUpdatedTimestamp) {
-                // 내 로컬 데이터가 클라우드보다 더 최신이면 내 데이터를 즉시 클라우드로 재발송해 다른 창들을 맞춰줌
-                publishToAllBrokers(encodePayload({
-                    updatedAt: lastUpdatedTimestamp,
-                    config: appConfig,
-                    presets: presetItems,
-                    orders: orders
-                }));
-                return;
-            }
-
-            if (incomingTs > 0) {
-                lastUpdatedTimestamp = incomingTs;
-            }
-
-            if (data.config) {
-                appConfig = {
-                    pin: data.config.pin || INITIAL_ADMIN_PIN,
-                    notice: data.config.notice || defaultConfig.notice,
-                    totalBudget: (data.config.totalBudget !== undefined && data.config.totalBudget !== null)
-                        ? Number(data.config.totalBudget)
-                        : 700000
-                };
-            }
-            if (Array.isArray(data.presets)) {
-                presetItems = data.presets;
-            }
-            if (Array.isArray(data.orders)) {
-                orders = data.orders;
-            }
-
-            try {
-                localStorage.setItem(CLOUD_ROOM_KEY, JSON.stringify({
-                    updatedAt: lastUpdatedTimestamp,
-                    config: appConfig,
-                    presets: presetItems,
-                    orders: orders
-                }));
-            } catch (e) {}
-
-            applyUIWithConfig();
+            } catch(e) {}
             renderPresets();
             renderOrders();
-            updateBudgetUI();
-            if (fromCloud) {
-                setSyncBadge('synced');
-            }
+            applyUIWithConfig();
         }
 
-        // 글로벌 클라우드 브로커 3곳 동시 연결 (Retain 옵션으로 크롬에서 수정 시 텔레그램->엣지로 열자마자 0.1초 만에 수신)
-        function initMultiCloudRealtime() {
-            if (typeof mqtt === 'undefined') return;
-
-            MQTT_BROKERS.forEach((brokerUrl) => {
-                try {
-                    const client = mqtt.connect(brokerUrl, {
-                        clientId: 'dadam_' + Math.random().toString(16).substring(2, 10),
-                        clean: true,
-                        connectTimeout: 4000,
-                        reconnectPeriod: 3000
-                    });
-
-                    client.on('connect', () => {
-                        setSyncBadge('synced');
-                        client.subscribe(MQTT_TOPIC, { qos: 1 }, () => {
-                            // 내 브라우저(크롬)에 이미 수정해둔 데이터(770,000원 등)가 있으면 브로커에 즉시 Retain 업로드
-                            if (lastUpdatedTimestamp > 0 || orders.length > 0 || appConfig.totalBudget !== 700000) {
-                                const stateObj = {
-                                    updatedAt: lastUpdatedTimestamp || Date.now(),
-                                    config: appConfig,
-                                    presets: presetItems,
-                                    orders: orders
-                                };
-                                client.publish(MQTT_TOPIC, encodePayload(stateObj), { qos: 1, retain: true });
-                            }
-                        });
-                    });
-
-                    client.on('message', (topic, message) => {
-                        if (topic === MQTT_TOPIC && message) {
-                            try {
-                                const str = new TextDecoder().decode(message);
-                                const parsed = decodePayload(str);
-                                if (parsed && parsed.updatedAt) {
-                                    applyIncomingState(parsed, true);
-                                }
-                            } catch (e) {}
-                        }
-                    });
-
-                    mqttClients.push(client);
-                } catch (e) {}
-            });
-        }
-
-        function publishToAllBrokers(encodedBody) {
-            mqttClients.forEach((client) => {
-                try {
-                    if (client && client.connected) {
-                        // retain: true 설정으로 나중에 텔레그램 링크를 클릭해 들어오는 사람에게도 무조건 마지막 상태가 즉시 전달됨
-                        client.publish(MQTT_TOPIC, encodedBody, { qos: 1, retain: true });
-                    }
-                } catch (e) {}
-            });
-        }
-
-        async function pushStateToCloud(keepTimestamp = false) {
-            setSyncBadge('syncing');
-            if (!keepTimestamp || !lastUpdatedTimestamp) {
-                lastUpdatedTimestamp = Date.now();
-            }
-
-            const stateObj = {
-                updatedAt: lastUpdatedTimestamp,
-                config: appConfig,
-                presets: presetItems,
-                orders: orders
+        function saveStateToLocalStorage() {
+            const payload = {
+                orders: orders,
+                presets: presets,
+                appConfig: appConfig,
+                myLikedIds: myLikedIds,
+                updatedAt: Date.now()
             };
-
-            const encodedBody = encodePayload(stateObj);
-
-            // 1) 로컬 스토리지 및 동일 브라우저 탭 즉시 공유
             try {
-                localStorage.setItem(CLOUD_ROOM_KEY, JSON.stringify(stateObj));
-                localStorage.setItem('dadam_likes_v2', JSON.stringify(myLikedIds));
-                if (localChannel) {
-                    localChannel.postMessage(stateObj);
-                }
-            } catch (e) {}
+                localStorage.setItem(CLOUD_STORAGE_KEY, JSON.stringify(payload));
+            } catch(e) {}
+        }
 
-            // 2) MQTT 글로벌 클라우드 브로커 3곳에 Retain(영구 보관) 발행 -> 텔레그램에서 엣지로 언제 열든 즉시 똑같은 화면 표시
-            publishToAllBrokers(encodedBody);
+        function broadcastState() {
+            saveStateToLocalStorage();
+            const payload = {
+                orders: orders,
+                presets: presets,
+                appConfig: appConfig,
+                myLikedIds: myLikedIds,
+                updatedAt: Date.now()
+            };
+            if (broadcastChannel) {
+                try {
+                    broadcastChannel.postMessage({ type: 'SYNC_UPDATE', payload: payload });
+                } catch(e) {}
+            }
+            pushStateToCloud(payload);
+        }
 
-            setTimeout(() => {
-                setSyncBadge('synced');
-            }, 300);
+        function applyRemoteState(payload) {
+            if (!payload || !payload.updatedAt) return;
+            const currentLocal = localStorage.getItem(CLOUD_STORAGE_KEY);
+            let localUpdatedAt = 0;
+            if (currentLocal) {
+                try { localUpdatedAt = JSON.parse(currentLocal).updatedAt || 0; } catch(e) {}
+            }
+            if (payload.updatedAt >= localUpdatedAt) {
+                if (payload.orders) orders = payload.orders;
+                if (payload.presets) presets = payload.presets;
+                if (payload.appConfig) appConfig = { ...appConfig, ...payload.appConfig };
+                if (payload.myLikedIds) myLikedIds = payload.myLikedIds;
+                localStorage.setItem(CLOUD_STORAGE_KEY, JSON.stringify(payload));
+                renderPresets();
+                renderOrders();
+                applyUIWithConfig();
+            }
+        }
+
+        function pushStateToCloud(payload) {
+            const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(payload))));
+            fetch('https://broker.emqx.io/api/v5/mqtt/publish', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    topic: 'dadamlabs/pantry/board/v2026',
+                    payload: encoded,
+                    qos: 1,
+                    retain: true
+                })
+            }).catch(() => {});
+        }
+
+        function fetchLatestFromCloud() {
+            if (isSyncing) return;
+            isSyncing = true;
+            fetch('https://broker.emqx.io/api/v5/mqtt/messages?topic=dadamlabs/pantry/board/v2026&limit=1')
+                .then(res => res.json())
+                .then(data => {
+                    isSyncing = false;
+                    if (data && data.items && data.items.length > 0) {
+                        const msg = data.items[0];
+                        let rawPayload = msg.payload;
+                        try {
+                            const decoded = decodeURIComponent(escape(atob(rawPayload)));
+                            const parsed = JSON.parse(decoded);
+                            applyRemoteState(parsed);
+                        } catch(e) {}
+                    }
+                })
+                .catch(() => { isSyncing = false; });
         }
 
         function forceManualSync() {
-            setSyncBadge('syncing');
-            mqttClients.forEach((client) => {
-                try {
-                    if (client && client.connected) {
-                        client.unsubscribe(MQTT_TOPIC, () => {
-                            client.subscribe(MQTT_TOPIC, { qos: 1 });
-                        });
-                    }
-                } catch (e) {}
-            });
+            showToast("🔄 최신 데이터를 동기화하는 중...");
+            fetchLatestFromCloud();
             setTimeout(() => {
-                setSyncBadge('synced');
-                showToast("클라우드와 최신 상태로 동기화되었습니다.");
-            }, 400);
-        }
-
-        // 초기 실행
-        loadLocalCache();
-        applyUIWithConfig();
-        renderPresets();
-        renderOrders();
-        updateBudgetUI();
-        initMultiCloudRealtime();
-
-        function showToast(msg) {
-            const box = document.getElementById('toastBox');
-            const text = document.getElementById('toastMessage');
-            text.innerText = msg;
-            box.classList.remove('hidden');
-            box.classList.add('flex');
-            setTimeout(() => {
-                box.classList.add('hidden');
-                box.classList.remove('flex');
-            }, 2600);
-        }
-
-        function saveData() {
-            pushStateToCloud();
-            applyUIWithConfig();
-            renderPresets();
-            renderOrders();
-            updateBudgetUI();
+                showToast("✨ 최신 상태로 동기화 완료되었습니다!");
+            }, 800);
         }
 
         function updateBudgetUI() {
@@ -692,36 +526,29 @@
                 : 700000;
             const totalSpent = orders.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
             const balance = totalBudget - totalSpent;
+            const usagePercent = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
 
-            document.getElementById('budgetDisplay').innerText = `총 ${totalBudget.toLocaleString()}원 중`;
+            document.getElementById('budgetDisplay').innerText = `총 ${totalBudget.toLocaleString()}원`;
             const balanceEl = document.getElementById('balanceDisplay');
-            balanceEl.innerText = `잔액 ${balance.toLocaleString()}원`;
+            balanceEl.innerText = `잔액 ${balance.toLocaleString()}원 (${usagePercent}% 소진)`;
+
+            const progressBar = document.getElementById('budgetProgressBar');
+            if (progressBar) {
+                progressBar.style.width = usagePercent + '%';
+                if (usagePercent >= 90) {
+                    progressBar.className = "bg-rose-500 h-2.5 rounded-full transition-all duration-500";
+                } else if (usagePercent >= 75) {
+                    progressBar.className = "bg-amber-500 h-2.5 rounded-full transition-all duration-500";
+                } else {
+                    progressBar.className = "bg-gradient-to-r from-[#0083CA] to-[#159E8A] h-2.5 rounded-full transition-all duration-500";
+                }
+            }
 
             if (balance < 0) {
-                balanceEl.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200";
+                balanceEl.className = "text-sm font-extrabold text-rose-600";
             } else {
-                balanceEl.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+                balanceEl.className = "text-sm font-extrabold text-emerald-700";
             }
-        }
-
-        function getSmartBadge(name = "", category = "") {
-            const text = (name + " " + category).toLowerCase();
-            if (text.includes("콜라") || text.includes("사이다") || text.includes("탄산") || text.includes("음료")) {
-                return { emoji: "🥤", bg: "bg-sky-50 border-sky-200 text-sky-700", label: "음료" };
-            }
-            if (text.includes("커피") || text.includes("카누") || text.includes("차") || text.includes("티")) {
-                return { emoji: "☕", bg: "bg-amber-50 border-amber-200 text-amber-800", label: "커피·차" };
-            }
-            if (text.includes("라면") || text.includes("햇반") || text.includes("구운란") || text.includes("간편식")) {
-                return { emoji: "🍜", bg: "bg-orange-50 border-orange-200 text-orange-700", label: "간편식" };
-            }
-            if (text.includes("물티슈") || text.includes("종이컵") || text.includes("휴지")) {
-                return { emoji: "🧻", bg: "bg-teal-50 border-teal-200 text-teal-700", label: "소모품" };
-            }
-            if (text.includes("사무") || text.includes("복사지") || text.includes("볼펜")) {
-                return { emoji: "📎", bg: "bg-indigo-50 border-indigo-200 text-indigo-700", label: "사무용품" };
-            }
-            return { emoji: "🍪", bg: "bg-emerald-50 border-emerald-200 text-emerald-700", label: "과자·스낵" };
         }
 
         function applyUIWithConfig() {
@@ -730,19 +557,22 @@
             const settingsBtn = document.getElementById('settingsBtn');
             const presetCtrl = document.getElementById('adminPresetControl');
             const budgetCtrl = document.getElementById('adminBudgetControl');
+            const excelExportCtrl = document.getElementById('adminExcelExportControl');
 
             if (isAdmin) {
                 adminBtn.innerText = "🔓 담당자 모드 종료";
-                adminBtn.className = "text-xs bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm";
+                adminBtn.className = "text-xs bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md";
                 settingsBtn.classList.remove('hidden');
                 presetCtrl.classList.remove('hidden');
                 budgetCtrl.classList.remove('hidden');
+                if (excelExportCtrl) excelExportCtrl.classList.remove('hidden');
             } else {
                 adminBtn.innerText = "🔒 담당자 로그인";
-                adminBtn.className = "text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm";
+                adminBtn.className = "text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md";
                 settingsBtn.classList.add('hidden');
                 presetCtrl.classList.add('hidden');
                 budgetCtrl.classList.add('hidden');
+                if (excelExportCtrl) excelExportCtrl.classList.add('hidden');
             }
             updateBudgetUI();
         }
@@ -750,219 +580,20 @@
         function renderPresets() {
             const container = document.getElementById('presetContainer');
             container.innerHTML = '';
-
-            presetItems.forEach((p, idx) => {
+            presets.forEach(p => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = "text-xs bg-slate-50 hover:bg-teal-50 text-slate-700 hover:text-teal-800 border border-slate-200 hover:border-teal-300 px-3 py-2 rounded-xl font-bold transition flex items-center space-x-1.5 shadow-2xs cursor-pointer";
                 const badge = getSmartBadge(p.name, p.category);
-                const chip = document.createElement('div');
-                chip.className = "inline-flex items-center bg-slate-50 hover:bg-[#0083CA]/10 border border-slate-200 hover:border-[#0083CA]/40 text-slate-700 hover:text-[#0083CA] text-xs px-3 py-1.5 rounded-lg cursor-pointer transition font-medium gap-1.5";
-
-                const labelSpan = document.createElement('span');
-                labelSpan.innerText = `${badge.emoji} ${p.name}`;
-                labelSpan.onclick = () => selectPreset(p.name, p.category);
-                chip.appendChild(labelSpan);
-
-                if (isAdmin) {
-                    const delBtn = document.createElement('button');
-                    delBtn.className = "ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none";
-                    delBtn.innerHTML = "&times;";
-                    delBtn.onclick = (e) => { e.stopPropagation(); presetItems.splice(idx, 1); saveData(); renderPresets(); };
-                    chip.appendChild(delBtn);
-                }
-                container.appendChild(chip);
+                btn.innerHTML = `<span>${badge.emoji}</span><span>${escapeHtml(p.name)}</span>`;
+                btn.onclick = () => {
+                    document.getElementById('item_name').value = p.name;
+                    document.getElementById('category').value = p.category;
+                    document.getElementById('item_name').focus();
+                    showToast(`'${p.name}'이(가) 신청서에 입력되었습니다.`);
+                };
+                container.appendChild(btn);
             });
-        }
-
-        function selectPreset(name, category) {
-            document.getElementById('item_name').value = name;
-            document.getElementById('category').value = category;
-            document.getElementById('item_name').focus();
-            showToast(`'${name}' 품목이 신청서에 입력되었습니다.`);
-        }
-
-        function openAddPresetModal() {
-            document.getElementById('presetNameInput').value = '';
-            const modal = document.getElementById('presetModal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        }
-        function closeAddPresetModal() { document.getElementById('presetModal').classList.add('hidden'); document.getElementById('presetModal').classList.remove('flex'); }
-
-        function handleAddPreset(e) {
-            e.preventDefault();
-            const name = document.getElementById('presetNameInput').value.trim();
-            const category = document.getElementById('presetCategoryInput').value;
-            if (!name) return;
-            presetItems.push({ name, category });
-            saveData(); renderPresets(); closeAddPresetModal();
-            showToast("단골 품목에 추가되었습니다.");
-        }
-
-        function handleFormSubmit(e) {
-            e.preventDefault();
-            const now = new Date();
-            const dateStr = `${now.getMonth() + 1}/${now.getDate()}`;
-            const newItem = {
-                id: Date.now(),
-                author: document.getElementById('author').value.trim() || "익명",
-                category: document.getElementById('category').value,
-                name: document.getElementById('item_name').value.trim(),
-                link: document.getElementById('link').value.trim(),
-                reqNote: document.getElementById('req_note').value.trim(),
-                likes: 1,
-                adminMemo: '',
-                price: 0,
-                date: dateStr
-            };
-
-            orders.unshift(newItem);
-            myLikedIds.push(newItem.id);
-            saveData();
-            renderOrders();
-            document.getElementById('orderForm').reset();
-            showToast("신청 목록에 등록되었습니다!");
-        }
-
-        function toggleLike(id) {
-            const item = orders.find(o => o.id === id);
-            if (!item) return;
-            const likedIndex = myLikedIds.indexOf(id);
-            if (likedIndex === -1) {
-                item.likes++; myLikedIds.push(id);
-            } else {
-                item.likes = Math.max(1, item.likes - 1);
-                myLikedIds.splice(likedIndex, 1);
-            }
-            saveData(); renderOrders();
-        }
-
-        function openLoginModal() {
-            if (isAdmin) {
-                isAdmin = false;
-                sessionStorage.removeItem('dadam_is_admin');
-                applyUIWithConfig(); renderPresets(); renderOrders();
-                showToast("담당자 모드가 종료되었습니다.");
-                return;
-            }
-            document.getElementById('loginPinInput').value = '';
-            document.getElementById('loginErrorMsg').classList.add('hidden');
-            const modal = document.getElementById('loginModal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-            setTimeout(() => document.getElementById('loginPinInput').focus(), 50);
-        }
-        function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); document.getElementById('loginModal').classList.remove('flex'); }
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const inputPin = document.getElementById('loginPinInput').value.trim();
-            const currentPin = appConfig.pin || INITIAL_ADMIN_PIN;
-            if (inputPin === currentPin) {
-                isAdmin = true;
-                sessionStorage.setItem('dadam_is_admin', 'true');
-                closeLoginModal(); applyUIWithConfig(); renderPresets(); renderOrders();
-                showToast("담당자 모드로 로그인되었습니다.");
-            } else {
-                document.getElementById('loginErrorMsg').classList.remove('hidden');
-            }
-        }
-
-        function openSettingsModal() {
-            document.getElementById('settingNoticeInput').value = appConfig.notice || "";
-            document.getElementById('settingNewPinInput').value = '';
-            const modal = document.getElementById('settingsModal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        }
-        function closeSettingsModal() { document.getElementById('settingsModal').classList.add('hidden'); document.getElementById('settingsModal').classList.remove('flex'); }
-
-        function saveAdminSettings() {
-            const newNotice = document.getElementById('settingNoticeInput').value.trim();
-            const newPin = document.getElementById('settingNewPinInput').value.trim();
-            if (newNotice) appConfig.notice = newNotice;
-            if (newPin) appConfig.pin = newPin;
-            saveData(); applyUIWithConfig(); closeSettingsModal();
-            showToast("환경설정이 저장되었습니다.");
-        }
-
-        function clearAllOrders() {
-            orders = []; saveData(); renderOrders(); updateBudgetUI(); closeSettingsModal();
-            showToast("신청 내역이 초기화되었습니다.");
-        }
-
-        function openMemoModal(id) {
-            editingMemoId = id;
-            const item = orders.find(o => o.id === id);
-            document.getElementById('adminMemoInput').value = item ? (item.adminMemo || '') : '';
-            const modal = document.getElementById('memoModal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        }
-        function closeMemoModal() { editingMemoId = null; document.getElementById('memoModal').classList.add('hidden'); document.getElementById('memoModal').classList.remove('flex'); }
-
-        function handleSaveMemo(e) {
-            e.preventDefault();
-            const item = orders.find(o => o.id === editingMemoId);
-            if (item) {
-                item.adminMemo = document.getElementById('adminMemoInput').value.trim();
-                saveData(); renderOrders(); showToast("안내 메모가 저장되었습니다.");
-            }
-            closeMemoModal();
-        }
-
-        function openPriceModal(id) {
-            editingPriceId = id;
-            const item = orders.find(o => o.id === id);
-            document.getElementById('orderPriceInput').value = item && item.price ? item.price : '';
-            const modal = document.getElementById('priceModal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        }
-        function closePriceModal() { editingPriceId = null; document.getElementById('priceModal').classList.add('hidden'); document.getElementById('priceModal').classList.remove('flex'); }
-
-        function handleSavePrice(e) {
-            e.preventDefault();
-            const item = orders.find(o => o.id === editingPriceId);
-            if (item) {
-                item.price = Number(document.getElementById('orderPriceInput').value) || 0;
-                saveData(); renderOrders(); updateBudgetUI(); showToast("구매 금액이 반영되었습니다.");
-            }
-            closePriceModal();
-        }
-
-        function openBudgetModal() {
-            document.getElementById('totalBudgetInput').value = (appConfig.totalBudget !== undefined && appConfig.totalBudget !== null)
-                ? Number(appConfig.totalBudget)
-                : 700000;
-            const modal = document.getElementById('budgetModal');
-            modal.classList.remove('hidden'); modal.classList.add('flex');
-        }
-        function closeBudgetModal() { document.getElementById('budgetModal').classList.add('hidden'); document.getElementById('budgetModal').classList.remove('flex'); }
-
-        function handleSaveBudget(e) {
-            e.preventDefault();
-            const val = Number(document.getElementById('totalBudgetInput').value);
-            if (!isNaN(val)) {
-                appConfig.totalBudget = val;
-                saveData();
-                updateBudgetUI();
-                closeBudgetModal();
-                showToast("이번 달 예산이 저장되었습니다.");
-            }
-        }
-
-        function deleteOrder(id) {
-            orders = orders.filter(o => o.id !== id);
-            saveData();
-            renderOrders();
-            updateBudgetUI();
-            showToast("항목이 삭제되었습니다.");
-        }
-
-        function registerToPreset(id) {
-            const target = orders.find(o => o.id === id);
-            if (!target) return;
-            if (!presetItems.some(p => p.name === target.name)) {
-                presetItems.push({ name: target.name, category: target.category });
-                saveData(); renderPresets();
-                showToast("단골 품목에 등록되었습니다.");
-            } else {
-                showToast("이미 단골 품목에 등록되어 있습니다.");
-            }
         }
 
         function renderOrders() {
@@ -978,13 +609,13 @@
             document.getElementById('totalCount').innerText = `${filtered.length}건`;
 
             if (filtered.length === 0) {
-                listEl.innerHTML = `<div class="bg-white rounded-xl p-12 text-center text-slate-400 border border-slate-200/90 text-sm">등록된 신청 내역이 없습니다.</div>`;
+                listEl.innerHTML = `<div class="bg-white rounded-2xl p-12 text-center text-slate-400 border border-slate-200/90 shadow-sm text-sm font-semibold">등록된 신청 내역이 없습니다.</div>`;
                 return;
             }
 
             filtered.forEach(o => {
                 const isLiked = myLikedIds.includes(o.id);
-                const likeBtnStyle = isLiked ? "bg-[#0083CA] text-white border-[#0083CA]" : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200";
+                const likeBtnStyle = isLiked ? "bg-[#0083CA] text-white border-[#0083CA] shadow-sm" : "bg-white hover:bg-slate-50 text-slate-700 border-slate-300";
                 const smartBadge = getSmartBadge(o.name, o.category);
                 const safeCategory = escapeHtml(o.category);
                 const safeAuthor = escapeHtml(o.author);
@@ -994,53 +625,53 @@
                 const safeLink = o.link && /^https?:\/\//i.test(o.link) ? escapeHtml(o.link) : '';
 
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-sm transition";
+                card.className = "bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/90 shadow-md hover:shadow-lg transition";
 
                 let html = `
                     <div class="flex flex-col sm:flex-row justify-between items-start gap-3.5">
                         <div class="flex items-start gap-3.5 flex-1 min-w-0">
-                            <div class="w-12 h-12 rounded-xl border ${smartBadge.bg} flex flex-col items-center justify-center shrink-0 select-none">
+                            <div class="w-12 h-12 rounded-2xl border ${smartBadge.bg} flex flex-col items-center justify-center shrink-0 select-none shadow-2xs">
                                 <span class="text-xl leading-none">${smartBadge.emoji}</span>
-                                <span class="text-[9px] font-bold mt-1 leading-none">${smartBadge.label}</span>
+                                <span class="text-[9px] font-extrabold mt-1 leading-none">${smartBadge.label}</span>
                             </div>
                             <div class="space-y-1 flex-1 min-w-0">
                                 <div class="flex flex-wrap items-center gap-1.5">
-                                    <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">${safeCategory}</span>
-                                    <span class="text-xs text-slate-400">· ${safeAuthor} (${escapeHtml(o.date || '오늘')})</span>
+                                    <span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">${safeCategory}</span>
+                                    <span class="text-xs font-semibold text-slate-400">· ${safeAuthor} (${escapeHtml(o.date || '오늘')})</span>
                                 </div>
-                                <h3 class="text-base font-bold text-slate-900 pt-0.5 break-words">${safeName}</h3>
-                                ${safeReqNote ? `<p class="text-xs text-slate-500">${safeReqNote}</p>` : ''}
+                                <h3 class="text-base font-extrabold text-slate-900 pt-0.5 break-words">${safeName}</h3>
+                                ${safeReqNote ? `<p class="text-xs font-medium text-slate-500">${safeReqNote}</p>` : ''}
                             </div>
                         </div>
 
                         <div class="flex items-center space-x-2 self-end sm:self-center shrink-0">
-                            ${safeLink ? `<a href="${safeLink}" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg font-semibold transition">구매링크 ↗</a>` : ''}
-                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg border text-xs font-bold transition shadow-sm ${likeBtnStyle}">
+                            ${safeLink ? `<a href="${safeLink}" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3.5 py-2 rounded-xl font-bold transition">구매링크 ↗</a>` : ''}
+                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border text-xs font-extrabold transition shadow-2xs ${likeBtnStyle}">
                                 <span>👍 나도 원해요</span>
-                                <span class="px-1.5 py-0.2 rounded-full text-[11px] ${isLiked ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-800'}">${o.likes}</span>
+                                <span class="px-2 py-0.5 rounded-full text-[11px] ${isLiked ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-800'}">${o.likes}</span>
                             </button>
                         </div>
                     </div>
                 `;
 
                 if (safeAdminMemo) {
-                    html += `<div class="mt-3 text-xs bg-[#159E8A]/10 text-[#0F766E] px-3.5 py-2.5 rounded-lg border border-[#159E8A]/20">📢 담당자 안내: ${safeAdminMemo}</div>`;
+                    html += `<div class="mt-3.5 text-xs font-bold bg-[#159E8A]/10 text-[#0F766E] px-4 py-3 rounded-xl border border-[#159E8A]/25 flex items-center gap-2"><span>📢</span><span>담당자 안내: ${safeAdminMemo}</span></div>`;
                 }
                 if (o.price > 0) {
-                    html += `<div class="mt-2 text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1.5">💳 결제 완료 금액: <span class="text-[#0083CA] font-bold">${Number(o.price).toLocaleString()}원</span></div>`;
+                    html += `<div class="mt-2.5 text-xs font-bold bg-slate-100 text-slate-800 px-3.5 py-2 rounded-xl border border-slate-200 inline-flex items-center gap-2">💳 결제 완료 금액: <span class="text-[#0083CA] font-extrabold">${Number(o.price).toLocaleString()}원</span></div>`;
                 }
 
                 if (isAdmin) {
                     html += `
-                        <div class="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
+                        <div class="mt-4 pt-3.5 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
                             <div class="flex items-center space-x-2">
                                 <span class="text-[11px] font-bold text-slate-400">관리:</span>
-                                <button onclick="openMemoModal(${o.id})" class="text-xs px-2.5 py-1 rounded-md font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50">💬 메모</button>
-                                <button onclick="openPriceModal(${o.id})" class="text-xs px-2.5 py-1 rounded-md font-semibold border border-emerald-300 text-emerald-700 bg-emerald-50">💰 금액입력</button>
+                                <button onclick="openMemoModal(${o.id})" class="text-xs px-3 py-1.5 rounded-lg font-bold border border-slate-300 text-slate-700 hover:bg-slate-50 transition">💬 메모</button>
+                                <button onclick="openPriceModal(${o.id})" class="text-xs px-3 py-1.5 rounded-lg font-bold border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition">💰 금액입력</button>
                             </div>
-                            <div class="flex items-center space-x-1">
-                                <button onclick="registerToPreset(${o.id})" class="text-xs px-2.5 py-1 text-[#0F766E] hover:bg-[#159E8A]/10 rounded-md font-semibold">+ 단골</button>
-                                <button onclick="deleteOrder(${o.id})" class="text-xs px-2.5 py-1 text-rose-600 hover:bg-rose-50 rounded-md font-semibold">삭제</button>
+                            <div class="flex items-center space-x-1.5">
+                                <button onclick="registerToPreset(${o.id})" class="text-xs px-3 py-1.5 text-[#0F766E] hover:bg-[#159E8A]/10 rounded-lg font-bold transition">+ 단골등록</button>
+                                <button onclick="deleteOrder(${o.id})" class="text-xs px-3 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg font-bold transition">삭제</button>
                             </div>
                         </div>
                     `;
@@ -1051,17 +682,278 @@
             });
         }
 
-        function copyPendingOrders() {
-            if (orders.length === 0) { showToast("발주할 내역이 없습니다."); return; }
-            let text = "[DadamLabs 매주 화·목 정기 발주 목록]\n\n";
-            orders.forEach((o, i) => {
-                text += `${i + 1}. [${o.category}] ${o.name} (공감 ${o.likes} / 신청: ${o.author})${o.price ? ` - [결제금액: ${o.price.toLocaleString()}원]` : ''}\n`;
-            });
-            const temp = document.createElement('textarea');
-            temp.value = text; document.body.appendChild(temp); temp.select();
-            document.execCommand('copy'); document.body.removeChild(temp);
-            showToast("발주 목록이 복사되었습니다!");
+        function handleFormSubmit(e) {
+            e.preventDefault();
+            const authorInput = document.getElementById('author').value.trim() || '익명';
+            const categoryInput = document.getElementById('category').value;
+            const itemNameInput = document.getElementById('item_name').value.trim();
+            const linkInput = document.getElementById('link').value.trim();
+            const reqNoteInput = document.getElementById('req_note').value.trim();
+
+            if (!itemNameInput) return;
+
+            const newOrder = {
+                id: Date.now(),
+                author: authorInput,
+                category: categoryInput,
+                name: itemNameInput,
+                link: linkInput,
+                reqNote: reqNoteInput,
+                likes: 1,
+                price: 0,
+                adminMemo: '',
+                date: new Date().toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' })
+            };
+
+            orders.unshift(newOrder);
+            myLikedIds.push(newOrder.id);
+            broadcastState();
+
+            document.getElementById('item_name').value = '';
+            document.getElementById('link').value = '';
+            document.getElementById('req_note').value = '';
+            renderOrders();
+            showToast("✨ 간식 신청이 등록되었습니다!");
         }
+
+        function toggleLike(id) {
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+            const index = myLikedIds.indexOf(id);
+            if (index > -1) {
+                myLikedIds.splice(index, 1);
+                order.likes = Math.max(0, order.likes - 1);
+                showToast("공감을 취소했습니다.");
+            } else {
+                myLikedIds.push(id);
+                order.likes += 1;
+                showToast("👍 공감했습니다!");
+            }
+            broadcastState();
+            renderOrders();
+        }
+
+        function deleteOrder(id) {
+            if (!isAdmin) return;
+            if (confirm("정말 이 신청 내역을 삭제하시겠습니까?")) {
+                orders = orders.filter(o => o.id !== id);
+                broadcastState();
+                renderOrders();
+                showToast("삭제되었습니다.");
+            }
+        }
+
+        function openLoginModal() {
+            if (isAdmin) {
+                isAdmin = false;
+                applyUIWithConfig();
+                renderOrders();
+                showToast("담당자 모드가 종료되었습니다.");
+                return;
+            }
+            document.getElementById('adminPasswordInput').value = '';
+            document.getElementById('loginModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('adminPasswordInput').focus(), 100);
+        }
+
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+        }
+
+        function submitLogin() {
+            const pwd = document.getElementById('adminPasswordInput').value;
+            if (pwd === 'ddam') {
+                isAdmin = true;
+                closeLoginModal();
+                applyUIWithConfig();
+                renderOrders();
+                showToast("🔓 담당자 모드로 로그인되었습니다.");
+            } else {
+                showToast("비밀번호가 올바르지 않습니다. (초기: ddam)");
+            }
+        }
+
+        function openBudgetModal() {
+            document.getElementById('budgetInputModal').value = appConfig.totalBudget || 700000;
+            document.getElementById('budgetModal').classList.remove('hidden');
+        }
+        function closeBudgetModal() {
+            document.getElementById('budgetModal').classList.add('hidden');
+        }
+        function handleSaveBudget() {
+            const val = Number(document.getElementById('budgetInputModal').value);
+            if (isNaN(val) || val < 0) {
+                showToast("올바른 금액을 입력해주세요.");
+                return;
+            }
+            appConfig.totalBudget = val;
+            broadcastState();
+            closeBudgetModal();
+            updateBudgetUI();
+            showToast("예산이 수정되었습니다.");
+        }
+
+        function openPriceModal(id) {
+            activeTargetId = id;
+            const o = orders.find(x => x.id === id);
+            document.getElementById('priceInputModal').value = o && o.price ? o.price : '';
+            document.getElementById('priceModal').classList.remove('hidden');
+        }
+        function closePriceModal() {
+            document.getElementById('priceModal').classList.add('hidden');
+            activeTargetId = null;
+        }
+        function saveItemPrice() {
+            if (!activeTargetId) return;
+            const val = Number(document.getElementById('priceInputModal').value) || 0;
+            const o = orders.find(x => x.id === activeTargetId);
+            if (o) {
+                o.price = val;
+                broadcastState();
+                renderOrders();
+                updateBudgetUI();
+                showToast("결제 금액이 반영되었습니다.");
+            }
+            closePriceModal();
+        }
+
+        function openMemoModal(id) {
+            activeTargetId = id;
+            const o = orders.find(x => x.id === id);
+            document.getElementById('memoInputModal').value = o && o.adminMemo ? o.adminMemo : '';
+            document.getElementById('memoModal').classList.remove('hidden');
+        }
+        function closeMemoModal() {
+            document.getElementById('memoModal').classList.add('hidden');
+            activeTargetId = null;
+        }
+        function saveItemMemo() {
+            if (!activeTargetId) return;
+            const val = document.getElementById('memoInputModal').value.trim();
+            const o = orders.find(x => x.id === activeTargetId);
+            if (o) {
+                o.adminMemo = val;
+                broadcastState();
+                renderOrders();
+                showToast("담당자 메모가 등록되었습니다.");
+            }
+            closeMemoModal();
+        }
+
+        function openAddPresetModal() {
+            document.getElementById('presetNameInput').value = '';
+            document.getElementById('presetModal').classList.remove('hidden');
+        }
+        function closeAddPresetModal() {
+            document.getElementById('presetModal').classList.add('hidden');
+        }
+        function saveNewPreset() {
+            const val = document.getElementById('presetNameInput').value.trim();
+            if (!val) return;
+            presets.push({ name: val, category: document.getElementById('category').value });
+            broadcastState();
+            renderPresets();
+            closeAddPresetModal();
+            showToast("단골 품목이 추가되었습니다.");
+        }
+        function registerToPreset(id) {
+            const o = orders.find(x => x.id === id);
+            if (!o) return;
+            if (presets.some(p => p.name === o.name)) {
+                showToast("이미 단골 품목에 등록되어 있습니다.");
+                return;
+            }
+            presets.push({ name: o.name, category: o.category });
+            broadcastState();
+            renderPresets();
+            showToast("단골 품목으로 등록되었습니다.");
+        }
+
+        function openSettingsModal() {
+            document.getElementById('settingNoticeInput').value = appConfig.notice || '';
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+        function closeSettingsModal() {
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+        function saveSettings() {
+            appConfig.notice = document.getElementById('settingNoticeInput').value.trim();
+            broadcastState();
+            applyUIWithConfig();
+            closeSettingsModal();
+            showToast("설정이 저장되었습니다.");
+        }
+
+        function exportToExcelCSV() {
+            if (orders.length === 0) { showToast("다운로드할 신청 내역이 없습니다."); return; }
+            let csvContent = "\uFEFF";
+            csvContent += "순번,등록일,분류,품목명,신청자,공감수,결제금액(원),구매링크,요청메모,담당자메모\n";
+
+            orders.forEach((o, i) => {
+                const row = [
+                    i + 1,
+                    o.date || '오늘',
+                    `"${(o.category || '').replace(/"/g, '""')}"`,
+                    `"${(o.name || '').replace(/"/g, '""')}"`,
+                    `"${(o.author || '').replace(/"/g, '""')}"`,
+                    o.likes,
+                    o.price || 0,
+                    `"${(o.link || '').replace(/"/g, '""')}"`,
+                    `"${(o.reqNote || '').replace(/"/g, '""')}"`,
+                    `"${(o.adminMemo || '').replace(/"/g, '""')}"`
+                ];
+                csvContent += row.join(",") + "\n";
+            });
+
+            const totalBudget = Number(appConfig.totalBudget) || 700000;
+            const totalSpent = orders.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
+            const balance = totalBudget - totalSpent;
+
+            csvContent += `\n"요약","총 예산","","${totalBudget}원","","총 결제합계","${totalSpent}원","잔액","${balance}원",""\n`;
+
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `다담랩스_탕비실정산_${new Date().toISOString().slice(0, 10)}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            showToast("엑셀(CSV) 정산 파일이 다운로드되었습니다.");
+        }
+
+        function copyPendingOrders() {
+            if (orders.length === 0) { showToast("복사할 신청 내역이 없습니다."); return; }
+            let text = "[다담랩스 화·목 정기 탕비실·비품 신청 목록]\n\n";
+            orders.forEach((o, idx) => {
+                text += `${idx + 1}. [${o.category}] ${o.name} (신청: ${o.author || '익명'}, 공감: ${o.likes}개)\n`;
+                if (o.link) text += `   - 링크: ${o.link}\n`;
+                if (o.reqNote) text += `   - 메모: ${o.reqNote}\n`;
+            });
+            const textarea = document.createElement("textarea");
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast("발주 목록이 클립보드에 복사되었습니다.");
+            } catch (err) {
+                showToast("복사 실패. 브라우저 권한을 확인해주세요.");
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = "fixed bottom-5 left-1/2 transform -translate-x-1/2 bg-slate-900/90 backdrop-blur-md text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-xl z-50 transition animate-bounce";
+            toast.innerText = msg;
+            document.body.appendChild(toast);
+            setTimeout(() => { toast.remove(); }, 2500);
+        }
+
+        window.onload = function() {
+            initMultiCloudRealtime();
+        };
     </script>
 </body>
 </html>
