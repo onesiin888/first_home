@@ -87,24 +87,29 @@
     <!-- 메인 컨텐츠 -->
     <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
 
-        <!-- 탕비실 예산 및 잔액 요약 바 -->
-        <section class="bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
-            <div class="flex items-center space-x-3 w-full sm:w-auto">
-                <div class="w-10 h-10 rounded-xl bg-[#0083CA]/10 text-[#0083CA] flex items-center justify-center font-bold text-lg shrink-0">
-                    💳
+        <!-- 화요일 / 목요일 정기 주문 안내 배지 & 예산 현황 요약 바 -->
+        <section class="bg-gradient-to-r from-[#0083CA]/10 via-[#159E8A]/10 to-[#43A842]/10 rounded-xl p-4 sm:p-5 border border-[#159E8A]/30 shadow-sm flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center space-x-3.5 w-full sm:w-auto">
+                <div class="w-11 h-11 rounded-xl bg-white text-[#159E8A] flex items-center justify-center font-extrabold text-xl shadow-sm shrink-0 border border-slate-200/60">
+                    🚚
                 </div>
                 <div>
-                    <h2 class="text-xs font-bold text-slate-500 uppercase tracking-wider">이번 달 탕비실 예산 현황</h2>
-                    <div class="flex items-center space-x-2 mt-0.5">
-                        <span class="text-lg font-extrabold text-slate-900" id="budgetDisplay">총 300,000원 중</span>
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">잔액 300,000원</span>
-                    </div>
+                    <h2 class="text-xs font-bold text-[#0F766E] uppercase tracking-wider">다담랩스 정기 주문 안내</h2>
+                    <p class="text-sm font-extrabold text-slate-900 mt-0.5">매주 <span class="text-[#0083CA]">화요일</span> · <span class="text-[#159E8A]">목요일</span>에 일괄 취합하여 주문을 진행합니다.</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+
+            <div class="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto bg-white/80 px-4 py-2.5 rounded-xl border border-slate-200/80">
+                <div>
+                    <div class="text-[11px] font-bold text-slate-400">이번 달 탕비실 예산 잔액</div>
+                    <div class="flex items-center space-x-2 mt-0.5">
+                        <span class="text-base font-extrabold text-slate-900" id="budgetDisplay">300,000원 중</span>
+                        <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200" id="balanceDisplay">잔액 300,000원</span>
+                    </div>
+                </div>
                 <div id="adminBudgetControl" class="hidden">
-                    <button onclick="openBudgetModal()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg font-semibold transition">
-                        ⚙️ 예산 설정
+                    <button onclick="openBudgetModal()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded-lg font-semibold transition">
+                        ⚙️ 예산설정
                     </button>
                 </div>
             </div>
@@ -138,7 +143,7 @@
                         <div class="mb-4 pb-3 border-b border-slate-100">
                             <div class="flex justify-between items-center">
                                 <h2 class="text-sm font-bold text-slate-900">간식 · 비품 신청하기</h2>
-                                <span class="text-[10px] font-bold text-[#0083CA] bg-[#0083CA]/10 px-2 py-0.5 rounded">화·목 취합 발주</span>
+                                <span class="text-[10px] font-bold text-[#0083CA] bg-[#0083CA]/10 px-2 py-0.5 rounded">화·목 정기 취합</span>
                             </div>
                             <p class="text-xs text-slate-500 mt-0.5">목록에 이미 있는 메뉴는 우측에서 '나도 원해요'를 눌러주세요.</p>
                         </div>
@@ -273,13 +278,13 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 비밀번호(PIN) 변경</label>
                     <input type="password" id="settingNewPinInput" placeholder="새 비밀번호 입력 (변경 시에만 입력)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 변경하고 [설정 저장]을 누르면 이 링크(깃허브)에 고정됩니다.</p>
+                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 변경하고 [설정 저장]을 누르면 이 깃허브 링크에 고정됩니다.</p>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
                     <label class="block text-xs font-semibold text-slate-700">전체 데이터 관리</label>
                     <button type="button" onclick="clearAllOrders()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 rounded-lg font-semibold transition">
-                        주문 완료된 지난 내역 전체 초기화하기
+                        지난 신청 내역 전체 초기화하기
                     </button>
                 </div>
             </div>
@@ -331,7 +336,7 @@
             <form onsubmit="handleSaveMemo(event)" class="space-y-3.5">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">메모 내용 (도착 예정일 / 안내 사항 등)</label>
-                    <input type="text" id="adminMemoInput" placeholder="예: 금요일 오후 입고 예정입니다!" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <input type="text" id="adminMemoInput" placeholder="예: 이번 주 목요일 일괄 배송 예정입니다!" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
                     <button type="button" onclick="closeMemoModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
@@ -405,85 +410,59 @@
             { name: "두툼한 물티슈 (10팩)", category: "탕비실 소모품" }
         ];
 
-        const DEFAULT_ORDERS = [
-            {
-                id: 101,
-                author: "개발팀",
-                category: "커피·음료",
-                name: "코카콜라 제로 355ml 1박스",
-                link: "https://www.coupang.com",
-                reqNote: "오후 당 충전용으로 신청합니다!",
-                likes: 5,
-                adminMemo: "",
-                price: 18500,
-                date: "11/13"
-            },
-            {
-                id: 102,
-                author: "기획팀",
-                category: "과자·스낵",
-                name: "오리온 비쵸비 3박스",
-                link: "https://shopping.naver.com",
-                reqNote: "탕비실 과자 칸이 비었어요",
-                likes: 7,
-                adminMemo: "목요일 정기 발주로 주문 예정입니다!",
-                price: 0,
-                date: "11/12"
-            }
-        ];
+        let appConfig = Object.assign({}, DEFAULT_CONFIG);
+        let presetItems = DEFAULT_PRESETS.slice();
+        let orders = [];
+        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v6')) || [];
 
-        let appConfig = JSON.parse(localStorage.getItem('dadam_config_v4')) || Object.assign({}, DEFAULT_CONFIG);
-        let presetItems = JSON.parse(localStorage.getItem('dadam_presets_v4')) || DEFAULT_PRESETS.slice();
-        let orders = JSON.parse(localStorage.getItem('dadam_orders_v4')) || DEFAULT_ORDERS.slice();
-        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v4')) || [];
-
-        let isAdmin = localStorage.getItem('dadam_is_admin_v4') === 'true';
+        let isAdmin = localStorage.getItem('dadam_is_admin_v6') === 'true';
         let editingMemoId = null;
         let editingPriceId = null;
 
-        // 클라우드 실시간 동기화 브릿지 (전사 직원 PC간 실시간 공유)
-        const SYNC_CHANNEL_KEY = "dadam_cloud_sync_bridge_v4";
-        
-        function saveData() {
-            localStorage.setItem('dadam_config_v4', JSON.stringify(appConfig));
-            localStorage.setItem('dadam_presets_v4', JSON.stringify(presetItems));
-            localStorage.setItem('dadam_orders_v4', JSON.stringify(orders));
-            localStorage.setItem('dadam_likes_v4', JSON.stringify(myLikedIds));
+        // 전사 실시간 동기화를 위한 공용 클라우드 API (kvdb.io 퍼블릭 브릿지)
+        const CLOUD_SYNC_URL = "https://kvdb.io/DadamLabsPantry2026SyncKey/data";
 
-            // 클라우드 브릿지에 타임스탬프와 함께 데이터 송출
-            const syncPayload = {
-                timestamp: Date.now(),
-                config: appConfig,
-                presets: presetItems,
-                orders: orders
-            };
-            localStorage.setItem(SYNC_CHANNEL_KEY, JSON.stringify(syncPayload));
-        }
-
-        // 다른 팀원들의 변경 사항을 실시간으로 감지하여 화면에 반영
-        window.addEventListener('storage', (event) => {
-            if (event.key === SYNC_CHANNEL_KEY && event.newValue) {
-                try {
-                    const remoteData = JSON.parse(event.newValue);
-                    if (remoteData && remoteData.orders) {
-                        appConfig = remoteData.config || appConfig;
-                        presetItems = remoteData.presets || presetItems;
-                        orders = remoteData.orders || orders;
-                        
-                        localStorage.setItem('dadam_config_v4', JSON.stringify(appConfig));
-                        localStorage.setItem('dadam_presets_v4', JSON.stringify(presetItems));
-                        localStorage.setItem('dadam_orders_v4', JSON.stringify(orders));
+        async function fetchCloudData() {
+            try {
+                const res = await fetch(CLOUD_SYNC_URL, { cache: 'no-store' });
+                if (res.ok) {
+                    const remote = await res.json();
+                    if (remote && remote.orders) {
+                        appConfig = remote.config || appConfig;
+                        presetItems = remote.presets || presetItems;
+                        orders = remote.orders || orders;
 
                         applyUIWithConfig();
                         renderPresets();
                         renderOrders();
                         updateBudgetUI();
                     }
-                } catch (e) {
-                    console.error("Sync parse error", e);
                 }
+            } catch (e) {
+                console.log("Offline or sync fallback mode");
             }
-        });
+        }
+
+        async function pushCloudData() {
+            try {
+                await fetch(CLOUD_SYNC_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        timestamp: Date.now(),
+                        config: appConfig,
+                        presets: presetItems,
+                        orders: orders
+                    })
+                });
+            } catch (e) {
+                console.log("Cloud push failed");
+            }
+        }
+
+        // 최초 로드 및 2초 간격 실시간 양방향 폴링 동기화
+        fetchCloudData();
+        setInterval(fetchCloudData, 2000);
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
@@ -497,11 +476,10 @@
             }, 2600);
         }
 
-        function saveData() {
-            localStorage.setItem('dadam_config_v4', JSON.stringify(appConfig));
-            localStorage.setItem('dadam_presets_v4', JSON.stringify(presetItems));
-            localStorage.setItem('dadam_orders_v4', JSON.stringify(orders));
-            localStorage.setItem('dadam_likes_v4', JSON.stringify(myLikedIds));
+        async function saveData() {
+            localStorage.setItem('dadam_likes_v6', JSON.stringify(myLikedIds));
+            await pushCloudData();
+            fetchCloudData(); // 즉시 동기화 반영
         }
 
         function updateBudgetUI() {
@@ -509,14 +487,14 @@
             const totalSpent = orders.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
             const balance = totalBudget - totalSpent;
 
-            document.getElementById('budgetDisplay').innerText = `총 ${totalBudget.toLocaleString()}원 중`;
+            document.getElementById('budgetDisplay').innerText = `${totalBudget.toLocaleString()}원 중`;
             const balanceEl = document.getElementById('balanceDisplay');
             balanceEl.innerText = `잔액 ${balance.toLocaleString()}원`;
 
             if (balance < 0) {
-                balanceEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200";
+                balanceEl.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-rose-50 text-rose-700 border border-rose-200";
             } else {
-                balanceEl.className = "text-xs font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
+                balanceEl.className = "text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200";
             }
         }
 
@@ -615,26 +593,26 @@
             modal.classList.remove('flex');
         }
 
-        function handleAddPreset(e) {
+        async function handleAddPreset(e) {
             e.preventDefault();
             const name = document.getElementById('presetNameInput').value.trim();
             const category = document.getElementById('presetCategoryInput').value;
             if (!name) return;
             presetItems.push({ name, category });
-            saveData();
+            await saveData();
             renderPresets();
             closeAddPresetModal();
             showToast("단골 품목에 추가되었습니다.");
         }
 
-        function deletePreset(idx) {
+        async function deletePreset(idx) {
             presetItems.splice(idx, 1);
-            saveData();
+            await saveData();
             renderPresets();
             showToast("단골 품목이 삭제되었습니다.");
         }
 
-        function handleFormSubmit(e) {
+        async function handleFormSubmit(e) {
             e.preventDefault();
             const now = new Date();
             const dateStr = `${now.getMonth() + 1}/${now.getDate()}`;
@@ -660,13 +638,13 @@
 
             orders.unshift(newItem);
             myLikedIds.push(newId);
-            saveData();
+            await saveData();
             renderOrders();
             document.getElementById('orderForm').reset();
             showToast("신청 목록에 등록되었습니다!");
         }
 
-        function toggleLike(id) {
+        async function toggleLike(id) {
             const item = orders.find(o => o.id === id);
             if (!item) return;
 
@@ -678,7 +656,7 @@
                 item.likes = Math.max(1, (item.likes || 1) - 1);
                 myLikedIds.splice(likedIndex, 1);
             }
-            saveData();
+            await saveData();
             renderOrders();
         }
 
@@ -699,13 +677,13 @@
             modal.classList.remove('flex');
         }
 
-        function handleSaveMemo(e) {
+        async function handleSaveMemo(e) {
             e.preventDefault();
             if (editingMemoId === null) return;
             const item = orders.find(o => o.id === editingMemoId);
             if (item) {
                 item.adminMemo = document.getElementById('adminMemoInput').value.trim();
-                saveData();
+                await saveData();
                 renderOrders();
                 showToast("담당자 안내 메모가 저장되었습니다.");
             }
@@ -729,13 +707,13 @@
             modal.classList.remove('flex');
         }
 
-        function handleSavePrice(e) {
+        async function handleSavePrice(e) {
             e.preventDefault();
             if (editingPriceId === null) return;
             const item = orders.find(o => o.id === editingPriceId);
             if (item) {
                 item.price = Number(document.getElementById('orderPriceInput').value) || 0;
-                saveData();
+                await saveData();
                 renderOrders();
                 updateBudgetUI();
                 showToast("구매 금액이 반영되어 예산에서 차감되었습니다.");
@@ -756,30 +734,30 @@
             modal.classList.remove('flex');
         }
 
-        function handleSaveBudget(e) {
+        async function handleSaveBudget(e) {
             e.preventDefault();
             const val = Number(document.getElementById('totalBudgetInput').value);
             if (!isNaN(val)) {
                 appConfig.totalBudget = val;
-                saveData();
+                await saveData();
                 updateBudgetUI();
                 closeBudgetModal();
                 showToast("이번 달 총 예산이 변경되었습니다.");
             }
         }
 
-        function deleteOrder(id) {
+        async function deleteOrder(id) {
             orders = orders.filter(o => o.id !== id);
-            saveData();
+            await saveData();
             renderOrders();
             updateBudgetUI();
             showToast("신청 내역이 삭제되었습니다.");
         }
 
-        function registerToPreset(name, category) {
+        async function registerToPreset(name, category) {
             if (!presetItems.some(p => p.name === name)) {
                 presetItems.push({ name, category });
-                saveData();
+                await saveData();
                 renderPresets();
                 showToast("상단 단골 품목에 등록되었습니다.");
             } else {
@@ -790,7 +768,7 @@
         function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
-                localStorage.removeItem('dadam_is_admin_v3');
+                localStorage.removeItem('dadam_is_admin_v6');
                 applyUIWithConfig();
                 renderPresets();
                 renderOrders();
@@ -819,7 +797,7 @@
 
             if (inputPin === currentPin) {
                 isAdmin = true;
-                localStorage.setItem('dadam_is_admin_v4', 'true');
+                localStorage.setItem('dadam_is_admin_v6', 'true');
                 closeLoginModal();
                 applyUIWithConfig();
                 renderPresets();
@@ -844,7 +822,7 @@
             modal.classList.remove('flex');
         }
 
-        function saveAdminSettings() {
+        async function saveAdminSettings() {
             const newNotice = document.getElementById('settingNoticeInput').value.trim();
             const newPin = document.getElementById('settingNewPinInput').value.trim();
 
@@ -855,15 +833,15 @@
                 appConfig.pin = newPin;
             }
 
-            saveData();
+            await saveData();
             applyUIWithConfig();
             closeSettingsModal();
             showToast("환경설정 및 비밀번호가 안전하게 저장되었습니다.");
         }
 
-        function clearAllOrders() {
+        async function clearAllOrders() {
             orders = [];
-            saveData();
+            await saveData();
             renderOrders();
             updateBudgetUI();
             closeSettingsModal();
@@ -956,7 +934,7 @@
                 if (o.price > 0) {
                     html += `
                         <div class="mt-2 text-xs bg-slate-100 text-slate-700 px-3 py-1.5 rounded-lg font-semibold inline-flex items-center gap-1.5">
-                            <span>💳 구매 완료 금액:</span>
+                            <span>💳 결제 완료 금액:</span>
                             <span class="text-[#0083CA] font-bold">${o.price.toLocaleString()}원</span>
                         </div>
                     `;
@@ -1003,10 +981,7 @@
             showToast("발주 목록이 클립보드에 복사되었습니다!");
         }
 
-        applyUIWithConfig();
-        renderPresets();
-        renderOrders();
-        updateBudgetUI();
+        fetchCloudData();
     </script>
 </body>
 </html>
