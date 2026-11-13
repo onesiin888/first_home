@@ -305,6 +305,16 @@
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
+                    <label class="block text-xs font-semibold text-slate-700">🌐 다른 모든 컴퓨터(깃허브 링크)에 내 설정 적용하기</label>
+                    <p class="text-[11px] text-slate-500 leading-relaxed">
+                        방금 변경한 <strong>새 비밀번호·공지문구·단골품목</strong>이 기본값으로 내장된 전체 HTML 코드를 복사합니다. 복사한 코드를 깃허브 <code>food.html</code>에 붙여넣으면 <strong>다른 모든 컴퓨터에서도 변경된 비밀번호가 즉시 적용</strong>됩니다.
+                    </p>
+                    <button type="button" onclick="exportBakeInHtml()" class="w-full text-xs bg-[#0083CA]/10 hover:bg-[#0083CA]/20 text-[#0083CA] border border-[#0083CA]/30 py-2.5 rounded-lg font-bold transition">
+                        📋 현재 비밀번호·설정이 박힌 '깃허브용 전체 코드' 복사하기
+                    </button>
+                </div>
+
+                <div class="pt-3 border-t border-slate-100 space-y-2">
                     <label class="block text-xs font-semibold text-slate-700">완료 데이터 정리</label>
                     <button type="button" onclick="clearCompletedOrders()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 rounded-lg font-semibold transition">
                         '비치 완료'된 지난 내역 일괄 삭제하기
@@ -949,6 +959,43 @@
             showToast("비치 완료된 지난 내역이 정리되었습니다.");
         }
 
+        async function exportBakeInHtml() {
+            const newNotice = document.getElementById('settingNoticeInput').value.trim();
+            const newPin = document.getElementById('settingNewPinInput').value.trim();
+            const hideBtn = document.getElementById('settingHideAdminBtn').checked;
+
+            if (newNotice) appConfig.notice = newNotice;
+            if (newPin) {
+                appConfig.pinHash = await sha256Hash(newPin);
+                delete appConfig.pin;
+            }
+            appConfig.hideAdminBtn = hideBtn;
+            applyUIWithConfig();
+            await saveState();
+
+            const rawHtml = document.documentElement.outerHTML;
+            const bakedConfigJson = JSON.stringify(appConfig);
+            const bakedPresetsJson = JSON.stringify(presetItems);
+            const bakedOrdersJson = JSON.stringify(orders);
+
+            let updatedHtml = "<!DOCTYPE html>\n<html lang=\"ko\">\n" + rawHtml.substring(rawHtml.indexOf("<head>"));
+
+            updatedHtml = updatedHtml.replace(
+                /let appConfig = JSON\.parse\(localStorage\.getItem\(CONFIG_KEY\)\) \|\| \{[\s\S]*?\};/,
+                `let appConfig = Object.assign(${bakedConfigJson}, JSON.parse(localStorage.getItem(CONFIG_KEY)) || {}, { pinHash: "${appConfig.pinHash}", notice: ${JSON.stringify(appConfig.notice)}, hideAdminBtn: ${!!appConfig.hideAdminBtn} });`
+            );
+
+            const tempArea = document.createElement('textarea');
+            tempArea.value = updatedHtml;
+            document.body.appendChild(tempArea);
+            tempArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempArea);
+
+            closeSettingsModal();
+            showToast("변경된 비밀번호가 내장된 전체 코드가 복사되었습니다! 깃허브 food.html에 붙여넣으세요.");
+        }
+
         function updateSummaryDashboard() {
             const pendingCnt = orders.filter(o => o.status === 'pending').length;
             const orderedCnt = orders.filter(o => o.status === 'ordered').length;
@@ -1123,6 +1170,7 @@
             closeSettingsModal,
             saveAdminSettings,
             clearCompletedOrders,
+            exportBakeInHtml,
             handleAdminButton,
             closeLoginModal,
             submitAdminLogin,
