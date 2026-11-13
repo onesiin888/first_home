@@ -233,7 +233,7 @@
         </div>
     </main>
 
-    <!-- 하단 푸터 (연속 5번 클릭 시 숨겨진 담당자 로그인 호출) -->
+    <!-- 하단 푸터 -->
     <footer class="bg-white border-t border-slate-200 mt-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-400">
             <div class="flex items-center space-x-2">
@@ -241,7 +241,7 @@
                 <span>|</span>
                 <span>서울특별시 금천구 가산디지털2로 143, 어반워크2차 1101~1103호</span>
             </div>
-            <div onclick="handleSecretFooterClick()" class="cursor-pointer select-none hover:text-slate-600 transition" title="담당자 비상 로그인: 연속 3번 클릭">© DadamLabs. All Rights Reserved.</div>
+            <div onclick="openLoginModal()" class="cursor-pointer select-none hover:text-slate-600 transition" title="담당자 로그인">© DadamLabs. All Rights Reserved.</div>
         </div>
     </footer>
 
@@ -255,7 +255,7 @@
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1.5">담당자 비밀번호 (PIN)</label>
-                    <input type="password" id="loginPinInput" required placeholder="비밀번호 입력 (초기: 1234)" class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <input type="password" id="loginPinInput" required placeholder="비밀번호 입력" class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                     <p id="loginErrorMsg" class="text-xs text-rose-600 mt-1.5 hidden">비밀번호가 일치하지 않습니다.</p>
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
@@ -286,29 +286,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 비밀번호(PIN) 변경</label>
                     <input type="password" id="settingNewPinInput" placeholder="새 비밀번호 입력 (변경 시에만 입력)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 바꾸고 [설정 저장]만 누르면 모든 직원의 컴퓨터에 즉시 적용됩니다.</p>
-                </div>
-
-                <div class="pt-3 border-t border-slate-100 space-y-2">
-                    <label class="flex items-center justify-between cursor-pointer bg-slate-50 p-3 rounded-lg border border-slate-200">
-                        <div>
-                            <span class="block text-xs font-bold text-slate-800">일반 직원 화면에서 '담당자 로그인' 버튼 숨기기</span>
-                            <span class="block text-[11px] text-slate-500 mt-0.5">체크하면 일반 직원에게는 우측 상단 로그인 버튼이 보이지 않습니다.</span>
-                        </div>
-                        <input type="checkbox" id="settingHideAdminBtn" class="w-4 h-4 accent-[#0083CA] rounded cursor-pointer">
-                    </label>
-                    <div class="text-[11px] bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-600 leading-relaxed">
-                        💡 버튼을 숨기더라도 <strong>하단 카피라이트('© DadamLabs')를 연속 3번 클릭</strong>하거나 주소 뒤에 <code>?admin=1</code>을 붙이면 언제든 담당자 로그인 창이 열립니다.
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-slate-100 space-y-2">
-                    <div class="flex items-center justify-between">
-                        <label class="block text-xs font-semibold text-slate-700">🔗 담당자 전용 바로가기 링크</label>
-                        <button type="button" onclick="copyAdminDirectLink()" class="text-xs bg-[#0083CA]/10 hover:bg-[#0083CA]/20 text-[#0083CA] border border-[#0083CA]/30 px-3 py-1.5 rounded-lg font-bold transition">
-                            담당자 전용 링크 복사
-                        </button>
-                    </div>
+                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 바꾸고 [설정 저장]을 누르면 즉시 클라우드에 반영되어 다른 분들도 새 번호로만 로그인할 수 있습니다.</p>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
@@ -382,15 +360,12 @@
     </div>
 
     <script>
-        // ★ [중요] 여기에 담당자 로그인 비밀번호를 미리 설정해 둘 수 있습니다!
-        // 직원들에게 이 링크를 그대로 주시면, 이 비밀번호로 [담당자 로그인]을 하실 수 있습니다.
-        const PRESET_ADMIN_PIN = "ddam"; // 원하시는 비밀번호(예: "9999" 등)로 수정 가능합니다.
+        // 초기 기본 비밀번호 (코드 내 최초 설정)
+        const INITIAL_ADMIN_PIN = "1234";
 
         const DEFAULT_CONFIG = {
-            pin: PRESET_ADMIN_PIN,
-            pinHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
-            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.",
-            hideAdminBtn: false // 모든 직원 화면에서 우측 상단 로그인 버튼이 보이도록 통일 (원하시면 true로 바꿀 수 있습니다)
+            pin: INITIAL_ADMIN_PIN,
+            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요."
         };
 
         const DEFAULT_PRESETS = [
@@ -426,50 +401,19 @@
                 status: "ordered",
                 adminMemo: "주문 완료! 목요일 도착 예정입니다.",
                 date: "11/12"
-            },
-            {
-                id: 103,
-                author: "경영지원",
-                category: "탕비실 소모품",
-                name: "종이컵 6.5온스 1박스",
-                link: "",
-                reqNote: "",
-                likes: 3,
-                status: "completed",
-                adminMemo: "탕비실 하단 수납장에 채워두었습니다.",
-                date: "11/11"
             }
         ];
 
-        const CONFIG_KEY = 'dadamlabs_pantry_config_v5';
-        const PRESET_KEY = 'dadamlabs_pantry_presets_v5';
-        const ORDERS_KEY = 'dadamlabs_pantry_orders_v5';
-        const LIKED_IDS_KEY = 'dadamlabs_my_liked_ids_v5';
-        const ADMIN_SESSION_KEY = 'dadamlabs_is_admin_device_v5';
+        const CLOUD_SYNC_URL = "https://kvdb.io/dadamlabs_pantry_room_2026_fixed_key/state";
 
-        const CLOUD_SYNC_URL = "https://kvdb.io/A2x9kL5mP8qR3vW7yZ1cB4/dadamlabs_pantry_shared_2026_v5";
+        let appConfig = JSON.parse(localStorage.getItem('dadam_config')) || Object.assign({}, DEFAULT_CONFIG);
+        let presetItems = JSON.parse(localStorage.getItem('dadam_presets')) || DEFAULT_PRESETS.slice();
+        let orders = JSON.parse(localStorage.getItem('dadam_orders')) || DEFAULT_ORDERS.slice();
+        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes')) || [];
 
-        let appConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || Object.assign({}, DEFAULT_CONFIG);
-        let presetItems = JSON.parse(localStorage.getItem(PRESET_KEY)) || DEFAULT_PRESETS.slice();
-        let orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || DEFAULT_ORDERS.slice();
-        let myLikedIds = JSON.parse(localStorage.getItem(LIKED_IDS_KEY)) || [];
-
-        let isAdmin = localStorage.getItem(ADMIN_SESSION_KEY) === 'true';
+        let isAdmin = localStorage.getItem('dadam_is_admin') === 'true';
         let editingMemoId = null;
-        let footerClickCount = 0;
-        let footerClickTimer = null;
         let lastCloudUpdatedAt = 0;
-
-        async function sha256Hash(str) {
-            try {
-                const buf = new TextEncoder().encode(str);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            } catch (e) {
-                return str;
-            }
-        }
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
@@ -507,15 +451,20 @@
                 }
                 if (!res.ok) return;
                 const data = await res.json();
-                if (data && (forceRender || !data.updatedAt || data.updatedAt > lastCloudUpdatedAt)) {
+                if (data && (forceRender || !data.updatedAt || data.updatedAt >= lastCloudUpdatedAt)) {
                     lastCloudUpdatedAt = data.updatedAt || Date.now();
-                    if (data.appConfig) appConfig = data.appConfig;
-                    if (Array.isArray(data.presetItems)) presetItems = data.presetItems;
-                    if (Array.isArray(data.orders)) orders = data.orders;
-
-                    localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
-                    localStorage.setItem(PRESET_KEY, JSON.stringify(presetItems));
-                    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+                    if (data.appConfig) {
+                        appConfig = data.appConfig;
+                        localStorage.setItem('dadam_config', JSON.stringify(appConfig));
+                    }
+                    if (Array.isArray(data.presetItems)) {
+                        presetItems = data.presetItems;
+                        localStorage.setItem('dadam_presets', JSON.stringify(presetItems));
+                    }
+                    if (Array.isArray(data.orders)) {
+                        orders = data.orders;
+                        localStorage.setItem('dadam_orders', JSON.stringify(orders));
+                    }
 
                     applyUIWithConfig();
                     renderPresets();
@@ -523,15 +472,15 @@
                 }
                 setSyncBadge(true, "실시간 전사 공유중");
             } catch (e) {
-                setSyncBadge(false, "로컬 저장 모드");
+                setSyncBadge(false, "오프라인 모드");
             }
         }
 
         async function pushToCloud() {
-            localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
-            localStorage.setItem(PRESET_KEY, JSON.stringify(presetItems));
-            localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-            localStorage.setItem(LIKED_IDS_KEY, JSON.stringify(myLikedIds));
+            localStorage.setItem('dadam_config', JSON.stringify(appConfig));
+            localStorage.setItem('dadam_presets', JSON.stringify(presetItems));
+            localStorage.setItem('dadam_orders', JSON.stringify(orders));
+            localStorage.setItem('dadam_likes', JSON.stringify(myLikedIds));
 
             try {
                 const nowTs = Date.now();
@@ -578,7 +527,6 @@
             const settingsBtn = document.getElementById('settingsBtn');
             const presetCtrl = document.getElementById('adminPresetControl');
 
-            // 이제 링크나 변동 없이 항상 깔끔하게 로그인 버튼과 환경설정 버튼이 제 자리에 위치합니다.
             if (isAdmin) {
                 adminBtn.classList.remove('hidden');
                 adminBtn.innerText = "🔓 담당자 모드 종료";
@@ -768,17 +716,19 @@
             }
         }
 
-        function openLoginModal() {
+        async function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
-                localStorage.removeItem(ADMIN_SESSION_KEY);
+                localStorage.removeItem('dadam_is_admin');
                 applyUIWithConfig();
                 renderPresets();
                 renderOrders();
                 showToast("담당자 모드가 종료되었습니다.");
                 return;
             }
-            pullFromCloud(false);
+            // 로그인 창 열기 전 최신 설정을 클라우드에서 무조건 강제로 당겨옴
+            await pullFromCloud(true);
+
             document.getElementById('loginPinInput').value = '';
             document.getElementById('loginErrorMsg').classList.add('hidden');
             const modal = document.getElementById('loginModal');
@@ -795,15 +745,15 @@
 
         async function handleAdminLogin(e) {
             e.preventDefault();
+            // 최신 클라우드 설정 반영을 위해 한 번 더 동기화 시도
+            await pullFromCloud(false);
+
             const inputPin = document.getElementById('loginPinInput').value.trim();
-            const inputHash = await sha256Hash(inputPin);
+            const currentPin = (appConfig && appConfig.pin) ? appConfig.pin : INITIAL_ADMIN_PIN;
 
-            // 코드 상단에 설정해 둔 비밀번호(PRESET_ADMIN_PIN) 또는 기존 저장된 비밀번호와 일치하는지 확인
-            const isMatch = (inputPin === PRESET_ADMIN_PIN) || (appConfig.pin && inputPin === appConfig.pin) || (appConfig.pinHash && inputHash === appConfig.pinHash);
-
-            if (isMatch) {
+            if (inputPin === currentPin) {
                 isAdmin = true;
-                localStorage.setItem(ADMIN_SESSION_KEY, 'true');
+                localStorage.setItem('dadam_is_admin', 'true');
                 closeLoginModal();
                 applyUIWithConfig();
                 renderPresets();
@@ -814,15 +764,10 @@
             }
         }
 
-        function handleSecretFooterClick() {
-            // 보조 로그인 경로 (필요시 사용)
-            openLoginModal();
-        }
-
-        function openSettingsModal() {
+        async function openSettingsModal() {
+            await pullFromCloud(true);
             document.getElementById('settingNoticeInput').value = appConfig.notice || DEFAULT_CONFIG.notice;
             document.getElementById('settingNewPinInput').value = '';
-            document.getElementById('settingHideAdminBtn').checked = !!appConfig.hideAdminBtn;
             const modal = document.getElementById('settingsModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -837,33 +782,18 @@
         async function saveAdminSettings() {
             const newNotice = document.getElementById('settingNoticeInput').value.trim();
             const newPin = document.getElementById('settingNewPinInput').value.trim();
-            const hideBtn = document.getElementById('settingHideAdminBtn').checked;
 
             if (newNotice) {
                 appConfig.notice = newNotice;
             }
             if (newPin) {
-                appConfig.pin = newPin;
-                appConfig.pinHash = await sha256Hash(newPin);
+                appConfig.pin = newPin; // 새 비밀번호 지정
             }
-            appConfig.hideAdminBtn = hideBtn;
 
             applyUIWithConfig();
-            await pushToCloud();
+            await pushToCloud(); // 클라우드에 즉시 강제 반영
             closeSettingsModal();
-            showToast("설정이 클라우드에 저장되어 모든 PC에 즉시 적용되었습니다!");
-        }
-
-        function copyAdminDirectLink() {
-            const baseUrl = window.location.origin + window.location.pathname;
-            const adminUrl = `${baseUrl}?admin=1`;
-            const tempArea = document.createElement('textarea');
-            tempArea.value = adminUrl;
-            document.body.appendChild(tempArea);
-            tempArea.select();
-            document.execCommand('copy');
-            document.body.removeChild(tempArea);
-            showToast("담당자 전용 링크가 복사되었습니다!");
+            showToast("비밀번호가 변경되어 클라우드에 즉시 저장되었습니다!");
         }
 
         async function clearCompletedOrders() {
@@ -1040,7 +970,7 @@
 
         setInterval(() => {
             pullFromCloud(false);
-        }, 3500);
+        }, 3000);
     </script>
 </body>
 </html>
