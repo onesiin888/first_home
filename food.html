@@ -388,7 +388,7 @@
                 userId = 'fallback-user-' + Math.random().toString(36).substring(2, 9);
             }
 
-            // [핵심 보장] 전 세계 단 하나의 공통 마스터 문서 키 고정 (크롬/엣지 완벽 동기화)
+            // [확실한 실시간 싱크 보장] 전 세계 단 하나의 공통 마스터 문서 키 구독
             try {
                 const docRef = doc(db, 'artifacts', 'dadamlabs_master_shared_room_v2026', 'public', 'data', 'master_state');
                 onSnapshot(docRef, (docSnap) => {
@@ -421,7 +421,7 @@
                 presets: presets,
                 appConfig: appConfig,
                 myLikedIds: myLikedIds,
-                timestamp: Date.now()
+                lastUpdated: Date.now()
             };
             try {
                 if (db) {
