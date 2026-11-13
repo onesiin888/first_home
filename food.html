@@ -343,6 +343,7 @@
         let myLikedIds = [];
         let isAdmin = false;
         let activeTargetId = null;
+        let isCloudSynced = false; // 클라우드 데이터 수신 여부 체크
 
         window.escapeHtml = function(str) {
             if (!str) return '';
@@ -388,22 +389,21 @@
                 userId = 'fallback-user-' + Math.random().toString(36).substring(2, 9);
             }
 
-            // 구글 클라우드 Firestore 영구 저장소 실시간 구독
+            // 구글 클라우드 Firestore 영구 저장소 실시간 구독 (엣지/크롬 어디서 열든 즉시 최신화)
             try {
                 const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_master_state_2026');
                 onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
-                        // 내가 방금 바꾼 게 아닐 때만 서버 데이터로 갱신 (반응 속도 극대화)
-                        if (data.updatedAt && data.updatedAt > lastLocalUpdateTime) {
-                            if (data.orders) orders = data.orders;
-                            if (data.presets) presets = data.presets;
-                            if (data.appConfig) appConfig = { ...appConfig, ...data.appConfig };
-                            if (data.myLikedIds) myLikedIds = data.myLikedIds;
-                            renderPresets();
-                            renderOrders();
-                            applyUIWithConfig();
-                        }
+                        if (data.orders) orders = data.orders;
+                        if (data.presets) presets = data.presets;
+                        if (data.appConfig) appConfig = { ...appConfig, ...data.appConfig };
+                        if (data.myLikedIds) myLikedIds = data.myLikedIds;
+                        
+                        isCloudSynced = true;
+                        renderPresets();
+                        renderOrders();
+                        applyUIWithConfig();
                     } else {
                         saveStateToCloud();
                     }
@@ -431,7 +431,7 @@
             try {
                 if (db) {
                     const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_master_state_2026');
-                    setDoc(docRef, payload).catch(() => {});
+                    setDoc(docRef, payload, { merge: true }).catch(() => {});
                 }
             } catch (e) {}
             try {
