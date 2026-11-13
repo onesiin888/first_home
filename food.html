@@ -410,22 +410,21 @@
             { name: "두툼한 물티슈 (10팩)", category: "탕비실 소모품" }
         ];
 
-        // 로컬 백업에서 우선 로드하여 새로고침 시 빈 화면 방지
         let localSaved = null;
         try {
-            localSaved = JSON.parse(localStorage.getItem('dadam_master_backup_v7'));
+            localSaved = JSON.parse(localStorage.getItem('dadam_master_backup_v8'));
         } catch(e) {}
 
         let appConfig = localSaved && localSaved.config ? localSaved.config : Object.assign({}, DEFAULT_CONFIG);
         let presetItems = localSaved && localSaved.presets ? localSaved.presets : DEFAULT_PRESETS.slice();
         let orders = localSaved && localSaved.orders ? localSaved.orders : [];
-        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v7')) || [];
+        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v8')) || [];
 
-        let isAdmin = localStorage.getItem('dadam_is_admin_v7') === 'true';
+        let isAdmin = localStorage.getItem('dadam_is_admin_v8') === 'true';
         let editingMemoId = null;
         let editingPriceId = null;
 
-        // 전사 실시간 동기화를 위한 공용 클라우드 API (kvdb.io 퍼블릭 브릿지)
+        // 전사 0.8초 초고속 실시간 동기화 브릿지
         const CLOUD_SYNC_URL = "https://kvdb.io/DadamLabsPantry2026SyncKey/data";
 
         async function fetchCloudData() {
@@ -438,8 +437,7 @@
                         presetItems = remote.presets || presetItems;
                         orders = remote.orders || orders;
 
-                        // 로컬 스토리지에 최신본 영구 백업
-                        localStorage.setItem('dadam_master_backup_v7', JSON.stringify({
+                        localStorage.setItem('dadam_master_backup_v8', JSON.stringify({
                             config: appConfig,
                             presets: presetItems,
                             orders: orders
@@ -452,7 +450,7 @@
                     }
                 }
             } catch (e) {
-                console.log("Offline or sync fallback mode");
+                console.log("Sync fallback mode");
             }
         }
 
@@ -463,8 +461,7 @@
                 presets: presetItems,
                 orders: orders
             };
-            // 즉시 로컬 백업
-            localStorage.setItem('dadam_master_backup_v7', JSON.stringify(payload));
+            localStorage.setItem('dadam_master_backup_v8', JSON.stringify(payload));
 
             try {
                 await fetch(CLOUD_SYNC_URL, {
@@ -477,15 +474,14 @@
             }
         }
 
-        // 초기 렌더링 즉시 수행
         applyUIWithConfig();
         renderPresets();
         renderOrders();
         updateBudgetUI();
 
-        // 클라우드 동기화 호출 및 폴링
         fetchCloudData();
-        setInterval(fetchCloudData, 2000);
+        // 0.8초 주기로 실시간 동기화 유지
+        setInterval(fetchCloudData, 800);
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
@@ -500,7 +496,7 @@
         }
 
         async function saveData() {
-            localStorage.setItem('dadam_likes_v7', JSON.stringify(myLikedIds));
+            localStorage.setItem('dadam_likes_v8', JSON.stringify(myLikedIds));
             await pushCloudData();
             fetchCloudData();
         }
@@ -791,7 +787,7 @@
         function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
-                localStorage.removeItem('dadam_is_admin_v7');
+                localStorage.removeItem('dadam_is_admin_v8');
                 applyUIWithConfig();
                 renderPresets();
                 renderOrders();
@@ -820,7 +816,7 @@
 
             if (inputPin === currentPin) {
                 isAdmin = true;
-                localStorage.setItem('dadam_is_admin_v7', 'true');
+                localStorage.setItem('dadam_is_admin_v8', 'true');
                 closeLoginModal();
                 applyUIWithConfig();
                 renderPresets();
