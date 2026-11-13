@@ -34,7 +34,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-800" onclick="triggerImmediateSync()">
+<body class="min-h-screen flex flex-col text-slate-800">
 
     <!-- 상단 그라데이션 포인트 라인 -->
     <div class="h-1.5 w-full dadam-gradient-bg"></div>
@@ -278,7 +278,7 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 비밀번호(PIN) 변경</label>
                     <input type="password" id="settingNewPinInput" placeholder="새 비밀번호 입력 (변경 시에만 입력)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 변경하고 [설정 저장]을 누르면 이 깃허브 링크에 고정됩니다.</p>
+                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 변경하고 [설정 저장]을 누르면 이 브라우저와 저장소에 고정됩니다.</p>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
@@ -410,96 +410,35 @@
             { name: "두툼한 물티슈 (10팩)", category: "탕비실 소모품" }
         ];
 
-        // 로컬 백업에서 우선 불러와 초기화 방지
-        let savedConfig = null;
-        let savedPresets = null;
-        let savedOrders = null;
-        let savedLikes = null;
+        // 100% 안전하고 강력한 로컬 영구 저장소 키
+        const STORAGE_KEY_CONFIG = 'dadam_master_config_v12';
+        const STORAGE_KEY_ORDERS = 'dadam_master_orders_v12';
+        const STORAGE_KEY_PRESETS = 'dadam_master_presets_v12';
+        const STORAGE_KEY_LIKES = 'dadam_master_likes_v12';
+        const STORAGE_KEY_ADMIN = 'dadam_master_is_admin_v12';
 
-        try {
-            savedConfig = JSON.parse(localStorage.getItem('dadam_config_v10'));
-            savedPresets = JSON.parse(localStorage.getItem('dadam_presets_v10'));
-            savedOrders = JSON.parse(localStorage.getItem('dadam_orders_v10'));
-            savedLikes = JSON.parse(localStorage.getItem('dadam_likes_v10'));
-        } catch(e) {}
+        let appConfig = JSON.parse(localStorage.getItem(STORAGE_KEY_CONFIG) || JSON.stringify(DEFAULT_CONFIG));
+        let presetItems = JSON.parse(localStorage.getItem(STORAGE_KEY_PRESETS) || JSON.stringify(DEFAULT_PRESETS));
+        let orders = JSON.parse(localStorage.getItem(STORAGE_KEY_ORDERS) || '[]');
+        let myLikedIds = JSON.parse(localStorage.getItem(STORAGE_KEY_LIKES) || '[]');
+        let isAdmin = localStorage.getItem(STORAGE_KEY_ADMIN) === 'true';
 
-        let appConfig = savedConfig ? savedConfig : Object.assign({}, DEFAULT_CONFIG);
-        let presetItems = savedPresets ? savedPresets : DEFAULT_PRESETS.slice();
-        let orders = savedOrders ? savedOrders : [];
-        let myLikedIds = savedLikes ? savedLikes : [];
-
-        let isAdmin = localStorage.getItem('dadam_is_admin_v10') === 'true';
         let editingMemoId = null;
         let editingPriceId = null;
 
-        const RELIABLE_CLOUD_URL = "https://kvdb.io/DadamLabsPantryMaster2026Key/data";
-
-        async function fetchCloudData() {
-            try {
-                const res = await fetch(RELIABLE_CLOUD_URL + "?t=" + Date.now(), { 
-                    method: 'GET',
-                    cache: 'no-store',
-                    headers: { 'Accept': 'application/json' }
-                });
-                if (res.ok) {
-                    const remote = await res.json();
-                    if (remote && remote.orders !== undefined && Array.isArray(remote.orders)) {
-                        // 원격 데이터가 비어있지 않거나 로컬보다 최신인 경우에만 반영
-                        appConfig = remote.config || appConfig;
-                        presetItems = remote.presets || presetItems;
-                        orders = remote.orders || orders;
-
-                        // 로컬 스토리지 동기화 백업
-                        localStorage.setItem('dadam_config_v10', JSON.stringify(appConfig));
-                        localStorage.setItem('dadam_presets_v10', JSON.stringify(presetItems));
-                        localStorage.setItem('dadam_orders_v10', JSON.stringify(orders));
-
-                        applyUIWithConfig();
-                        renderPresets();
-                        renderOrders();
-                        updateBudgetUI();
-                    }
-                }
-            } catch (e) {
-                // 네트워크 오류 시 로컬 백업 사용
-            }
+        function persistData() {
+            localStorage.setItem(STORAGE_KEY_CONFIG, JSON.stringify(appConfig));
+            localStorage.setItem(STORAGE_KEY_PRESETS, JSON.stringify(presetItems));
+            localStorage.setItem(STORAGE_KEY_ORDERS, JSON.stringify(orders));
+            localStorage.setItem(STORAGE_KEY_LIKES, JSON.stringify(myLikedIds));
+            localStorage.setItem(STORAGE_KEY_ADMIN, isAdmin ? 'true' : 'false');
         }
 
-        async function pushCloudData() {
-            // 로컬 스토리지에 무조건 즉시 영구 저장 (새로고침 초기화 방지)
-            localStorage.setItem('dadam_config_v10', JSON.stringify(appConfig));
-            localStorage.setItem('dadam_presets_v10', JSON.stringify(presetItems));
-            localStorage.setItem('dadam_orders_v10', JSON.stringify(orders));
-            localStorage.setItem('dadam_likes_v10', JSON.stringify(myLikedIds));
-
-            const payload = {
-                timestamp: Date.now(),
-                config: appConfig,
-                presets: presetItems,
-                orders: orders
-            };
-
-            try {
-                await fetch(RELIABLE_CLOUD_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-            } catch (e) {}
-        }
-
-        function triggerImmediateSync() {
-            fetchCloudData();
-        }
-
-        // 초기 실행 시 화면 먼저 빠르게 그리고 백그라운드 동기화
+        // 초기 실행 시 UI 적용
         applyUIWithConfig();
         renderPresets();
         renderOrders();
         updateBudgetUI();
-
-        fetchCloudData();
-        setInterval(fetchCloudData, 1000);
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
@@ -513,8 +452,8 @@
             }, 2600);
         }
 
-        async function saveData() {
-            await pushCloudData();
+        function saveData() {
+            persistData();
             applyUIWithConfig();
             renderPresets();
             renderOrders();
@@ -632,26 +571,26 @@
             modal.classList.remove('flex');
         }
 
-        async function handleAddPreset(e) {
+        function handleAddPreset(e) {
             e.preventDefault();
             const name = document.getElementById('presetNameInput').value.trim();
             const category = document.getElementById('presetCategoryInput').value;
             if (!name) return;
             presetItems.push({ name, category });
-            await saveData();
+            saveData();
             renderPresets();
             closeAddPresetModal();
             showToast("단골 품목에 추가되었습니다.");
         }
 
-        async function deletePreset(idx) {
+        function deletePreset(idx) {
             presetItems.splice(idx, 1);
-            await saveData();
+            saveData();
             renderPresets();
             showToast("단골 품목이 삭제되었습니다.");
         }
 
-        async function handleFormSubmit(e) {
+        function handleFormSubmit(e) {
             e.preventDefault();
             const now = new Date();
             const dateStr = `${now.getMonth() + 1}/${now.getDate()}`;
@@ -677,13 +616,13 @@
 
             orders.unshift(newItem);
             myLikedIds.push(newId);
-            await saveData();
+            saveData();
             renderOrders();
             document.getElementById('orderForm').reset();
             showToast("신청 목록에 등록되었습니다!");
         }
 
-        async function toggleLike(id) {
+        function toggleLike(id) {
             const item = orders.find(o => o.id === id);
             if (!item) return;
 
@@ -695,7 +634,7 @@
                 item.likes = Math.max(1, (item.likes || 1) - 1);
                 myLikedIds.splice(likedIndex, 1);
             }
-            await saveData();
+            saveData();
             renderOrders();
         }
 
@@ -716,13 +655,13 @@
             modal.classList.remove('flex');
         }
 
-        async function handleSaveMemo(e) {
+        function handleSaveMemo(e) {
             e.preventDefault();
             if (editingMemoId === null) return;
             const item = orders.find(o => o.id === editingMemoId);
             if (item) {
                 item.adminMemo = document.getElementById('adminMemoInput').value.trim();
-                await saveData();
+                saveData();
                 renderOrders();
                 showToast("담당자 안내 메모가 저장되었습니다.");
             }
@@ -746,13 +685,13 @@
             modal.classList.remove('flex');
         }
 
-        async function handleSavePrice(e) {
+        function handleSavePrice(e) {
             e.preventDefault();
             if (editingPriceId === null) return;
             const item = orders.find(o => o.id === editingPriceId);
             if (item) {
                 item.price = Number(document.getElementById('orderPriceInput').value) || 0;
-                await saveData();
+                saveData();
                 renderOrders();
                 updateBudgetUI();
                 showToast("구매 금액이 반영되어 예산에서 차감되었습니다.");
@@ -773,30 +712,30 @@
             modal.classList.remove('flex');
         }
 
-        async function handleSaveBudget(e) {
+        function handleSaveBudget(e) {
             e.preventDefault();
             const val = Number(document.getElementById('totalBudgetInput').value);
             if (!isNaN(val)) {
                 appConfig.totalBudget = val;
-                await saveData();
+                saveData();
                 updateBudgetUI();
                 closeBudgetModal();
                 showToast("이번 달 총 예산이 변경되었습니다.");
             }
         }
 
-        async function deleteOrder(id) {
+        function deleteOrder(id) {
             orders = orders.filter(o => o.id !== id);
-            await saveData();
+            saveData();
             renderOrders();
             updateBudgetUI();
             showToast("신청 내역이 삭제되었습니다.");
         }
 
-        async function registerToPreset(name, category) {
+        function registerToPreset(name, category) {
             if (!presetItems.some(p => p.name === name)) {
                 presetItems.push({ name, category });
-                await saveData();
+                saveData();
                 renderPresets();
                 showToast("상단 단골 품목에 등록되었습니다.");
             } else {
@@ -807,7 +746,7 @@
         function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
-                localStorage.removeItem('dadam_is_admin_v10');
+                persistData();
                 applyUIWithConfig();
                 renderPresets();
                 renderOrders();
@@ -836,7 +775,7 @@
 
             if (inputPin === currentPin) {
                 isAdmin = true;
-                localStorage.setItem('dadam_is_admin_v10', 'true');
+                persistData();
                 closeLoginModal();
                 applyUIWithConfig();
                 renderPresets();
@@ -861,7 +800,7 @@
             modal.classList.remove('flex');
         }
 
-        async function saveAdminSettings() {
+        function saveAdminSettings() {
             const newNotice = document.getElementById('settingNoticeInput').value.trim();
             const newPin = document.getElementById('settingNewPinInput').value.trim();
 
@@ -872,15 +811,15 @@
                 appConfig.pin = newPin;
             }
 
-            await saveData();
+            saveData();
             applyUIWithConfig();
             closeSettingsModal();
             showToast("환경설정 및 비밀번호가 안전하게 저장되었습니다.");
         }
 
-        async function clearAllOrders() {
+        function clearAllOrders() {
             orders = [];
-            await saveData();
+            saveData();
             renderOrders();
             updateBudgetUI();
             closeSettingsModal();
