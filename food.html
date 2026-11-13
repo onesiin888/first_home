@@ -34,7 +34,7 @@
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col text-slate-800">
+<body class="min-h-screen flex flex-col text-slate-800" onclick="triggerImmediateSync()">
 
     <!-- 상단 그라데이션 포인트 라인 -->
     <div class="h-1.5 w-full dadam-gradient-bg"></div>
@@ -412,24 +412,24 @@
 
         let localSaved = null;
         try {
-            localSaved = JSON.parse(localStorage.getItem('dadam_master_backup_v8'));
+            localSaved = JSON.parse(localStorage.getItem('dadam_master_backup_v9'));
         } catch(e) {}
 
         let appConfig = localSaved && localSaved.config ? localSaved.config : Object.assign({}, DEFAULT_CONFIG);
         let presetItems = localSaved && localSaved.presets ? localSaved.presets : DEFAULT_PRESETS.slice();
         let orders = localSaved && localSaved.orders ? localSaved.orders : [];
-        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v8')) || [];
+        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v9')) || [];
 
-        let isAdmin = localStorage.getItem('dadam_is_admin_v8') === 'true';
+        let isAdmin = localStorage.getItem('dadam_is_admin_v9') === 'true';
         let editingMemoId = null;
         let editingPriceId = null;
 
-        // 전사 0.8초 초고속 실시간 동기화 브릿지
+        // 메신저 인앱 브라우저 호환 초고속 실시간 동기화 브릿지
         const CLOUD_SYNC_URL = "https://kvdb.io/DadamLabsPantry2026SyncKey/data";
 
         async function fetchCloudData() {
             try {
-                const res = await fetch(CLOUD_SYNC_URL, { cache: 'no-store' });
+                const res = await fetch(CLOUD_SYNC_URL + "?t=" + Date.now(), { cache: 'no-store' });
                 if (res.ok) {
                     const remote = await res.json();
                     if (remote && remote.orders !== undefined) {
@@ -437,7 +437,7 @@
                         presetItems = remote.presets || presetItems;
                         orders = remote.orders || orders;
 
-                        localStorage.setItem('dadam_master_backup_v8', JSON.stringify({
+                        localStorage.setItem('dadam_master_backup_v9', JSON.stringify({
                             config: appConfig,
                             presets: presetItems,
                             orders: orders
@@ -461,7 +461,7 @@
                 presets: presetItems,
                 orders: orders
             };
-            localStorage.setItem('dadam_master_backup_v8', JSON.stringify(payload));
+            localStorage.setItem('dadam_master_backup_v9', JSON.stringify(payload));
 
             try {
                 await fetch(CLOUD_SYNC_URL, {
@@ -474,14 +474,18 @@
             }
         }
 
+        function triggerImmediateSync() {
+            fetchCloudData();
+        }
+
         applyUIWithConfig();
         renderPresets();
         renderOrders();
         updateBudgetUI();
 
         fetchCloudData();
-        // 0.8초 주기로 실시간 동기화 유지
-        setInterval(fetchCloudData, 800);
+        // 0.6초 주기로 실시간 동기화 유지 (인앱 브라우저 대응 강화)
+        setInterval(fetchCloudData, 600);
 
         function showToast(msg) {
             const box = document.getElementById('toastBox');
@@ -496,9 +500,9 @@
         }
 
         async function saveData() {
-            localStorage.setItem('dadam_likes_v8', JSON.stringify(myLikedIds));
+            localStorage.setItem('dadam_likes_v9', JSON.stringify(myLikedIds));
             await pushCloudData();
-            fetchCloudData();
+            await fetchCloudData();
         }
 
         function updateBudgetUI() {
@@ -787,7 +791,7 @@
         function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
-                localStorage.removeItem('dadam_is_admin_v8');
+                localStorage.removeItem('dadam_is_admin_v9');
                 applyUIWithConfig();
                 renderPresets();
                 renderOrders();
@@ -816,7 +820,7 @@
 
             if (inputPin === currentPin) {
                 isAdmin = true;
-                localStorage.setItem('dadam_is_admin_v8', 'true');
+                localStorage.setItem('dadam_is_admin_v9', 'true');
                 closeLoginModal();
                 applyUIWithConfig();
                 renderPresets();
