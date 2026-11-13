@@ -124,33 +124,9 @@
                     </div>
 
                     <!-- 통합 일정 리스트 -->
-                    <div class="space-y-4 max-h-[460px] overflow-y-auto custom-scrollbar pr-1" id="schedule-container">
+                    <div class="space-y-4 max-h-[540px] overflow-y-auto custom-scrollbar pr-1" id="schedule-container">
                         <!-- JS로 렌더링 -->
                     </div>
-                </div>
-
-                <!-- 추가된 실시간 미니 잡담 톡방 박스 -->
-                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 space-y-4">
-                    <div class="flex justify-between items-center">
-                        <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                            💬 탕비실 실시간 한줄 잡담
-                        </h2>
-                        <span class="text-[11px] font-bold text-slate-400">자유로운 소통 공간</span>
-                    </div>
-                    
-                    <!-- 채팅 목록 -->
-                    <div id="chat-messages-container" class="space-y-2.5 max-h-48 overflow-y-auto custom-scrollbar pr-1 bg-slate-50/80 p-3 rounded-2xl border border-slate-200/60">
-                        <!-- JS로 렌더링 -->
-                    </div>
-
-                    <!-- 채팅 입력폼 -->
-                    <form id="chat-form" class="flex gap-2">
-                        <input type="text" id="chat-sender" placeholder="이름" class="w-24 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <input type="text" id="chat-text" placeholder="잡담이나 질문을 남겨보세요..." class="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm transition-all shrink-0 cursor-pointer">
-                            전송
-                        </button>
-                    </form>
                 </div>
             </div>
 
@@ -431,12 +407,7 @@
             { id: 'h2', type: 'holiday', date: '2027-01-01', title: '☀️ 신정 새해 첫날 (공휴일)' }
         ];
 
-        const defaultChats = [
-            { id: 'c1', sender: '김팀장', text: '다들 오늘 점심 뭐 드실 건가요?', time: '11:30' },
-            { id: 'c2', sender: '이대리', text: '저는 회사 근처 김치찌개 콜입니다!', time: '11:31' }
-        ];
-
-        const STORAGE_KEY = 'survival_lounge_state_v3';
+        const STORAGE_KEY = 'survival_lounge_state_v4';
 
         function loadLocalBackup() {
             try {
@@ -465,7 +436,6 @@
         // 상태 변수
         let teamMembers = cachedState && Array.isArray(cachedState.teamMembers) ? cachedState.teamMembers : [...defaultMembers];
         let schedules = cachedState && Array.isArray(cachedState.schedules) ? cachedState.schedules : [...defaultSchedules];
-        let chats = cachedState && Array.isArray(cachedState.chats) ? cachedState.chats : [...defaultChats];
         let spaceTitle = cachedState && cachedState.spaceTitle ? cachedState.spaceTitle : '생존신고 라운지 🏕️';
         let noticeText = cachedState && cachedState.noticeText ? cachedState.noticeText : '오늘 점심 메뉴 추천 받습니다! 🍔 (클릭해서 공지 수정)';
 
@@ -507,15 +477,13 @@
                                 const data = snapshot.data();
                                 if (Array.isArray(data.teamMembers)) teamMembers = data.teamMembers;
                                 if (Array.isArray(data.schedules)) schedules = data.schedules;
-                                if (Array.isArray(data.chats)) chats = data.chats;
                                 if (data.spaceTitle) spaceTitle = data.spaceTitle;
                                 if (data.noticeText) noticeText = data.noticeText;
                                 
-                                saveLocalBackup({ teamMembers, schedules, chats, spaceTitle, noticeText });
+                                saveLocalBackup({ teamMembers, schedules, spaceTitle, noticeText });
                                 renderHeaderInfo();
                                 renderMembers();
                                 renderSchedules();
-                                renderChats();
                             } else {
                                 saveToCloud();
                             }
@@ -534,7 +502,6 @@
             const payload = {
                 teamMembers,
                 schedules,
-                chats,
                 spaceTitle,
                 noticeText,
                 updatedAt: Date.now()
@@ -708,33 +675,6 @@
                 };
                 container.appendChild(row);
             });
-        }
-
-        // 실시간 미니 잡담 톡방 렌더링
-        function renderChats() {
-            const chatContainer = document.getElementById('chat-messages-container');
-            if (!chatContainer) return;
-            chatContainer.innerHTML = '';
-
-            if (chats.length === 0) {
-                chatContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">첫 번째 메시지를 남겨보세요!</div>`;
-                return;
-            }
-
-            chats.slice(-20).forEach(chat => {
-                const bubble = document.createElement('div');
-                bubble.className = "bg-white p-2.5 rounded-2xl border border-slate-200/60 shadow-sm text-xs space-y-0.5";
-                bubble.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <span class="font-extrabold text-indigo-600">${chat.sender}</span>
-                        <span class="text-[10px] text-slate-400">${chat.time}</span>
-                    </div>
-                    <p class="text-slate-700 font-medium break-all">${chat.text}</p>
-                `;
-                chatContainer.appendChild(bubble);
-            });
-
-            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
         // 모달 내부 선택기 생성
@@ -1002,34 +942,6 @@
                 }
                 document.getElementById('space-name-modal').classList.add('hidden');
             };
-
-            // 6. 실시간 잡담 톡방 전송 이벤트
-            const chatForm = document.getElementById('chat-form');
-            if (chatForm) {
-                chatForm.onsubmit = (e) => {
-                    e.preventDefault();
-                    const senderInput = document.getElementById('chat-sender');
-                    const textInput = document.getElementById('chat-text');
-                    const sender = senderInput.value.trim() || '익명';
-                    const text = textInput.value.trim();
-
-                    if (!text) return;
-
-                    const now = new Date();
-                    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
-
-                    chats.push({
-                        id: 'c_' + Date.now(),
-                        sender,
-                        text,
-                        time: timeStr
-                    });
-
-                    textInput.value = '';
-                    renderChats();
-                    saveToCloud();
-                };
-            }
         }
 
         // 초기 실행
@@ -1038,7 +950,6 @@
         buildModalSelectors();
         renderMembers();
         renderSchedules();
-        renderChats();
         bindEvents();
         initCloudSync();
     </script>
