@@ -410,12 +410,18 @@
             { name: "두툼한 물티슈 (10팩)", category: "탕비실 소모품" }
         ];
 
-        let appConfig = Object.assign({}, DEFAULT_CONFIG);
-        let presetItems = DEFAULT_PRESETS.slice();
-        let orders = [];
-        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v6')) || [];
+        // 로컬 백업에서 우선 로드하여 새로고침 시 빈 화면 방지
+        let localSaved = null;
+        try {
+            localSaved = JSON.parse(localStorage.getItem('dadam_master_backup_v7'));
+        } catch(e) {}
 
-        let isAdmin = localStorage.getItem('dadam_is_admin_v6') === 'true';
+        let appConfig = localSaved && localSaved.config ? localSaved.config : Object.assign({}, DEFAULT_CONFIG);
+        let presetItems = localSaved && localSaved.presets ? localSaved.presets : DEFAULT_PRESETS.slice();
+        let orders = localSaved && localSaved.orders ? localSaved.orders : [];
+        let myLikedIds = JSON.parse(localStorage.getItem('dadam_likes_v7')) || [];
+
+        let isAdmin = localStorage.getItem('dadam_is_admin_v7') === 'true';
         let editingMemoId = null;
         let editingPriceId = null;
 
@@ -427,10 +433,17 @@
                 const res = await fetch(CLOUD_SYNC_URL, { cache: 'no-store' });
                 if (res.ok) {
                     const remote = await res.json();
-                    if (remote && remote.orders) {
+                    if (remote && remote.orders !== undefined) {
                         appConfig = remote.config || appConfig;
                         presetItems = remote.presets || presetItems;
                         orders = remote.orders || orders;
+
+                        // 로컬 스토리지에 최신본 영구 백업
+                        localStorage.setItem('dadam_master_backup_v7', JSON.stringify({
+                            config: appConfig,
+                            presets: presetItems,
+                            orders: orders
+                        }));
 
                         applyUIWithConfig();
                         renderPresets();
@@ -444,23 +457,33 @@
         }
 
         async function pushCloudData() {
+            const payload = {
+                timestamp: Date.now(),
+                config: appConfig,
+                presets: presetItems,
+                orders: orders
+            };
+            // 즉시 로컬 백업
+            localStorage.setItem('dadam_master_backup_v7', JSON.stringify(payload));
+
             try {
                 await fetch(CLOUD_SYNC_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        timestamp: Date.now(),
-                        config: appConfig,
-                        presets: presetItems,
-                        orders: orders
-                    })
+                    body: JSON.stringify(payload)
                 });
             } catch (e) {
                 console.log("Cloud push failed");
             }
         }
 
-        // 최초 로드 및 2초 간격 실시간 양방향 폴링 동기화
+        // 초기 렌더링 즉시 수행
+        applyUIWithConfig();
+        renderPresets();
+        renderOrders();
+        updateBudgetUI();
+
+        // 클라우드 동기화 호출 및 폴링
         fetchCloudData();
         setInterval(fetchCloudData, 2000);
 
@@ -477,9 +500,9 @@
         }
 
         async function saveData() {
-            localStorage.setItem('dadam_likes_v6', JSON.stringify(myLikedIds));
+            localStorage.setItem('dadam_likes_v7', JSON.stringify(myLikedIds));
             await pushCloudData();
-            fetchCloudData(); // 즉시 동기화 반영
+            fetchCloudData();
         }
 
         function updateBudgetUI() {
@@ -768,7 +791,7 @@
         function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
-                localStorage.removeItem('dadam_is_admin_v6');
+                localStorage.removeItem('dadam_is_admin_v7');
                 applyUIWithConfig();
                 renderPresets();
                 renderOrders();
@@ -797,7 +820,7 @@
 
             if (inputPin === currentPin) {
                 isAdmin = true;
-                localStorage.setItem('dadam_is_admin_v6', 'true');
+                localStorage.setItem('dadam_is_admin_v7', 'true');
                 closeLoginModal();
                 applyUIWithConfig();
                 renderPresets();
@@ -980,8 +1003,6 @@
             document.body.removeChild(tempArea);
             showToast("발주 목록이 클립보드에 복사되었습니다!");
         }
-
-        fetchCloudData();
     </script>
 </body>
 </html>
