@@ -716,7 +716,7 @@
             }
         }
 
-        async function openLoginModal() {
+        function openLoginModal() {
             if (isAdmin) {
                 isAdmin = false;
                 localStorage.removeItem('dadam_is_admin');
@@ -726,8 +726,9 @@
                 showToast("담당자 모드가 종료되었습니다.");
                 return;
             }
-            // 로그인 창 열기 전 최신 설정을 클라우드에서 무조건 강제로 당겨옴
-            await pullFromCloud(true);
+            
+            // 딜레이 없이 즉시 로그인 모달 창 띄우기 (클라우드 동기화는 백그라운드에서 실행)
+            pullFromCloud(false);
 
             document.getElementById('loginPinInput').value = '';
             document.getElementById('loginErrorMsg').classList.add('hidden');
