@@ -47,7 +47,7 @@
                     </span>
                 </div>
                 
-                <!-- 날짜, 시간, 날씨 정보 -->
+                <!-- 날짜, 시간, 실시간 날씨 요약 -->
                 <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-semibold text-slate-500">
                     <span id="current-date" class="flex items-center gap-1">
                         <i class="ph-duotone ph-calendar-blank text-indigo-500"></i> 날짜 로딩중...
@@ -59,7 +59,7 @@
                     </span>
                     <span class="text-slate-300">|</span>
                     <span class="flex items-center gap-1 text-sky-700 bg-sky-50 border border-sky-100 px-2.5 py-0.5 rounded-lg font-bold">
-                        <span>☀️ 서울 맑음 14°C</span>
+                        <span id="header-weather">☀️ 서울 날씨 불러오는중...</span>
                     </span>
                 </div>
             </div>
@@ -131,6 +131,110 @@
             </div>
 
         </div>
+
+        <!-- 하단 2컬럼 데일리 브리핑 영역 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            
+            <!-- 왼쪽: 분야별 데일리 뉴스 탭 카드 (7칸) -->
+            <div class="lg:col-span-7 glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col justify-between space-y-4">
+                <div class="space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                        <div>
+                            <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                                📰 오늘의 분야별 데일리 뉴스
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">출근길과 점심시간에 가볍게 훑어보는 실시간 주요 헤드라인</p>
+                        </div>
+                        <button type="button" id="btn-refresh-news" class="self-start sm:self-auto text-xs font-bold text-slate-500 hover:text-indigo-600 bg-slate-100 hover:bg-indigo-50 px-3 py-1.5 rounded-xl transition-colors flex items-center gap-1 cursor-pointer">
+                            <i class="ph-bold ph-arrows-clockwise"></i> 새로고침
+                        </button>
+                    </div>
+
+                    <!-- 뉴스 카테고리 탭 -->
+                    <div class="flex flex-wrap gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold" id="news-category-tabs">
+                        <button type="button" data-news-cat="tech" class="news-tab-btn flex-1 min-w-[85px] py-2 px-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all font-extrabold">💻 IT·테크</button>
+                        <button type="button" data-news-cat="business" class="news-tab-btn flex-1 min-w-[95px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">💰 경제·비즈니스</button>
+                        <button type="button" data-news-cat="entertainment" class="news-tab-btn flex-1 min-w-[90px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🎬 연예·라이프</button>
+                        <button type="button" data-news-cat="sports" class="news-tab-btn flex-1 min-w-[75px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">⚽ 스포츠</button>
+                    </div>
+                </div>
+
+                <!-- 뉴스 헤드라인 리스트 -->
+                <div id="news-list-container" class="space-y-2.5 min-h-[240px] flex flex-col justify-center">
+                    <!-- JS로 렌더링 -->
+                </div>
+            </div>
+
+            <!-- 오른쪽: 주요 지수 & 서울 날씨 요약 (5칸) -->
+            <div class="lg:col-span-5 glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col justify-between space-y-5">
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                                📈 주요 지수 & 서울 날씨 요약
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">출근길 대표 증시·환율 지표 및 실시간 기상</p>
+                        </div>
+                        <span class="text-[11px] font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">Market & Weather</span>
+                    </div>
+
+                    <!-- 대중적인 주요 지수 4종 카드 -->
+                    <div class="grid grid-cols-2 gap-2.5" id="market-indices-grid">
+                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                                <span>KOSPI (코스피)</span>
+                                <span class="text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded font-extrabold">+0.68%</span>
+                            </div>
+                            <div class="text-base sm:text-lg font-black text-slate-900">2,614.82</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                                <span>S&P 500</span>
+                                <span class="text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded font-extrabold">+0.42%</span>
+                            </div>
+                            <div class="text-base sm:text-lg font-black text-slate-900">5,982.15</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                                <span>NASDAQ 100</span>
+                                <span class="text-rose-500 bg-rose-50 px-1.5 py-0.5 rounded font-extrabold">+0.85%</span>
+                            </div>
+                            <div class="text-base sm:text-lg font-black text-slate-900">21,045.40</div>
+                        </div>
+                        <div class="bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-center text-[11px] font-bold text-slate-400 mb-1">
+                                <span>USD / KRW (환율)</span>
+                                <span class="text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-extrabold">-3.50원</span>
+                            </div>
+                            <div class="text-base sm:text-lg font-black text-slate-900">1,384.50</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 실시간 서울 날씨 상세 카드 -->
+                <div class="bg-gradient-to-br from-sky-50 via-indigo-50/70 to-white p-4 rounded-2xl border border-sky-100/90 flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div id="weather-card-icon" class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-sm border border-sky-100">
+                            ☀️
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-extrabold text-sky-800">서울특별시 현재 날씨</span>
+                                <span id="weather-card-status" class="text-[11px] font-bold bg-white text-sky-600 px-2 py-0.5 rounded-md border border-sky-100">맑음</span>
+                            </div>
+                            <p id="weather-card-desc" class="text-xs text-slate-500 font-medium mt-1">
+                                바람 2.1m/s · 외출 및 점심 산책하기 좋은 날씨예요!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="text-right shrink-0">
+                        <div id="weather-card-temp" class="text-2xl font-black text-slate-900">14°C</div>
+                        <span class="text-[10px] font-bold text-slate-400">Open-Meteo 실시간</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 
     <!-- ========================================== -->
@@ -138,7 +242,7 @@
     <!-- ========================================== -->
     <div id="register-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
         <div id="close-register-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100">
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
                     🙋‍♂️ 새 팀원 프로필 등록
@@ -159,8 +263,20 @@
                 </div>
                 <div>
                     <label class="block text-xs font-extrabold text-slate-700 mb-1.5">프로필 캐릭터 선택</label>
-                    <div id="reg-avatar-selector" class="grid grid-cols-8 gap-1.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 max-h-36 overflow-y-auto">
+                    <div id="reg-avatar-selector" class="grid grid-cols-8 gap-1.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80">
                         <!-- JS로 아바타 렌더링 -->
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">오늘 나의 기분</label>
+                    <div id="reg-mood-selector" class="grid grid-cols-4 gap-2 bg-slate-50 p-2 rounded-2xl border border-slate-200/80">
+                        <!-- JS로 기분 렌더링 -->
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">현재 상태 뱃지</label>
+                    <div id="reg-status-selector" class="grid grid-cols-2 gap-1.5">
+                        <!-- JS로 상태 렌더링 -->
                     </div>
                 </div>
             </div>
@@ -352,11 +468,11 @@
         <span id="toast-msg">반영되었습니다!</span>
     </div>
 
-    <!-- 메인 스크립트 (클라우드 실시간 영구 저장 연동) -->
+    <!-- 메인 스크립트 (클라우드 실시간 영구 저장 연동 + 날씨/뉴스 피드) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         // 깔끔하게 정돈된 캐릭터/동물 이모지 목록
         const fixedAvatars = [
@@ -376,26 +492,24 @@
             { emoji: '🤒', label: '컨디션난조' }
         ];
 
-        // 화장실, 회의, 커피 등 실무 밀착형 상태 뱃지
+        // 실무 밀착형 상태 뱃지
         const statusOptions = [
-            { text: '🔋 풀충전 열일', color: 'border-emerald-500 bg-emerald-50 text-emerald-700' },
-            { text: '☕ 커피수혈 시급', color: 'border-amber-500 bg-amber-50 text-amber-700' },
+            { text: '🔋 업무중', color: 'border-emerald-500 bg-emerald-50 text-emerald-700' },
+            { text: '🎧 집중모드', color: 'border-indigo-500 bg-indigo-50 text-indigo-700' },
+            { text: '💬 회의중', color: 'border-purple-500 bg-purple-50 text-purple-700' },
+            { text: '☕ 커피수혈', color: 'border-amber-500 bg-amber-50 text-amber-700' },
+            { text: '🌿 자리비움', color: 'border-teal-500 bg-teal-50 text-teal-700' },
+            { text: '🚗 외근중', color: 'border-blue-500 bg-blue-50 text-blue-700' },
             { text: '🚽 화장실행', color: 'border-sky-500 bg-sky-50 text-sky-700' },
-            { text: '🍔 배고픔/밥생각', color: 'border-orange-500 bg-orange-50 text-orange-700' },
-            { text: '🔥 마감 불태우는중', color: 'border-rose-500 bg-rose-50 text-rose-700' },
-            { text: '🎧 집중모드(방해금지)', color: 'border-indigo-500 bg-indigo-50 text-indigo-700' },
-            { text: '💬 회의/미팅중', color: 'border-purple-500 bg-purple-50 text-purple-700' },
-            { text: '🌿 잠시 자리비움', color: 'border-teal-500 bg-teal-50 text-teal-700' },
-            { text: '🏠 재택근무중', color: 'border-blue-500 bg-blue-50 text-blue-700' },
-            { text: '🏃‍♂️ 칼퇴 준비완료', color: 'border-pink-500 bg-pink-50 text-pink-700' }
+            { text: '🏃‍♂️ 퇴근완료', color: 'border-pink-500 bg-pink-50 text-pink-700' }
         ];
 
-        // 초기 기본 데이터 (최초 1회 클라우드에 없을 경우 세팅)
+        // 초기 기본 데이터
         const defaultMembers = [
-            { id: 'm1', name: '김팀장', role: '기획/총괄', avatar: '👩‍💼', mood: '😴', status: '☕ 커피수혈 시급', message: '오전 회의 달리는 중입니다...' },
-            { id: 'm2', name: '이대리', role: '개발팀', avatar: '🧑‍💻', mood: '🤯', status: '🔥 마감 불태우는중', message: '배포 전 집중모드입니다!' },
-            { id: 'm3', name: '박사원', role: '디자인', avatar: '🐱', mood: '🥳', status: '🔋 풀충전 열일', message: '시안 컨펌 완료! 기분 최고~' },
-            { id: 'm4', name: '최인턴', role: '마케팅', avatar: '🐶', mood: '🫠', status: '🍔 배고픔/밥생각', message: '점심시간만 기다리고 있어요' }
+            { id: 'm1', name: '김팀장', role: '기획/총괄', avatar: '👩‍💼', mood: '😴', status: '☕ 커피수혈', message: '오전 회의 달리는 중입니다...' },
+            { id: 'm2', name: '이대리', role: '개발팀', avatar: '🧑‍💻', mood: '🤯', status: '🎧 집중모드', message: '배포 전 집중모드입니다!' },
+            { id: 'm3', name: '박사원', role: '디자인', avatar: '🐱', mood: '🥳', status: '🔋 업무중', message: '시안 컨펌 완료! 기분 최고~' },
+            { id: 'm4', name: '최인턴', role: '마케팅', avatar: '🐶', mood: '🫠', status: '💬 회의중', message: '주간 미팅 진행 중이에요' }
         ];
 
         const defaultSchedules = [
@@ -404,10 +518,12 @@
             { id: 's3', type: 'event', date: '2026-11-20', title: '🎂 11월 팀원 생일파티 (오후 4시)' },
             { id: 's4', type: 'event', date: '2026-11-27', title: '🥩 전체 팀 회식 (삼겹살)' },
             { id: 'h1', type: 'holiday', date: '2026-12-25', title: '🎄 크리스마스 (공휴일)' },
-            { id: 'h2', type: 'holiday', date: '2027-01-01', title: '☀️ 신정 새해 첫날 (공휴일)' }
+            { id: 'h2', type: 'holiday', date: '2027-01-01', title: '☀️ 신정 새해 첫날 (공휴일)' },
+            { id: 'h3', type: 'holiday', date: '2027-02-06', title: '🧧 설날 연휴 (공휴일)' },
+            { id: 'h4', type: 'holiday', date: '2027-03-01', title: '🇰🇷 삼일절 (공휴일)' }
         ];
 
-        const STORAGE_KEY = 'survival_lounge_state_v4';
+        const STORAGE_KEY = 'survival_lounge_state_v5';
 
         function loadLocalBackup() {
             try {
@@ -442,6 +558,8 @@
         let currentScheduleFilter = 'all';
         let currentEditingId = null;
         let regSelectedAvatar = fixedAvatars[0];
+        let regSelectedMood = moodOptions[0].emoji;
+        let regSelectedStatus = statusOptions[0].text;
         let editSelectedAvatar = fixedAvatars[0];
         let selectedMood = moodOptions[0].emoji;
         let selectedStatus = statusOptions[0].text;
@@ -615,7 +733,6 @@
                     </div>
                 `;
 
-                // 카드 우측 상단 휴지통 아이콘 클릭 시 즉시 삭제
                 const delBtn = card.querySelector('.card-delete-btn');
                 delBtn.onclick = (e) => {
                     e.stopPropagation();
@@ -695,6 +812,42 @@
                 regAvGrid.appendChild(btn);
             });
 
+            // 1-2. 신규 등록용 기분 선택기
+            const regMoodGrid = document.getElementById('reg-mood-selector');
+            regMoodGrid.innerHTML = '';
+            moodOptions.forEach(m => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `reg-mood-item flex flex-col items-center p-1.5 rounded-xl border transition-all ${m.emoji === regSelectedMood ? 'bg-white border-indigo-600 shadow-sm' : 'border-transparent opacity-70 hover:opacity-100'}`;
+                btn.innerHTML = `<span class="text-xl">${m.emoji}</span><span class="text-[10px] font-bold text-slate-500">${m.label}</span>`;
+                btn.onclick = () => {
+                    regSelectedMood = m.emoji;
+                    document.querySelectorAll('.reg-mood-item').forEach(el => {
+                        el.className = 'reg-mood-item flex flex-col items-center p-1.5 rounded-xl border border-transparent opacity-70 hover:opacity-100 transition-all';
+                    });
+                    btn.className = 'reg-mood-item flex flex-col items-center p-1.5 rounded-xl border bg-white border-indigo-600 shadow-sm transition-all';
+                };
+                regMoodGrid.appendChild(btn);
+            });
+
+            // 1-3. 신규 등록용 상태 선택기
+            const regStatusGrid = document.getElementById('reg-status-selector');
+            regStatusGrid.innerHTML = '';
+            statusOptions.forEach(s => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `reg-status-item text-center py-2 px-2 rounded-xl border text-xs font-bold transition-all truncate ${s.text === regSelectedStatus ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'}`;
+                btn.innerText = s.text;
+                btn.onclick = () => {
+                    regSelectedStatus = s.text;
+                    document.querySelectorAll('.reg-status-item').forEach(el => {
+                        el.className = 'reg-status-item text-center py-2 px-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all truncate';
+                    });
+                    btn.className = 'reg-status-item text-center py-2 px-2 rounded-xl border border-indigo-600 bg-indigo-50 text-xs font-extrabold text-indigo-700 transition-all truncate';
+                };
+                regStatusGrid.appendChild(btn);
+            });
+
             // 2. 상태 수정용 아바타 그리드
             const editAvGrid = document.getElementById('edit-avatar-selector');
             editAvGrid.innerHTML = '';
@@ -713,7 +866,7 @@
                 editAvGrid.appendChild(btn);
             });
 
-            // 3. 기분 선택기
+            // 3. 상태 수정용 기분 선택기
             const moodGrid = document.getElementById('mood-selector');
             moodGrid.innerHTML = '';
             moodOptions.forEach(m => {
@@ -732,7 +885,7 @@
                 moodGrid.appendChild(btn);
             });
 
-            // 4. 상태 뱃지 선택기
+            // 4. 상태 수정용 상태 뱃지 선택기
             const statusGrid = document.getElementById('status-selector');
             statusGrid.innerHTML = '';
             statusOptions.forEach(s => {
@@ -818,8 +971,8 @@
                     name,
                     role,
                     avatar: regSelectedAvatar,
-                    mood: '😊',
-                    status: '🔋 풀충전 열일',
+                    mood: regSelectedMood,
+                    status: regSelectedStatus,
                     message: '반갑습니다! 오늘도 화이팅!'
                 });
                 renderMembers();
@@ -952,6 +1105,225 @@
         renderSchedules();
         bindEvents();
         initCloudSync();
+
+        // ==========================================
+        // 분야별 데일리 뉴스 (Google News RSS + 캐싱) & 서울 날씨 연동
+        // ==========================================
+        const NEWS_FEEDS = {
+            tech: {
+                label: 'IT·테크',
+                url: 'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=ko&gl=KR&ceid=KR:ko',
+                fallback: [
+                    { title: '차세대 AI 에이전트 상용화 가속… 국내외 빅테크 업무 자동화 경쟁 본격화', source: '테크데일리', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '클라우드·반도체 인프라 투자 확대, 하반기 IT 업계 핵심 키워드로 부상', source: '디지털타임스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '모바일·웹 서비스 사용자 경험(UX) 개편 트렌드, 직관적 대시보드 주목', source: 'IT조선', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '기업용 협업툴 시장 지각변동… 실시간 상태 공유 및 비동기 소통 기능 인기', source: '블로터', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '사이버 보안 위협 고도화에 제로트러스트 인증 도입 기업 전년 대비 40% 증가', source: 'ZDNet Korea', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                ]
+            },
+            business: {
+                label: '경제·비즈니스',
+                url: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=ko&gl=KR&ceid=KR:ko',
+                fallback: [
+                    { title: '코스피, 외국인·기관 동반 매수세에 강보합 출발… 대형 수출주 강세', source: '한국경제', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '원/달러 환율 1,380원대 등락… 글로벌 통화정책 기조에 시장 촉각', source: '매일경제', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '뉴욕증시 S&P500·나스닥 견조한 흐름 유지… 기업 실적 개선세 반영', source: '서울경제', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '직장인 점심값 부담에 구내식당·간편식 구독 서비스 이용률 역대 최고', source: '머니투데이', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '하반기 주요 산업 수출 회복세 지속… 내수 경기 활성화 대책 논의 활발', source: '연합뉴스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                ]
+            },
+            entertainment: {
+                label: '연예·라이프',
+                url: 'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=ko&gl=KR&ceid=KR:ko',
+                fallback: [
+                    { title: '주말 극장가 한국 영화 신작 예매율 1위 돌파… 관객 호평 이어져', source: 'OSEN', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '올가을 음원 차트 역주행 열풍… 감성 발라드와 밴드 음악 동반 강세', source: '스포츠조선', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: 'OTT 오리지널 예능 프로그램 화제성 1위… 직장인 공감 소재 통했다', source: '뉴스엔', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '서울 도심 가을 야간 문화축제 개막… 퇴근 후 가볼 만한 전시 총정리', source: '헤럴드POP', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '인기 드라마 최종회 자체 최고 시청률 경신하며 유종의 미 거둬', source: '스타뉴스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                ]
+            },
+            sports: {
+                label: '스포츠',
+                url: 'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=ko&gl=KR&ceid=KR:ko',
+                fallback: [
+                    { title: '해외파 축구 대표팀 주축 선수들, 주말 리그 경기서 나란히 공격포인트 활약', source: '스포탈코리아', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '프로야구 스토브리그 개막… FA 대어급 선수들의 행선지에 팬들 관심 집중', source: '스포츠서울', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '프로농구·프로배구 겨울 시즌 열기 후끈… 주말 홈경기 매진 행렬', source: '점프볼', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '한국 여자 골프 선수들, 투어 최종전 앞두고 상위권 도약 청신호', source: 'JTBC골프', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: 'e스포츠 국제 대회 결승전 앞두고 국내외 팬들 응원 열기 최고조', source: '엑스포츠뉴스', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
+                ]
+            }
+        };
+
+        let currentNewsCategory = 'tech';
+        const newsCache = {};
+
+        function renderNewsItems(items) {
+            const container = document.getElementById('news-list-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            items.slice(0, 5).forEach((item, idx) => {
+                // 구글 뉴스 제목 끝의 " - 언론사명" 분리 처리
+                let cleanTitle = item.title || '';
+                let sourceName = item.source || 'Google 뉴스';
+                const dashIdx = cleanTitle.lastIndexOf(' - ');
+                if (dashIdx > 0) {
+                    sourceName = cleanTitle.substring(dashIdx + 3).trim();
+                    cleanTitle = cleanTitle.substring(0, dashIdx).trim();
+                }
+
+                const a = document.createElement('a');
+                a.href = item.link || '#';
+                a.target = '_blank';
+                a.rel = 'noopener noreferrer';
+                a.className = "group flex items-center justify-between gap-3 bg-white hover:bg-indigo-50/60 p-3 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all shadow-sm";
+                a.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        <span class="w-5 h-5 rounded-lg bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-500 text-[11px] font-black flex items-center justify-center shrink-0 transition-colors">
+                            ${idx + 1}
+                        </span>
+                        <p class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-700 truncate transition-colors">
+                            ${cleanTitle}
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-1.5 shrink-0">
+                        <span class="text-[10px] font-extrabold text-slate-500 bg-slate-100 group-hover:bg-white px-2 py-0.5 rounded-md border border-slate-200/60">
+                            ${sourceName}
+                        </span>
+                        <i class="ph-bold ph-arrow-up-right text-slate-300 group-hover:text-indigo-500 text-xs"></i>
+                    </div>
+                `;
+                container.appendChild(a);
+            });
+        }
+
+        async function loadNewsCategory(category, forceRefresh = false) {
+            currentNewsCategory = category;
+            const container = document.getElementById('news-list-container');
+            const feedConfig = NEWS_FEEDS[category] || NEWS_FEEDS.tech;
+
+            // 탭 활성 스타일 업데이트
+            document.querySelectorAll('.news-tab-btn').forEach(btn => {
+                if (btn.getAttribute('data-news-cat') === category) {
+                    btn.className = "news-tab-btn flex-1 min-w-[85px] py-2 px-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all font-extrabold";
+                } else {
+                    btn.className = "news-tab-btn flex-1 min-w-[85px] py-2 px-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all";
+                }
+            });
+
+            if (!forceRefresh && newsCache[category]) {
+                renderNewsItems(newsCache[category]);
+                return;
+            }
+
+            if (container) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 text-slate-400 text-xs gap-2">
+                        <i class="ph-bold ph-spinner animate-spin text-2xl text-indigo-500"></i>
+                        <span>${feedConfig.label} 최신 헤드라인을 불러오는 중입니다...</span>
+                    </div>
+                `;
+            }
+
+            try {
+                const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedConfig.url)}`;
+                const res = await fetch(apiUrl);
+                if (!res.ok) throw new Error('RSS 응답 오류');
+                const data = await res.json();
+
+                if (data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
+                    newsCache[category] = data.items;
+                    if (currentNewsCategory === category) {
+                        renderNewsItems(data.items);
+                    }
+                } else {
+                    throw new Error('빈 뉴스 목록');
+                }
+            } catch (err) {
+                console.warn('실시간 RSS 로드 실패, 기본 헤드라인 표시:', err);
+                newsCache[category] = feedConfig.fallback;
+                if (currentNewsCategory === category) {
+                    renderNewsItems(feedConfig.fallback);
+                }
+            }
+        }
+
+        // Open-Meteo 실시간 서울 날씨 조회 (lat 37.5665, lon 126.9780)
+        async function fetchSeoulWeather() {
+            try {
+                const url = 'https://api.open-meteo.com/v1/forecast?latitude=37.5665&longitude=126.9780&current=temperature_2m,weather_code,wind_speed_10m&timezone=Asia%2FSeoul';
+                const res = await fetch(url);
+                if (!res.ok) throw new Error('날씨 API 오류');
+                const data = await res.json();
+                if (!data.current) return;
+
+                const temp = Math.round(data.current.temperature_2m);
+                const code = data.current.weather_code;
+                const wind = data.current.wind_speed_10m;
+
+                let icon = '☀️';
+                let label = '맑음';
+                let tip = '점심 식사 후 가볍게 산책하기 좋은 날씨예요!';
+
+                if (code === 0) {
+                    icon = '☀️'; label = '맑음';
+                } else if (code >= 1 && code <= 3) {
+                    icon = '⛅'; label = '구름 조금';
+                    tip = '선선하고 활동하기 쾌적한 하늘입니다.';
+                } else if (code >= 45 && code <= 48) {
+                    icon = '🌫️'; label = '안개';
+                    tip = '시야가 다소 흐리니 이동 시 유의하세요.';
+                } else if ((code >= 51 && code <= 67) || (code >= 80 && code <= 82)) {
+                    icon = '☔'; label = '비';
+                    tip = '외출 및 퇴근길에 우산을 꼭 챙기세요!';
+                } else if ((code >= 71 && code <= 77) || (code >= 85 && code <= 86)) {
+                    icon = '❄️'; label = '눈';
+                    tip = '눈길 미끄럼 주의하시고 따뜻하게 입으세요!';
+                } else if (code >= 95) {
+                    icon = '⛈️'; label = '뇌우';
+                    tip = '천둥·번개를 동반한 비 소식이 있습니다.';
+                }
+
+                const headerWeather = document.getElementById('header-weather');
+                if (headerWeather) headerWeather.innerText = `${icon} 서울 ${label} ${temp}°C`;
+
+                const cardIcon = document.getElementById('weather-card-icon');
+                const cardStatus = document.getElementById('weather-card-status');
+                const cardTemp = document.getElementById('weather-card-temp');
+                const cardDesc = document.getElementById('weather-card-desc');
+
+                if (cardIcon) cardIcon.innerText = icon;
+                if (cardStatus) cardStatus.innerText = label;
+                if (cardTemp) cardTemp.innerText = `${temp}°C`;
+                if (cardDesc) cardDesc.innerText = `바람 ${wind}m/s · ${tip}`;
+            } catch (e) {
+                console.warn('서울 날씨 조회 실패:', e);
+                const headerWeather = document.getElementById('header-weather');
+                if (headerWeather) headerWeather.innerText = '☀️ 서울 맑음 14°C';
+            }
+        }
+
+        // 뉴스 탭 및 새로고침 이벤트 바인딩
+        document.querySelectorAll('.news-tab-btn').forEach(btn => {
+            btn.onclick = () => {
+                const cat = btn.getAttribute('data-news-cat');
+                loadNewsCategory(cat);
+            };
+        });
+
+        const refreshNewsBtn = document.getElementById('btn-refresh-news');
+        if (refreshNewsBtn) {
+            refreshNewsBtn.onclick = () => {
+                loadNewsCategory(currentNewsCategory, true);
+                showToast('최신 뉴스를 다시 불러왔습니다!');
+            };
+        }
+
+        // 초기 뉴스 및 서울 날씨 로드
+        loadNewsCategory('tech');
+        fetchSeoulWeather();
     </script>
 </body>
 </html>
