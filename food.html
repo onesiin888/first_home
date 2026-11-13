@@ -233,8 +233,8 @@
     <div id="loginModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
             <h3 class="text-base font-extrabold text-slate-900 mb-2">🔒 담당자 로그인</h3>
-            <p class="text-xs text-slate-500 mb-4 font-medium">담당자 비밀번호를 입력해주세요. (초기: ddam)</p>
-            <input type="password" id="adminPasswordInput" placeholder="비밀번호 입력" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
+            <p class="text-xs text-slate-500 mb-4 font-medium">담당자 비밀번호를 입력해주세요.</p>
+            <input type="password" id="adminPasswordInput" onkeydown="if(event.key==='Enter') submitLogin()" placeholder="비밀번호 입력" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
             <div class="flex space-x-2">
                 <button onclick="closeLoginModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
                 <button onclick="submitLogin()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">로그인</button>
@@ -328,6 +328,7 @@
         // 크롬, 엣지, 모바일, 5시간 전 텔레그램 링크 어디서 열든 100% 동일한 데이터를 바라보는 글로벌 Retain 클라우드 엔진
         const STORAGE_KEY = 'dadamlabs_pantry_master_db_2026_v5';
         const LIKED_KEY = 'dadamlabs_pantry_my_likes_2026_v5';
+        const ADMIN_AUTH_KEY = 'dadamlabs_pantry_admin_auth_2026_v5';
         const CLOUD_TOPIC = 'dadamlabs/pantry/shared_board_2026_master_v1/state';
 
         // 글로벌 웹소켓 브로커 다중화 (Canvas 보안 정책을 통과하며 즉시 Retain 동기화되는 브로커만 사용)
@@ -389,6 +390,10 @@
         // 로컬 캐시 불러오기 (초기 화면 즉시 표시용)
         function loadStateFromStorage() {
             try {
+                if (localStorage.getItem(ADMIN_AUTH_KEY) === 'true') {
+                    isAdmin = true;
+                }
+
                 const likedSaved = localStorage.getItem(LIKED_KEY);
                 if (likedSaved) myLikedIds = JSON.parse(likedSaved);
 
@@ -778,6 +783,7 @@
         window.openLoginModal = function() {
             if (isAdmin) {
                 isAdmin = false;
+                localStorage.removeItem(ADMIN_AUTH_KEY);
                 applyUIWithConfig();
                 renderOrders();
                 showToast("담당자 모드가 종료되었습니다.");
@@ -796,12 +802,13 @@
             const pwd = document.getElementById('adminPasswordInput').value;
             if (pwd === 'ddam') {
                 isAdmin = true;
+                localStorage.setItem(ADMIN_AUTH_KEY, 'true');
                 closeLoginModal();
                 applyUIWithConfig();
                 renderOrders();
                 showToast("🔓 담당자 모드로 로그인되었습니다.");
             } else {
-                showToast("비밀번호가 올바르지 않습니다. (초기: ddam)");
+                showToast("비밀번호가 올바르지 않습니다.");
             }
         };
 
