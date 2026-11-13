@@ -176,12 +176,9 @@
                         </button>
                     </div>
 
-                    <!-- 깔끔한 2x2 주요 지수 카드 그리드 (TradingView 공식 실시간 시세 직결) -->
+                    <!-- 깔끔한 2x2 주요 지수 카드 그리드 -->
                     <div class="grid grid-cols-2 gap-3" id="market-indices-grid">
-                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden h-[106px] flex items-center justify-center relative">
-                    <!-- 깔끔한 2x2 주요 지수 카드 그리드 (한국 지수 실시간 연동 + 미국 지수 TradingView 직결) -->
-                    <div class="grid grid-cols-2 gap-3" id="market-indices-grid">
-                        <!-- 1. 코스피 (KOSPI) 실시간 카드 -->
+                        <!-- 1. 코스피 (KOSPI) -->
                         <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm h-[106px] flex flex-col justify-between">
                             <div class="flex items-center justify-between gap-1">
                                 <span class="text-xs font-bold text-slate-500">KOSPI (코스피)</span>
@@ -193,7 +190,31 @@
                             </div>
                         </div>
 
-                        <!-- 2. 코스닥 (KOSDAQ) 또는 원/달러 환율 실시간 카드 -->
+                        <!-- 2. S&P 500 -->
+                        <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm h-[106px] flex flex-col justify-between">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-xs font-bold text-slate-500">S&P 500</span>
+                                <span id="sp500-change" class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">조회중</span>
+                            </div>
+                            <div>
+                                <div id="sp500-price" class="text-lg sm:text-xl font-black text-slate-900 tabular-nums tracking-tight">---</div>
+                                <div id="sp500-sub" class="text-[10px] font-semibold text-slate-400 mt-0.5">미국 대표 500 지수</div>
+                            </div>
+                        </div>
+
+                        <!-- 3. NASDAQ 100 -->
+                        <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm h-[106px] flex flex-col justify-between">
+                            <div class="flex items-center justify-between gap-1">
+                                <span class="text-xs font-bold text-slate-500">NASDAQ 100</span>
+                                <span id="nasdaq-change" class="text-[11px] font-extrabold px-2 py-0.5 rounded-md bg-slate-100 text-slate-500">조회중</span>
+                            </div>
+                            <div>
+                                <div id="nasdaq-price" class="text-lg sm:text-xl font-black text-slate-900 tabular-nums tracking-tight">---</div>
+                                <div id="nasdaq-sub" class="text-[10px] font-semibold text-slate-400 mt-0.5">나스닥 기술주 지수</div>
+                            </div>
+                        </div>
+
+                        <!-- 4. 원/달러 환율 (USD / KRW) -->
                         <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm h-[106px] flex flex-col justify-between">
                             <div class="flex items-center justify-between gap-1">
                                 <span class="text-xs font-bold text-slate-500">USD / KRW (환율)</span>
@@ -202,40 +223,6 @@
                             <div>
                                 <div id="usdkrw-price" class="text-lg sm:text-xl font-black text-slate-900 tabular-nums tracking-tight">---</div>
                                 <div id="usdkrw-sub" class="text-[10px] font-semibold text-slate-400 mt-0.5">서울외국환중개 기준</div>
-                            </div>
-                        </div>
-
-                        <!-- 3. S&P 500 (TradingView 공식 실시간) -->
-                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden h-[106px] flex items-center justify-center relative">
-                            <div class="tradingview-widget-container w-full h-full">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
-                                {
-                                    "symbol": "FOREXCOM:SPXUSD",
-                                    "width": "100%",
-                                    "height": "100%",
-                                    "isTransparent": true,
-                                    "colorTheme": "light",
-                                    "locale": "kr"
-                                }
-                                </script>
-                            </div>
-                        </div>
-
-                        <!-- 4. NASDAQ 100 (TradingView 공식 실시간) -->
-                        <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden h-[106px] flex items-center justify-center relative">
-                            <div class="tradingview-widget-container w-full h-full">
-                                <div class="tradingview-widget-container__widget"></div>
-                                <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
-                                {
-                                    "symbol": "FOREXCOM:NSXUSD",
-                                    "width": "100%",
-                                    "height": "100%",
-                                    "isTransparent": true,
-                                    "colorTheme": "light",
-                                    "locale": "kr"
-                                }
-                                </script>
                             </div>
                         </div>
                     </div>
@@ -1110,86 +1097,111 @@
         fetchSeoulWeather();
 
         // ==========================================
-        // 8. 한국 지수(KOSPI) 및 실시간 원/달러 환율 직통 연동
+        // 8. 4대 주요 지수(KOSPI, S&P 500, NASDAQ 100, USD/KRW) 실시간 연동
         // ==========================================
-        async function fetchKoreanMarketData() {
-            // 1) 실시간 원/달러 환율 (직통 API - 100% 작동)
-            try {
-                const fxRes = await fetch('https://open.er-api.com/v6/latest/USD');
-                const fxData = await fxRes.json();
-                if (fxData && fxData.rates && fxData.rates.KRW) {
-                    const krw = Number(fxData.rates.KRW);
-                    document.getElementById('usdkrw-price').innerText = krw.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '원';
-                    document.getElementById('usdkrw-sub').innerText = '실시간 매매기준율';
-                }
-            } catch (e) {
-                console.warn('환율 조회 지연:', e);
+        async function fetchIndexFromMultiSource(naverCode, yahooSymbol) {
+            const urls = [];
+            if (naverCode) {
+                const naverApi = `https://m.stock.naver.com/api/index/${naverCode}/basic`;
+                urls.push('https://api.allorigins.win/raw?url=' + encodeURIComponent(naverApi));
+                urls.push('https://corsproxy.io/?' + encodeURIComponent(naverApi));
+            }
+            if (yahooSymbol) {
+                const yahooApi = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(yahooSymbol)}?interval=1d&range=2d`;
+                urls.push('https://api.allorigins.win/raw?url=' + encodeURIComponent(yahooApi));
+                urls.push('https://corsproxy.io/?' + encodeURIComponent(yahooApi));
+                urls.push('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(yahooApi));
             }
 
-            // 2) 코스피(KOSPI) 실시간 시세 조회 (네이버/야후 다중 경로)
-            const kospiEndpoints = [
-                'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://m.stock.naver.com/api/index/KOSPI/basic'),
-                'https://corsproxy.io/?' + encodeURIComponent('https://m.stock.naver.com/api/index/KOSPI/basic'),
-                'https://api.allorigins.win/raw?url=' + encodeURIComponent('https://query1.finance.yahoo.com/v8/finance/chart/%5EKS11?interval=1d&range=2d')
-            ];
-
-            for (const url of kospiEndpoints) {
+            for (const url of urls) {
                 try {
                     const res = await fetch(url);
                     if (!res.ok) continue;
                     const data = await res.json();
 
-                    // 네이버 증권 모바일 API 응답 형식 파싱
                     if (data && data.closePrice) {
-                        const priceStr = String(data.closePrice);
-                        const ratio = Number(data.fluctuationsRatio || 0);
-                        const diff = String(data.compareToPreviousClosePrice || '0');
-                        const isUp = ratio > 0;
-                        const isDown = ratio < 0;
-
-                        document.getElementById('kospi-price').innerText = priceStr;
-                        const badge = document.getElementById('kospi-change');
-                        badge.innerText = `${isUp ? '+' : ''}${ratio.toFixed(2)}%`;
-                        badge.className = `text-[11px] font-extrabold px-2 py-0.5 rounded-md ${isUp ? 'bg-rose-50 text-rose-600' : isDown ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-600'}`;
-                        document.getElementById('kospi-sub').innerText = `전일대비 ${isUp ? '▲' : isDown ? '▼' : '-'} ${diff.replace('-', '')}`;
-                        return;
+                        const price = Number(String(data.closePrice).replace(/,/g, ''));
+                        const pct = Number(data.fluctuationsRatio || 0);
+                        const diff = Number(String(data.compareToPreviousClosePrice || '0').replace(/,/g, ''));
+                        return { price, pct, diff };
                     }
 
-                    // 야후 파이낸스 백업 응답 파싱
                     const meta = data?.chart?.result?.[0]?.meta;
                     if (meta && meta.regularMarketPrice) {
                         const price = Number(meta.regularMarketPrice);
                         const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
                         const diff = price - prev;
                         const pct = prev ? (diff / prev) * 100 : 0;
-                        const isUp = pct > 0;
-                        const isDown = pct < 0;
-
-                        document.getElementById('kospi-price').innerText = price.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-                        const badge = document.getElementById('kospi-change');
-                        badge.innerText = `${isUp ? '+' : ''}${pct.toFixed(2)}%`;
-                        badge.className = `text-[11px] font-extrabold px-2 py-0.5 rounded-md ${isUp ? 'bg-rose-50 text-rose-600' : isDown ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-600'}`;
-                        document.getElementById('kospi-sub').innerText = `전일대비 ${isUp ? '▲' : isDown ? '▼' : '-'} ${Math.abs(diff).toFixed(2)}`;
-                        return;
+                        return { price, pct, diff };
                     }
-                } catch (err) {
+                } catch (e) {
                     continue;
                 }
             }
+            return null;
         }
 
-        fetchKoreanMarketData();
+        function applyMarketCardUI(prefix, result, unitSuffix = '') {
+            if (!result || isNaN(result.price)) return;
+            const priceEl = document.getElementById(`${prefix}-price`);
+            const badgeEl = document.getElementById(`${prefix}-change`);
+            const subEl = document.getElementById(`${prefix}-sub`);
+
+            const isUp = result.pct > 0;
+            const isDown = result.pct < 0;
+
+            priceEl.innerText = result.price.toLocaleString('ko-KR', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            }) + unitSuffix;
+
+            badgeEl.innerText = `${isUp ? '+' : ''}${result.pct.toFixed(2)}%`;
+            badgeEl.className = `text-[11px] font-extrabold px-2 py-0.5 rounded-md ${
+                isUp ? 'bg-rose-50 text-rose-600' : isDown ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-600'
+            }`;
+
+            if (subEl) {
+                subEl.innerText = `전일대비 ${isUp ? '▲' : isDown ? '▼' : '-'} ${Math.abs(result.diff).toFixed(2)}`;
+            }
+        }
+
+        async function fetchAllMarketData() {
+            // 1. 원/달러 환율 (직통 API)
+            fetch('https://open.er-api.com/v6/latest/USD')
+                .then(r => r.json())
+                .then(fxData => {
+                    if (fxData?.rates?.KRW) {
+                        const krw = Number(fxData.rates.KRW);
+                        document.getElementById('usdkrw-price').innerText = krw.toLocaleString('ko-KR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + '원';
+                        document.getElementById('usdkrw-sub').innerText = '실시간 매매기준율';
+                    }
+                })
+                .catch(() => {});
+
+            // 2. 코스피, S&P 500, NASDAQ 100 병렬 실시간 조회
+            const [kospi, sp500, nasdaq] = await Promise.all([
+                fetchIndexFromMultiSource('KOSPI', '^KS11'),
+                fetchIndexFromMultiSource(null, '^GSPC'),
+                fetchIndexFromMultiSource(null, '^NDX')
+            ]);
+
+            if (kospi) applyMarketCardUI('kospi', kospi);
+            if (sp500) applyMarketCardUI('sp500', sp500);
+            if (nasdaq) applyMarketCardUI('nasdaq', nasdaq);
+        }
+
+        fetchAllMarketData();
 
         document.getElementById('refresh-market-btn')?.addEventListener('click', () => {
             fetchSeoulWeather();
-            fetchKoreanMarketData();
-            showToast('코스피·환율·날씨를 최신화했습니다.');
+            fetchAllMarketData();
+            showToast('주요 지수·환율·날씨를 최신화했습니다.');
         });
 
-        // 3분마다 한국 지수·환율·날씨 자동 갱신
+        // 3분마다 자동 갱신
         setInterval(() => {
             fetchSeoulWeather();
-            fetchKoreanMarketData();
+            fetchAllMarketData();
         }, 180000);
     </script>
 </body>
