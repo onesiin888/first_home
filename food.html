@@ -1048,10 +1048,8 @@
         renderOrders();
         pullFromCloud(true);
 
-        const initParams = new URLSearchParams(window.location.search);
-        if ((initParams.get('admin') === '1' || initParams.get('admin') === 'true') && !isAdmin) {
-            setTimeout(() => openLoginModal(), 300);
-        }
+        // 이전에는 ?admin=1이 있으면 자동으로 로그인 모달이 떴으나, 이제는 자동 팝업 없이 깔끔한 일반 화면으로 유지됩니다.
+        // 담당자분은 우측 상단의 숨겨진 로그인 버튼이나 하단 카피라이트를 연속 클릭하여 로그인할 수 있습니다.
 
         setInterval(() => {
             pullFromCloud(false);
