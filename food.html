@@ -3,444 +3,312 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>(주)다담랩스 | 탕비실 · 비품 신청 데스크</title>
+    <title>DadamLabs | 탕비실 · 비품 신청 보드</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
-            background-color: #F4F7F9;
+            background-color: #F4F7FA;
         }
-        .dadam-gradient {
-            background: linear-gradient(90deg, #0083CA 0%, #159E8A 50%, #43A842 100%);
+        .dadam-gradient-bg {
+            background: linear-gradient(90deg, #0083CA 0%, #159E8A 52%, #43A842 100%);
         }
-        .dadam-gradient-hover:hover {
-            background: linear-gradient(90deg, #0072B1 0%, #118775 50%, #399138 100%);
+        .dadam-gradient-btn {
+            background: linear-gradient(135deg, #0083CA 0%, #159E8A 55%, #43A842 100%);
         }
-        .dadam-text-gradient {
-            background: linear-gradient(90deg, #0083CA 0%, #159E8A 50%, #43A842 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .dadam-gradient-btn:hover {
+            filter: brightness(0.95);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 6px;
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #F1F5F9;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #CBD5E1;
+            border-radius: 9999px;
         }
     </style>
-<style>*, ::before, ::after{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }::backdrop{--tw-border-spacing-x:0;--tw-border-spacing-y:0;--tw-translate-x:0;--tw-translate-y:0;--tw-rotate:0;--tw-skew-x:0;--tw-skew-y:0;--tw-scale-x:1;--tw-scale-y:1;--tw-pan-x: ;--tw-pan-y: ;--tw-pinch-zoom: ;--tw-scroll-snap-strictness:proximity;--tw-gradient-from-position: ;--tw-gradient-via-position: ;--tw-gradient-to-position: ;--tw-ordinal: ;--tw-slashed-zero: ;--tw-numeric-figure: ;--tw-numeric-spacing: ;--tw-numeric-fraction: ;--tw-ring-inset: ;--tw-ring-offset-width:0px;--tw-ring-offset-color:#fff;--tw-ring-color:rgb(59 130 246 / 0.5);--tw-ring-offset-shadow:0 0 #0000;--tw-ring-shadow:0 0 #0000;--tw-shadow:0 0 #0000;--tw-shadow-colored:0 0 #0000;--tw-blur: ;--tw-brightness: ;--tw-contrast: ;--tw-grayscale: ;--tw-hue-rotate: ;--tw-invert: ;--tw-saturate: ;--tw-sepia: ;--tw-drop-shadow: ;--tw-backdrop-blur: ;--tw-backdrop-brightness: ;--tw-backdrop-contrast: ;--tw-backdrop-grayscale: ;--tw-backdrop-hue-rotate: ;--tw-backdrop-invert: ;--tw-backdrop-opacity: ;--tw-backdrop-saturate: ;--tw-backdrop-sepia: ;--tw-contain-size: ;--tw-contain-layout: ;--tw-contain-paint: ;--tw-contain-style: }/* ! tailwindcss v3.4.17 | MIT License | https://tailwindcss.com */*,::after,::before{box-sizing:border-box;border-width:0;border-style:solid;border-color:#e5e7eb}::after,::before{--tw-content:''}:host,html{line-height:1.5;-webkit-text-size-adjust:100%;-moz-tab-size:4;tab-size:4;font-family:ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";font-feature-settings:normal;font-variation-settings:normal;-webkit-tap-highlight-color:transparent}body{margin:0;line-height:inherit}hr{height:0;color:inherit;border-top-width:1px}abbr:where([title]){-webkit-text-decoration:underline dotted;text-decoration:underline dotted}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}a{color:inherit;text-decoration:inherit}b,strong{font-weight:bolder}code,kbd,pre,samp{font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;font-feature-settings:normal;font-variation-settings:normal;font-size:1em}small{font-size:80%}sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit;border-collapse:collapse}button,input,optgroup,select,textarea{font-family:inherit;font-feature-settings:inherit;font-variation-settings:inherit;font-size:100%;font-weight:inherit;line-height:inherit;letter-spacing:inherit;color:inherit;margin:0;padding:0}button,select{text-transform:none}button,input:where([type=button]),input:where([type=reset]),input:where([type=submit]){-webkit-appearance:button;background-color:transparent;background-image:none}:-moz-focusring{outline:auto}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}[type=search]{-webkit-appearance:textfield;outline-offset:-2px}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}summary{display:list-item}blockquote,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset{margin:0;padding:0}legend{padding:0}menu,ol,ul{list-style:none;margin:0;padding:0}dialog{padding:0}textarea{resize:vertical}input::placeholder,textarea::placeholder{opacity:1;color:#9ca3af}[role=button],button{cursor:pointer}:disabled{cursor:default}audio,canvas,embed,iframe,img,object,svg,video{display:block;vertical-align:middle}img,video{max-width:100%;height:auto}[hidden]:where(:not([hidden=until-found])){display:none}.fixed{position:fixed}.absolute{position:absolute}.relative{position:relative}.sticky{position:sticky}.inset-0{inset:0px}.left-0{left:0px}.right-4{right:1rem}.top-0{top:0px}.top-20{top:5rem}.top-24{top:6rem}.bottom-1{bottom:0.25rem}.right-1{right:0.25rem}.z-20{z-index:20}.z-50{z-index:50}.mx-auto{margin-left:auto;margin-right:auto}.mb-1{margin-bottom:0.25rem}.mb-1\.5{margin-bottom:0.375rem}.mb-2{margin-bottom:0.5rem}.mb-2\.5{margin-bottom:0.625rem}.mb-4{margin-bottom:1rem}.ml-2{margin-left:0.5rem}.mt-0\.5{margin-top:0.125rem}.mt-1{margin-top:0.25rem}.mt-12{margin-top:3rem}.mt-3{margin-top:0.75rem}.ml-1{margin-left:0.25rem}.block{display:block}.flex{display:flex}.inline-flex{display:inline-flex}.grid{display:grid}.hidden{display:none}.aspect-square{aspect-ratio:1 / 1}.h-1{height:0.25rem}.h-1\.5{height:0.375rem}.h-2{height:0.5rem}.h-2\.5{height:0.625rem}.h-4{height:1rem}.h-7{height:1.75rem}.h-8{height:2rem}.h-full{height:100%}.h-16{height:4rem}.h-5{height:1.25rem}.min-h-screen{min-height:100vh}.w-1\.5{width:0.375rem}.w-12{width:3rem}.w-2{width:0.5rem}.w-2\.5{width:0.625rem}.w-4{width:1rem}.w-8{width:2rem}.w-full{width:100%}.w-px{width:1px}.w-16{width:4rem}.w-5{width:1.25rem}.min-w-0{min-width:0px}.max-w-6xl{max-width:72rem}.max-w-md{max-width:28rem}.max-w-sm{max-width:24rem}.flex-1{flex:1 1 0%}.shrink-0{flex-shrink:0}@keyframes pulse{50%{opacity:.5}}.animate-pulse{animation:pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite}.cursor-pointer{cursor:pointer}.cursor-zoom-out{cursor:zoom-out}.cursor-zoom-in{cursor:zoom-in}.select-none{-webkit-user-select:none;user-select:none}.grid-cols-1{grid-template-columns:repeat(1, minmax(0, 1fr))}.grid-cols-2{grid-template-columns:repeat(2, minmax(0, 1fr))}.flex-col{flex-direction:column}.flex-wrap{flex-wrap:wrap}.items-start{align-items:flex-start}.items-end{align-items:flex-end}.items-center{align-items:center}.justify-end{justify-content:flex-end}.justify-center{justify-content:center}.justify-between{justify-content:space-between}.gap-1{gap:0.25rem}.gap-1\.5{gap:0.375rem}.gap-2{gap:0.5rem}.gap-3{gap:0.75rem}.gap-6{gap:1.5rem}.gap-3\.5{gap:0.875rem}.space-x-2 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.5rem * var(--tw-space-x-reverse));margin-left:calc(0.5rem * calc(1 - var(--tw-space-x-reverse)))}.space-x-3\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.875rem * var(--tw-space-x-reverse));margin-left:calc(0.875rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-2 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.5rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.5rem * var(--tw-space-y-reverse))}.space-y-2\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.625rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.625rem * var(--tw-space-y-reverse))}.space-y-3 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.75rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.75rem * var(--tw-space-y-reverse))}.space-y-3\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.875rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.875rem * var(--tw-space-y-reverse))}.space-y-4 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1rem * var(--tw-space-y-reverse))}.space-y-5 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(1.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(1.25rem * var(--tw-space-y-reverse))}.space-x-1\.5 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.375rem * var(--tw-space-x-reverse));margin-left:calc(0.375rem * calc(1 - var(--tw-space-x-reverse)))}.space-y-1 > :not([hidden]) ~ :not([hidden]){--tw-space-y-reverse:0;margin-top:calc(0.25rem * calc(1 - var(--tw-space-y-reverse)));margin-bottom:calc(0.25rem * var(--tw-space-y-reverse))}.space-x-1 > :not([hidden]) ~ :not([hidden]){--tw-space-x-reverse:0;margin-right:calc(0.25rem * var(--tw-space-x-reverse));margin-left:calc(0.25rem * calc(1 - var(--tw-space-x-reverse)))}.overflow-hidden{overflow:hidden}.truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.break-words{overflow-wrap:break-word}.rounded{border-radius:0.25rem}.rounded-2xl{border-radius:1rem}.rounded-full{border-radius:9999px}.rounded-lg{border-radius:0.5rem}.rounded-md{border-radius:0.375rem}.rounded-xl{border-radius:0.75rem}.border{border-width:1px}.border-b{border-bottom-width:1px}.border-t{border-top-width:1px}.border-\[\#0083CA\]\/25{border-color:rgb(0 131 202 / 0.25)}.border-\[\#0083CA\]\/30{border-color:rgb(0 131 202 / 0.3)}.border-rose-200{--tw-border-opacity:1;border-color:rgb(254 205 211 / var(--tw-border-opacity, 1))}.border-slate-100{--tw-border-opacity:1;border-color:rgb(241 245 249 / var(--tw-border-opacity, 1))}.border-slate-200{--tw-border-opacity:1;border-color:rgb(226 232 240 / var(--tw-border-opacity, 1))}.border-slate-200\/80{border-color:rgb(226 232 240 / 0.8)}.border-slate-200\/90{border-color:rgb(226 232 240 / 0.9)}.border-slate-700{--tw-border-opacity:1;border-color:rgb(51 65 85 / var(--tw-border-opacity, 1))}.border-\[\#159E8A\]\/20{border-color:rgb(21 158 138 / 0.2)}.border-\[\#159E8A\]\/25{border-color:rgb(21 158 138 / 0.25)}.border-\[\#43A842\]\/25{border-color:rgb(67 168 66 / 0.25)}.border-transparent{border-color:transparent}.border-\[\#0083CA\]{--tw-border-opacity:1;border-color:rgb(0 131 202 / var(--tw-border-opacity, 1))}.border-\[\#159E8A\]{--tw-border-opacity:1;border-color:rgb(21 158 138 / var(--tw-border-opacity, 1))}.border-\[\#43A842\]{--tw-border-opacity:1;border-color:rgb(67 168 66 / var(--tw-border-opacity, 1))}.bg-\[\#0083CA\]\/10{background-color:rgb(0 131 202 / 0.1)}.bg-\[\#159E8A\]{--tw-bg-opacity:1;background-color:rgb(21 158 138 / var(--tw-bg-opacity, 1))}.bg-\[\#159E8A\]\/10{background-color:rgb(21 158 138 / 0.1)}.bg-\[\#43A842\]{--tw-bg-opacity:1;background-color:rgb(67 168 66 / var(--tw-bg-opacity, 1))}.bg-\[\#43A842\]\/10{background-color:rgb(67 168 66 / 0.1)}.bg-amber-500{--tw-bg-opacity:1;background-color:rgb(245 158 11 / var(--tw-bg-opacity, 1))}.bg-amber-500\/10{background-color:rgb(245 158 11 / 0.1)}.bg-rose-50{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.bg-slate-100{--tw-bg-opacity:1;background-color:rgb(241 245 249 / var(--tw-bg-opacity, 1))}.bg-slate-200{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.bg-slate-50{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.bg-slate-900{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.bg-slate-900\/50{background-color:rgb(15 23 42 / 0.5)}.bg-slate-900\/75{background-color:rgb(15 23 42 / 0.75)}.bg-white{--tw-bg-opacity:1;background-color:rgb(255 255 255 / var(--tw-bg-opacity, 1))}.bg-\[\#0083CA\]{--tw-bg-opacity:1;background-color:rgb(0 131 202 / var(--tw-bg-opacity, 1))}.bg-\[\#159E8A\]\/5{background-color:rgb(21 158 138 / 0.05)}.bg-slate-900\/60{background-color:rgb(15 23 42 / 0.6)}.bg-slate-800{--tw-bg-opacity:1;background-color:rgb(30 41 59 / var(--tw-bg-opacity, 1))}.object-contain{object-fit:contain}.object-cover{object-fit:cover}.p-2{padding:0.5rem}.p-3{padding:0.75rem}.p-3\.5{padding:0.875rem}.p-4{padding:1rem}.p-5{padding:1.25rem}.p-6{padding:1.5rem}.px-1{padding-left:0.25rem;padding-right:0.25rem}.px-2{padding-left:0.5rem;padding-right:0.5rem}.px-2\.5{padding-left:0.625rem;padding-right:0.625rem}.px-3{padding-left:0.75rem;padding-right:0.75rem}.px-3\.5{padding-left:0.875rem;padding-right:0.875rem}.px-4{padding-left:1rem;padding-right:1rem}.px-5{padding-left:1.25rem;padding-right:1.25rem}.py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}.py-1{padding-top:0.25rem;padding-bottom:0.25rem}.py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}.py-2{padding-top:0.5rem;padding-bottom:0.5rem}.py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}.py-3{padding-top:0.75rem;padding-bottom:0.75rem}.py-3\.5{padding-top:0.875rem;padding-bottom:0.875rem}.py-4{padding-top:1rem;padding-bottom:1rem}.py-6{padding-top:1.5rem;padding-bottom:1.5rem}.pb-3{padding-bottom:0.75rem}.pr-2{padding-right:0.5rem}.pr-4{padding-right:1rem}.pt-1{padding-top:0.25rem}.pt-2{padding-top:0.5rem}.pt-3{padding-top:0.75rem}.pl-1\.5{padding-left:0.375rem}.pr-3{padding-right:0.75rem}.pt-0\.5{padding-top:0.125rem}.text-\[11px\]{font-size:11px}.text-base{font-size:1rem;line-height:1.5rem}.text-lg{font-size:1.125rem;line-height:1.75rem}.text-sm{font-size:0.875rem;line-height:1.25rem}.text-xs{font-size:0.75rem;line-height:1rem}.text-\[9px\]{font-size:9px}.font-bold{font-weight:700}.font-medium{font-weight:500}.font-normal{font-weight:400}.font-semibold{font-weight:600}.leading-none{line-height:1}.leading-relaxed{line-height:1.625}.tracking-tight{letter-spacing:-0.025em}.text-\[\#0083CA\]{--tw-text-opacity:1;color:rgb(0 131 202 / var(--tw-text-opacity, 1))}.text-\[\#159E8A\]{--tw-text-opacity:1;color:rgb(21 158 138 / var(--tw-text-opacity, 1))}.text-\[\#43A842\]{--tw-text-opacity:1;color:rgb(67 168 66 / var(--tw-text-opacity, 1))}.text-amber-600{--tw-text-opacity:1;color:rgb(217 119 6 / var(--tw-text-opacity, 1))}.text-rose-600{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.text-rose-700{--tw-text-opacity:1;color:rgb(190 18 60 / var(--tw-text-opacity, 1))}.text-slate-400{--tw-text-opacity:1;color:rgb(148 163 184 / var(--tw-text-opacity, 1))}.text-slate-500{--tw-text-opacity:1;color:rgb(100 116 139 / var(--tw-text-opacity, 1))}.text-slate-600{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.text-slate-700{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.text-slate-800{--tw-text-opacity:1;color:rgb(30 41 59 / var(--tw-text-opacity, 1))}.text-slate-900{--tw-text-opacity:1;color:rgb(15 23 42 / var(--tw-text-opacity, 1))}.text-white{--tw-text-opacity:1;color:rgb(255 255 255 / var(--tw-text-opacity, 1))}.text-white\/90{color:rgb(255 255 255 / 0.9)}.text-slate-300{--tw-text-opacity:1;color:rgb(203 213 225 / var(--tw-text-opacity, 1))}.accent-\[\#159E8A\]{accent-color:#159E8A}.opacity-0{opacity:0}.shadow-2xl{--tw-shadow:0 25px 50px -12px rgb(0 0 0 / 0.25);--tw-shadow-colored:0 25px 50px -12px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-lg{--tw-shadow:0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 10px 15px -3px var(--tw-shadow-color), 0 4px 6px -4px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.shadow-xl{--tw-shadow:0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);--tw-shadow-colored:0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);box-shadow:var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow)}.transition{transition-property:color, background-color, border-color, fill, stroke, opacity, box-shadow, transform, filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;transition-property:color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-text-decoration-color, -webkit-backdrop-filter;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.transition-transform{transition-property:transform;transition-timing-function:cubic-bezier(0.4, 0, 0.2, 1);transition-duration:150ms}.duration-200{transition-duration:200ms}.hover\:border-\[\#159E8A\]\/40:hover{border-color:rgb(21 158 138 / 0.4)}.hover\:border-\[\#159E8A\]\/50:hover{border-color:rgb(21 158 138 / 0.5)}.hover\:bg-\[\#0083CA\]\/20:hover{background-color:rgb(0 131 202 / 0.2)}.hover\:bg-\[\#159E8A\]\/20:hover{background-color:rgb(21 158 138 / 0.2)}.hover\:bg-rose-100:hover{--tw-bg-opacity:1;background-color:rgb(255 228 230 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-200:hover{--tw-bg-opacity:1;background-color:rgb(226 232 240 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-50:hover{--tw-bg-opacity:1;background-color:rgb(248 250 252 / var(--tw-bg-opacity, 1))}.hover\:bg-\[\#159E8A\]\/10:hover{background-color:rgb(21 158 138 / 0.1)}.hover\:bg-\[\#159E8A\]\/5:hover{background-color:rgb(21 158 138 / 0.05)}.hover\:bg-\[\#0083CA\]\/10:hover{background-color:rgb(0 131 202 / 0.1)}.hover\:bg-rose-50:hover{--tw-bg-opacity:1;background-color:rgb(255 241 242 / var(--tw-bg-opacity, 1))}.hover\:bg-slate-900:hover{--tw-bg-opacity:1;background-color:rgb(15 23 42 / var(--tw-bg-opacity, 1))}.hover\:text-slate-600:hover{--tw-text-opacity:1;color:rgb(71 85 105 / var(--tw-text-opacity, 1))}.hover\:text-slate-700:hover{--tw-text-opacity:1;color:rgb(51 65 85 / var(--tw-text-opacity, 1))}.hover\:text-\[\#0083CA\]:hover{--tw-text-opacity:1;color:rgb(0 131 202 / var(--tw-text-opacity, 1))}.hover\:text-rose-600:hover{--tw-text-opacity:1;color:rgb(225 29 72 / var(--tw-text-opacity, 1))}.hover\:underline:hover{-webkit-text-decoration-line:underline;text-decoration-line:underline}.focus\:border-\[\#0083CA\]:focus{--tw-border-opacity:1;border-color:rgb(0 131 202 / var(--tw-border-opacity, 1))}.focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}.focus\:ring-2:focus{--tw-ring-offset-shadow:var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);--tw-ring-shadow:var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);box-shadow:var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000)}.focus\:ring-\[\#0083CA\]\/15:focus{--tw-ring-color:rgb(0 131 202 / 0.15)}.group:hover .group-hover\:scale-105{--tw-scale-x:1.05;--tw-scale-y:1.05;transform:translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y))}.group:hover .group-hover\:opacity-100{opacity:1}@media (min-width: 640px){.sm\:inline{display:inline}.sm\:w-auto{width:auto}.sm\:grid-cols-4{grid-template-columns:repeat(4, minmax(0, 1fr))}.sm\:flex-row{flex-direction:row}.sm\:items-center{align-items:center}.sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}}@media (min-width: 1024px){.lg\:col-span-4{grid-column:span 4 / span 4}.lg\:col-span-8{grid-column:span 8 / span 8}.lg\:grid-cols-12{grid-template-columns:repeat(12, minmax(0, 1fr))}}</style></head>
-<body class="min-h-screen text-slate-900 flex flex-col">
+</head>
+<body class="min-h-screen flex flex-col text-slate-800">
 
-    <!-- 상단 다담랩스 시그니처 그라데이션 포인트 바 -->
-    <div class="h-1.5 w-full dadam-gradient"></div>
+    <!-- 상단 그라데이션 포인트 라인 -->
+    <div class="h-1.5 w-full dadam-gradient-bg"></div>
 
-    <!-- 메인 헤더 -->
-    <header class="bg-white border-b border-slate-200/90 sticky top-0 z-20 shadow-2xs">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 py-3 flex justify-between items-center gap-3">
-            
-            <!-- 다담랩스(DadamLabs) 공식 로고 및 타이틀 -->
+    <!-- 상단 헤더 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center gap-3">
+            <!-- 다담랩스 로고 & 타이틀 -->
             <div class="flex items-center space-x-3.5 min-w-0">
-                <a href="http://dadamlabs.com/" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center shrink-0 group" title="(주)다담랩스 홈페이지">
-                    <svg class="w-12 h-8 transition-transform group-hover:scale-105" viewBox="0 0 130 82" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <div class="flex flex-col items-center justify-center shrink-0 select-none">
+                    <svg class="w-11 h-7" viewBox="0 0 120 76" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <linearGradient id="dadamLogoGrad" x1="0" y1="41" x2="130" y2="41" gradientUnits="userSpaceOnUse">
-                                <stop offset="0%" stop-color="#0083CA"></stop>
-                                <stop offset="50%" stop-color="#159E8A"></stop>
-                                <stop offset="100%" stop-color="#43A842"></stop>
+                            <linearGradient id="dadamLogoGrad" x1="0" y1="38" x2="120" y2="38" gradientUnits="userSpaceOnUse">
+                                <stop offset="0%" stop-color="#0083CA"/>
+                                <stop offset="50%" stop-color="#159E8A"/>
+                                <stop offset="100%" stop-color="#43A842"/>
                             </linearGradient>
                         </defs>
-                        <path d="M 52 38 C 46 27 36 22 22 22 L 12 22 L 12 66 L 26 66 C 40 66 51 58 63 44 L 74 31 C 84 20 98 20 108 31 C 117 41 117 55 108 63 C 98 71 84 69 75 56 M 113 10 L 113 68" stroke="url(#dadamLogoGrad)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"></path>
+                        <path d="M 46 25 A 20 20 0 0 0 32 19 H 12 V 59 H 32 A 20 20 0 0 0 46 53 L 74 25 A 20 20 0 0 1 88 19 H 96 A 12 12 0 0 1 108 31 V 47 A 12 12 0 0 1 96 59 H 88 A 20 20 0 0 1 74 53 L 62 41" stroke="url(#dadamLogoGrad)" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M 108 8 V 59" stroke="#43A842" stroke-width="12" stroke-linecap="round"/>
                     </svg>
-                    <span class="text-[11px] font-bold tracking-tight text-slate-800 leading-none mt-0.5">DadamLabs</span>
-                </a>
+                    <span class="text-[10px] font-bold tracking-tight text-slate-800 leading-none mt-0.5">DadamLabs</span>
+                </div>
 
-                <div class="h-7 w-px bg-slate-200 shrink-0"></div>
+                <div class="h-6 w-px bg-slate-200 hidden sm:block"></div>
 
-                <div class="min-w-0">
-                    <div class="flex flex-wrap items-center gap-2">
-                        <h1 class="text-base font-bold text-slate-900 tracking-tight truncate">탕비실 · 비품 신청 데스크</h1>
-                        <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                            <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-[#0083CA]"></span>
-                            <span id="syncText">브라우저 저장 모드</span>
+                <div class="truncate">
+                    <div class="flex items-center space-x-2">
+                        <h1 class="text-base sm:text-lg font-bold text-slate-900 tracking-tight truncate">탕비실 · 비품 신청 보드</h1>
+                        <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25">
+                            <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-[#43A842]"></span>
+                            <span id="syncText">실시간 공유중</span>
                         </span>
-                        <span id="adminBadge" class="dadam-gradient text-white text-[11px] font-semibold px-2 py-0.5 rounded-md shadow-2xs">총괄 담당자 모드</span>
                     </div>
-                    <p id="headerNoticeText" class="text-xs text-slate-500 truncate mt-0.5">먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.</p>
+                    <p class="text-xs text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
                 </div>
             </div>
 
-            <!-- 우측 담당자 전용 컨트롤 영역 -->
+            <!-- 우측 담당자 전용 컨트롤 -->
             <div class="flex items-center space-x-2 shrink-0">
-                <button onclick="openSettingsModal()" id="settingsBtn" class="text-xs bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3 py-2 rounded-lg font-medium transition items-center gap-1 inline-flex">
+                <button onclick="openSettingsModal()" id="settingsBtn" class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg font-semibold transition flex items-center space-x-1">
                     <span>⚙️ 환경설정</span>
                 </button>
-                <button onclick="handleAdminButton()" id="adminToggleBtn" class="text-xs bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-lg font-semibold transition">담당자 모드 종료</button>
+                <button onclick="openLoginModal()" id="adminBtn" class="text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm">
+                    🔒 담당자 로그인
+                </button>
             </div>
         </div>
     </header>
 
-    <!-- 상단 우측 토스트 알림 -->
-    <div id="toastBox" class="fixed top-20 right-4 z-50 hidden">
-        <div class="bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg border border-slate-700 flex items-center space-x-2">
-            <span class="w-2 h-2 rounded-full bg-[#43A842]"></span>
-            <span id="toastText">변경된 비밀번호가 내장된 전체 코드가 복사되었습니다! 깃허브 food.html에 붙여넣으세요.</span>
-        </div>
-    </div>
+    <!-- 메인 컨텐츠 -->
+    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-6">
 
-    <!-- 본문 컨테이너 -->
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5 flex-1 w-full">
-
-        <!-- 총괄 현황 요약 카드 (접수 대기 / 발주 완료 / 비치 완료 / 최다 공감 메뉴) -->
+        <!-- 상단 총괄 요약 바 -->
         <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
+            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-medium text-slate-500">접수 대기</p>
-                    <p id="statPending" class="text-lg font-bold text-[#0083CA] mt-0.5">1건</p>
+                    <p class="text-xs font-medium text-slate-500">접수 대기</p>
+                    <p class="text-xl font-extrabold text-[#0083CA] mt-0.5" id="statPending">0건</p>
                 </div>
-                <span class="w-8 h-8 rounded-lg bg-[#0083CA]/10 text-[#0083CA] flex items-center justify-center text-sm font-bold">⏳</span>
+                <span class="w-9 h-9 rounded-lg bg-[#0083CA]/10 text-[#0083CA] flex items-center justify-center text-sm font-bold">⏳</span>
             </div>
-            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
+            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-medium text-slate-500">발주 완료 (배송중)</p>
-                    <p id="statOrdered" class="text-lg font-bold text-[#159E8A] mt-0.5">1건</p>
+                    <p class="text-xs font-medium text-slate-500">발주(주문) 완료</p>
+                    <p class="text-xl font-extrabold text-[#159E8A] mt-0.5" id="statOrdered">0건</p>
                 </div>
-                <span class="w-8 h-8 rounded-lg bg-[#159E8A]/10 text-[#159E8A] flex items-center justify-center text-sm font-bold">🚚</span>
+                <span class="w-9 h-9 rounded-lg bg-[#159E8A]/10 text-[#159E8A] flex items-center justify-center text-sm font-bold">🚚</span>
             </div>
-            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
+            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-medium text-slate-500">탕비실 비치 완료</p>
-                    <p id="statCompleted" class="text-lg font-bold text-[#43A842] mt-0.5">1건</p>
+                    <p class="text-xs font-medium text-slate-500">탕비실 비치 완료</p>
+                    <p class="text-xl font-extrabold text-[#43A842] mt-0.5" id="statCompleted">0건</p>
                 </div>
-                <span class="w-8 h-8 rounded-lg bg-[#43A842]/10 text-[#43A842] flex items-center justify-center text-sm font-bold">✓</span>
+                <span class="w-9 h-9 rounded-lg bg-[#43A842]/10 text-[#43A842] flex items-center justify-center text-sm font-bold">✅</span>
             </div>
-            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
+            <div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm flex items-center justify-between col-span-2 sm:col-span-1">
                 <div class="min-w-0 pr-2">
-                    <p class="text-[11px] font-medium text-slate-500">최다 공감 희망 메뉴</p>
-                    <p id="statTopItem" class="text-xs font-bold text-slate-800 truncate mt-1">코카콜라 제로 355ml (24캔) 2박스 (6명)</p>
+                    <p class="text-xs font-medium text-slate-500">현재 최다 공감 품목</p>
+                    <p class="text-sm font-bold text-slate-900 truncate mt-1" id="statTopItem">-</p>
                 </div>
-                <span class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm font-bold shrink-0">👍</span>
+                <span class="w-9 h-9 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-sm font-bold shrink-0">🔥</span>
             </div>
         </section>
 
-        <!-- 자주 신청하는 단골 품목 (원클릭 자동 입력 + 미니 썸네일) -->
-        <section class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs">
-            <div class="flex justify-between items-center mb-2.5">
+        <!-- 자주 찾는 단골 품목 바 -->
+        <section class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-sm">
+            <div class="flex flex-wrap justify-between items-center gap-2 mb-3">
                 <div class="flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-[#159E8A]"></span>
-                    <span class="text-xs font-bold text-slate-800">자주 찾는 단골 메뉴 · 비품</span>
-                    <span class="text-xs text-slate-400 hidden sm:inline">클릭하면 좌측 신청서에 썸네일과 함께 자동 입력됩니다</span>
+                    <h2 class="text-xs font-bold text-slate-800 tracking-tight">자주 찾는 단골 품목</h2>
+                    <span class="text-[11px] text-slate-400">클릭하면 좌측 신청서에 바로 입력됩니다</span>
                 </div>
-                <button onclick="openPresetAddModal()" id="addPresetTopBtn" class="text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#159E8A] px-2.5 py-1 rounded-md font-semibold transition">
-                    + 단골 품목 추가
-                </button>
+                <div id="adminPresetControl" class="hidden">
+                    <button onclick="openAddPresetModal()" class="text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#0F766E] px-2.5 py-1 rounded-md font-semibold transition">
+                        + 단골 품목 추가
+                    </button>
+                </div>
             </div>
-            <div id="presetListContainer" class="flex flex-wrap gap-2"><div class="inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5"><span class="flex items-center gap-1.5 font-medium"><span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">🥤</span><span>코카콜라 제로 355ml (24캔)</span></span><button class="ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none" title="단골 품목 삭제">×</button></div><div class="inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5"><span class="flex items-center gap-1.5 font-medium"><span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">🥤</span><span>카누 미니 다크로스트 (100T)</span></span><button class="ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none" title="단골 품목 삭제">×</button></div><div class="inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5"><span class="flex items-center gap-1.5 font-medium"><span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">🍪</span><span>오리온 비쵸비</span></span><button class="ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none" title="단골 품목 삭제">×</button></div><div class="inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5"><span class="flex items-center gap-1.5 font-medium"><span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">🥚</span><span>구운란 30구</span></span><button class="ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none" title="단골 품목 삭제">×</button></div><div class="inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5"><span class="flex items-center gap-1.5 font-medium"><span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">🧻</span><span>종이컵 1박스</span></span><button class="ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none" title="단골 품목 삭제">×</button></div><div class="inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5"><span class="flex items-center gap-1.5 font-medium"><span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">📄</span><span>더블에이 A4 복사용지 1박스</span></span><button class="ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none" title="단골 품목 삭제">×</button></div><div class="inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5"><span class="flex items-center gap-1.5 font-medium"><span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">🍪</span><span>제로펩시</span></span><button class="ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none" title="단골 품목 삭제">×</button></div></div>
+            <div id="presetContainer" class="flex flex-wrap gap-2"></div>
         </section>
 
-        <!-- 좌/우 메인 분할 레이아웃 -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <!-- 좌측: 간식·비품 신청서 (4칸) -->
+        <!-- 본문 좌/우 분할 영역 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- 왼쪽: 간식·비품 신청서 (4칸) -->
             <div class="lg:col-span-4">
-                <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden sticky top-24">
-                    <div class="dadam-gradient px-5 py-3.5 flex items-center justify-between">
-                        <h2 class="text-sm font-bold text-white">간식 · 비품 신청하기</h2>
-                        <span class="text-[11px] text-white/90 font-medium">DadamLabs Pantry</span>
+                <div class="bg-white rounded-xl border border-slate-200/90 shadow-sm overflow-hidden sticky top-20">
+                    <div class="h-1 w-full dadam-gradient-bg"></div>
+                    <div class="p-5">
+                        <div class="mb-4 pb-3 border-b border-slate-100">
+                            <h2 class="text-sm font-bold text-slate-900">간식 · 비품 신청하기</h2>
+                            <p class="text-xs text-slate-500 mt-0.5">목록에 이미 있는 메뉴는 우측에서 '나도 원해요'를 눌러주세요.</p>
+                        </div>
+
+                        <form id="orderForm" onsubmit="handleFormSubmit(event)" class="space-y-3.5">
+                            <div class="grid grid-cols-2 gap-2.5">
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">신청자 (익명 가능)</label>
+                                    <input type="text" id="author" placeholder="이름 또는 닉네임" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-slate-700 mb-1">분류</label>
+                                    <select id="category" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] bg-white">
+                                        <option value="과자·스낵">🍪 과자·스낵</option>
+                                        <option value="커피·음료">🥤 커피·음료</option>
+                                        <option value="라면·간편식">🍜 라면·간편식</option>
+                                        <option value="탕비실 소모품">🧻 탕비실 소모품</option>
+                                        <option value="사무용품">📎 사무용품</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">품목명 및 수량 <span class="text-rose-500">*</span></label>
+                                <input type="text" id="item_name" required placeholder="예: 코카콜라 제로 355ml 1박스" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">구매 링크 (쿠팡·네이버 등 URL)</label>
+                                <input type="url" id="link" placeholder="https://..." class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">한줄 메모 (선택)</label>
+                                <input type="text" id="req_note" placeholder="예: 탕비실 냉장고에 다 떨어졌어요" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
+                            </div>
+
+                            <button type="submit" class="w-full dadam-gradient-btn text-white font-bold py-2.5 rounded-lg shadow-sm transition text-sm">
+                                신청 목록에 올리기
+                            </button>
+                        </form>
                     </div>
-
-                    <form id="requestForm" onsubmit="submitRequest(event)" class="p-5 space-y-3.5">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">신청자 (또는 익명)</label>
-                                <input type="text" id="reqAuthor" required="" placeholder="예: 홍길동 / 익명" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-semibold text-slate-700 mb-1">분류</label>
-                                <select id="reqCategory" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] bg-white">
-                                    <option value="스낵·간편식">스낵·간편식</option>
-                                    <option value="음료·커피">음료·커피</option>
-                                    <option value="탕비실 소모품">탕비실 소모품</option>
-                                    <option value="사무용품">사무용품</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">희망 품목명 및 수량</label>
-                            <input type="text" id="reqName" required="" placeholder="예: 코카콜라 제로 355ml 1박스" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
-                        </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="text-xs font-semibold text-slate-700">구매 링크 (쿠팡·네이버 등)</label>
-                                <span id="mallBadgePreview" class="text-[11px] text-[#0083CA] font-semibold hidden"></span>
-                            </div>
-                            <input type="url" id="reqLink" oninput="handleLinkInput(this.value)" placeholder="https://... (선택사항)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">한줄 메모 / 신청 사유 (선택)</label>
-                            <input type="text" id="reqNote" placeholder="예: 당 충전용으로 같이 먹고 싶어요!" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
-                        </div>
-
-                        <button type="submit" class="w-full dadam-gradient dadam-gradient-hover text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-xs">
-                            신청 목록에 올리기
-                        </button>
-                    </form>
                 </div>
             </div>
 
-            <!-- 우측: 직원 희망 메뉴 & 발주 현황판 (8칸) -->
+            <!-- 오른쪽: 신청 및 투표 현황 보드 (8칸) -->
             <div class="lg:col-span-8 space-y-4">
-                
-                <!-- 상단 필터 및 정렬 바 -->
-                <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+
+                <!-- 상단 필터 및 정렬 컨트롤 -->
+                <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div class="flex items-center space-x-2">
-                        <h2 class="text-sm font-bold text-slate-900">신청 및 발주 현황</h2>
-                        <span id="orderCountBadge" class="text-xs bg-[#159E8A]/10 text-[#159E8A] px-2 py-0.5 rounded-md font-bold">3건</span>
+                        <h2 class="text-sm font-bold text-slate-900">신청 · 공감 현황</h2>
+                        <span id="totalCount" class="text-xs bg-[#0083CA]/10 text-[#0083CA] px-2 py-0.5 rounded-full font-bold">0건</span>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <select id="sortSelect" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0083CA]">
+                        <select id="sortOrder" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="popular">👍 공감 많은 순</option>
                             <option value="latest">🕒 최신 등록 순</option>
                         </select>
-                        <select id="statusFilter" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0083CA]">
+                        <select id="filterStatus" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="all">전체 상태</option>
                             <option value="pending">접수 대기</option>
                             <option value="ordered">발주 완료</option>
                             <option value="completed">비치 완료</option>
                         </select>
-                        <select id="categoryFilter" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0083CA]">
+                        <select id="filterCategory" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="all">전체 분류</option>
-                            <option value="스낵·간편식">스낵·간편식</option>
-                            <option value="음료·커피">음료·커피</option>
+                            <option value="과자·스낵">과자·스낵</option>
+                            <option value="커피·음료">커피·음료</option>
+                            <option value="라면·간편식">라면·간편식</option>
                             <option value="탕비실 소모품">탕비실 소모품</option>
                             <option value="사무용품">사무용품</option>
                         </select>
-                        <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition">
-                            대기목록 복사
+                        <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold transition ml-auto sm:ml-0">
+                            📋 대기목록 복사
                         </button>
                     </div>
                 </div>
 
-                <!-- 담당자 모드 활성화 안내 배너 -->
-                <div id="adminBanner" class="bg-[#0083CA]/10 border border-[#0083CA]/25 text-slate-800 px-4 py-2.5 rounded-xl text-xs flex items-center justify-between">
-                    <span>💡 <strong>총괄 담당자 모드 실행 중:</strong> 각 품목의 발주 상태를 변경하거나 입고 일정 메모를 남길 수 있습니다.</span>
-                    <button onclick="openSettingsModal()" class="text-[#0083CA] font-bold hover:underline shrink-0 ml-2">비밀번호 변경 ↗</button>
-                </div>
-
-                <!-- 신청 카드 리스트 -->
-                <div id="ordersContainer" class="space-y-2.5"><div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs transition hover:border-[#159E8A]/50">
-                    <div class="flex justify-between items-start gap-3.5">
-                        <div onclick="openImageZoom('https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&amp;fit=crop&amp;w=300&amp;q=80', '오리온 비쵸비 3박스')" title="클릭하여 이미지 크게 보기" class="w-16 h-16 sm:w-18 sm:h-18 rounded-xl border border-slate-200 overflow-hidden shrink-0 bg-slate-50 cursor-zoom-in relative group shadow-2xs">
-                           <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="오리온 비쵸비 3박스" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.parentElement.innerHTML='&lt;div class=\'w-full h-full flex flex-col items-center justify-center bg-amber-50/80 border-amber-200/70 text-amber-700\'&gt;&lt;span class=\'text-2xl\'&gt;🍪&lt;/span&gt;&lt;/div&gt;'">
-                           <span class="absolute bottom-1 right-1 bg-slate-900/60 text-white text-[9px] px-1 rounded opacity-0 group-hover:opacity-100 transition">확대</span>
-                       </div>
-                        <div class="space-y-1 flex-1 min-w-0">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-[11px] bg-[#43A842]/10 text-[#43A842] border border-[#43A842]/25 px-2 py-0.5 rounded-md font-semibold">비치 완료</span>
-                                <span class="text-xs font-semibold text-[#159E8A]">스낵·간편식</span>
-                                <span class="text-xs text-slate-300">|</span>
-                                <span class="text-xs text-slate-500">박선임 · 11/10</span>
-                            </div>
-                            <h3 class="text-sm font-bold text-slate-900 pt-0.5 break-words">오리온 비쵸비 3박스</h3>
-                            <p class="text-xs text-slate-500">커피랑 같이 먹을 달달한 과자 요청합니다</p>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
-                            
-                            <button onclick="toggleLike(103)" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition dadam-gradient text-white border-transparent shadow-2xs">
-                                <span>👍 나도 원해요</span>
-                                <span class="font-bold">8</span>
-                            </button>
-                        </div>
-                    </div>
-                
-                        <div class="mt-3 text-xs bg-[#159E8A]/5 text-slate-700 px-3 py-2 rounded-lg border border-[#159E8A]/20 flex items-center space-x-1.5">
-                            <span class="font-bold text-[#0083CA] shrink-0">담당자 안내:</span>
-                            <span>탕비실 스낵 선반에 비치 완료했습니다!</span>
-                        </div>
-                    
-                        <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
-                            <div class="flex flex-wrap items-center gap-1">
-                                <button onclick="setOrderStatus(103, 'pending')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-white text-slate-600 border-slate-200 hover:bg-slate-50">접수 대기</button>
-                                <button onclick="setOrderStatus(103, 'ordered')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-white text-slate-600 border-slate-200 hover:bg-slate-50">발주 완료</button>
-                                <button onclick="setOrderStatus(103, 'completed')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-[#43A842] text-white border-[#43A842]">비치 완료</button>
-                                <button onclick="toggleMemoInput(103)" class="text-[11px] px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">안내메모 입력</button>
-                            </div>
-                            <div class="flex items-center space-x-1">
-                                <button onclick="promoteToPreset(103)" class="text-[11px] px-2 py-1 text-[#0083CA] hover:bg-[#0083CA]/10 rounded font-medium">+단골등록</button>
-                                <button onclick="removeOrder(103)" class="text-[11px] px-2 py-1 text-rose-600 hover:bg-rose-50 rounded font-medium">삭제</button>
-                            </div>
-                        </div>
-                    </div><div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs transition hover:border-[#159E8A]/50">
-                    <div class="flex justify-between items-start gap-3.5">
-                        <div onclick="openImageZoom('https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&amp;fit=crop&amp;w=300&amp;q=80', '코카콜라 제로 355ml (24캔) 2박스')" title="클릭하여 이미지 크게 보기" class="w-16 h-16 sm:w-18 sm:h-18 rounded-xl border border-slate-200 overflow-hidden shrink-0 bg-slate-50 cursor-zoom-in relative group shadow-2xs">
-                           <img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="코카콜라 제로 355ml (24캔) 2박스" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.parentElement.innerHTML='&lt;div class=\'w-full h-full flex flex-col items-center justify-center bg-sky-50 border-sky-200/70 text-sky-700\'&gt;&lt;span class=\'text-2xl\'&gt;🥤&lt;/span&gt;&lt;/div&gt;'">
-                           <span class="absolute bottom-1 right-1 bg-slate-900/60 text-white text-[9px] px-1 rounded opacity-0 group-hover:opacity-100 transition">확대</span>
-                       </div>
-                        <div class="space-y-1 flex-1 min-w-0">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-[11px] bg-[#0083CA]/10 text-[#0083CA] border border-[#0083CA]/25 px-2 py-0.5 rounded-md font-semibold">접수 대기</span>
-                                <span class="text-xs font-semibold text-[#159E8A]">음료·커피</span>
-                                <span class="text-xs text-slate-300">|</span>
-                                <span class="text-xs text-slate-500">김대리 · 11/13</span>
-                            </div>
-                            <h3 class="text-sm font-bold text-slate-900 pt-0.5 break-words">코카콜라 제로 355ml (24캔) 2박스</h3>
-                            <p class="text-xs text-slate-500">탕비실 냉장고 음료 재고가 거의 다 떨어졌어요!</p>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
-                            
-                                <a href="https://www.coupang.com" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg font-medium transition">
-                                    쿠팡 ↗
-                                </a>
-                            
-                            <button onclick="toggleLike(101)" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition bg-white hover:bg-[#159E8A]/5 text-slate-700 border-slate-200">
-                                <span>👍 나도 원해요</span>
-                                <span class="font-bold">6</span>
-                            </button>
-                        </div>
-                    </div>
-                
-                        <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
-                            <div class="flex flex-wrap items-center gap-1">
-                                <button onclick="setOrderStatus(101, 'pending')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-[#0083CA] text-white border-[#0083CA]">접수 대기</button>
-                                <button onclick="setOrderStatus(101, 'ordered')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-white text-slate-600 border-slate-200 hover:bg-slate-50">발주 완료</button>
-                                <button onclick="setOrderStatus(101, 'completed')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-white text-slate-600 border-slate-200 hover:bg-slate-50">비치 완료</button>
-                                <button onclick="toggleMemoInput(101)" class="text-[11px] px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">안내메모 입력</button>
-                            </div>
-                            <div class="flex items-center space-x-1">
-                                <button onclick="promoteToPreset(101)" class="text-[11px] px-2 py-1 text-[#0083CA] hover:bg-[#0083CA]/10 rounded font-medium">+단골등록</button>
-                                <button onclick="removeOrder(101)" class="text-[11px] px-2 py-1 text-rose-600 hover:bg-rose-50 rounded font-medium">삭제</button>
-                            </div>
-                        </div>
-                    </div><div class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs transition hover:border-[#159E8A]/50">
-                    <div class="flex justify-between items-start gap-3.5">
-                        <div onclick="openImageZoom('https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&amp;fit=crop&amp;w=300&amp;q=80', '고메 소바바 치킨 (달콤갈비맛) 2봉')" title="클릭하여 이미지 크게 보기" class="w-16 h-16 sm:w-18 sm:h-18 rounded-xl border border-slate-200 overflow-hidden shrink-0 bg-slate-50 cursor-zoom-in relative group shadow-2xs">
-                           <img src="https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&amp;fit=crop&amp;w=300&amp;q=80" alt="고메 소바바 치킨 (달콤갈비맛) 2봉" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.parentElement.innerHTML='&lt;div class=\'w-full h-full flex flex-col items-center justify-center bg-orange-50 border-orange-200/70 text-orange-700\'&gt;&lt;span class=\'text-2xl\'&gt;🍗&lt;/span&gt;&lt;/div&gt;'">
-                           <span class="absolute bottom-1 right-1 bg-slate-900/60 text-white text-[9px] px-1 rounded opacity-0 group-hover:opacity-100 transition">확대</span>
-                       </div>
-                        <div class="space-y-1 flex-1 min-w-0">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="text-[11px] bg-[#159E8A]/10 text-[#159E8A] border border-[#159E8A]/25 px-2 py-0.5 rounded-md font-semibold">발주 완료</span>
-                                <span class="text-xs font-semibold text-[#159E8A]">스낵·간편식</span>
-                                <span class="text-xs text-slate-300">|</span>
-                                <span class="text-xs text-slate-500">이주임 · 11/12</span>
-                            </div>
-                            <h3 class="text-sm font-bold text-slate-900 pt-0.5 break-words">고메 소바바 치킨 (달콤갈비맛) 2봉</h3>
-                            <p class="text-xs text-slate-500">오후 출출할 때 다 같이 돌려서 먹고 싶습니다</p>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
-                            
-                                <a href="https://shopping.naver.com" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg font-medium transition">
-                                    네이버쇼핑 ↗
-                                </a>
-                            
-                            <button onclick="toggleLike(102)" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition bg-white hover:bg-[#159E8A]/5 text-slate-700 border-slate-200">
-                                <span>👍 나도 원해요</span>
-                                <span class="font-bold">4</span>
-                            </button>
-                        </div>
-                    </div>
-                
-                        <div class="mt-3 text-xs bg-[#159E8A]/5 text-slate-700 px-3 py-2 rounded-lg border border-[#159E8A]/20 flex items-center space-x-1.5">
-                            <span class="font-bold text-[#0083CA] shrink-0">담당자 안내:</span>
-                            <span>발주 완료 (다음 주 월요일 입고 예정)</span>
-                        </div>
-                    
-                        <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
-                            <div class="flex flex-wrap items-center gap-1">
-                                <button onclick="setOrderStatus(102, 'pending')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-white text-slate-600 border-slate-200 hover:bg-slate-50">접수 대기</button>
-                                <button onclick="setOrderStatus(102, 'ordered')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-[#159E8A] text-white border-[#159E8A]">발주 완료</button>
-                                <button onclick="setOrderStatus(102, 'completed')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition bg-white text-slate-600 border-slate-200 hover:bg-slate-50">비치 완료</button>
-                                <button onclick="toggleMemoInput(102)" class="text-[11px] px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">안내메모 입력</button>
-                            </div>
-                            <div class="flex items-center space-x-1">
-                                <button onclick="promoteToPreset(102)" class="text-[11px] px-2 py-1 text-[#0083CA] hover:bg-[#0083CA]/10 rounded font-medium">+단골등록</button>
-                                <button onclick="removeOrder(102)" class="text-[11px] px-2 py-1 text-rose-600 hover:bg-rose-50 rounded font-medium">삭제</button>
-                            </div>
-                        </div>
-                    </div></div>
+                <!-- 신청 품목 리스트 -->
+                <div id="orderList" class="space-y-3"></div>
             </div>
 
         </div>
     </main>
 
-    <!-- 심플한 다담랩스 사내 푸터 -->
-    <footer class="bg-white border-t border-slate-200/80 mt-12 py-4">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-2">
+    <!-- 하단 푸터 (연속 5번 클릭 시 숨겨진 담당자 로그인 호출) -->
+    <footer class="bg-white border-t border-slate-200 mt-12">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 py-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-slate-400">
             <div class="flex items-center space-x-2">
-                <span class="font-bold dadam-text-gradient">DadamLabs</span>
+                <span class="font-bold text-slate-600">(주)다담랩스 (DadamLabs)</span>
                 <span>|</span>
-                <span>(주)다담랩스 사내 탕비실 · 비품 총괄 관리 시스템</span>
+                <span>서울특별시 금천구 가산디지털2로 143, 어반워크2차 1101~1103호</span>
             </div>
-            <div onclick="handleSecretFooterClick()" class="cursor-pointer select-none" title="담당자 호출">© DadamLabs. All Rights Reserved.</div>
+            <div onclick="handleSecretFooterClick()" class="cursor-pointer select-none hover:text-slate-600 transition" title="담당자 비상 로그인: 연속 3번 클릭">© DadamLabs. All Rights Reserved.</div>
         </div>
     </footer>
 
-    <!-- 1. 담당자 로그인 모달 -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/50 items-center justify-center z-50 p-4 hidden">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl overflow-hidden relative">
-            <div class="h-1 w-full dadam-gradient absolute top-0 left-0"></div>
-            <div class="flex justify-between items-center mb-2">
-                <h3 class="text-sm font-bold text-slate-900">총괄 담당자 로그인</h3>
-                <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">×</button>
+    <!-- 모달 1: 담당자 로그인 -->
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900">담당자 모드 인증</h3>
+                <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
             </div>
-            <p class="text-xs text-slate-500 mb-4">담당자 비밀번호(PIN)를 입력해 주세요.<br><span id="defaultPinHint" class="text-slate-400">(담당자가 설정한 고유 비밀번호를 입력하세요)</span></p>
-            <form onsubmit="submitAdminLogin(event)" class="space-y-3">
-                <input type="password" id="loginPinInput" required="" placeholder="비밀번호 입력" class="w-full text-sm px-3 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                <p id="loginErrorText" class="text-xs text-rose-600 hidden">비밀번호가 일치하지 않습니다.</p>
-                <div class="flex justify-end space-x-2 pt-1">
-                    <button type="button" onclick="closeLoginModal()" class="text-xs px-3.5 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">취소</button>
-                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient text-white font-semibold">확인</button>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">담당자 비밀번호 (PIN)</label>
+                    <input type="password" id="loginPinInput" required placeholder="비밀번호 입력 (초기: 1234)" class="w-full text-sm px-3.5 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <p id="loginErrorMsg" class="text-xs text-rose-600 mt-1.5 hidden">비밀번호가 일치하지 않습니다.</p>
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeLoginModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
+                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">확인</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 2. 담당자 환경설정 모달 (비밀번호 변경 / 공지 수정 / 버튼 숨김 / 완료내역 정리) -->
-    <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 items-center justify-center z-50 p-4 flex">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 border border-slate-200 shadow-xl space-y-5 relative overflow-hidden">
-            <div class="h-1 w-full dadam-gradient absolute top-0 left-0"></div>
+    <!-- 모달 2: 담당자 환경설정 (비밀번호 변경 / 공지 수정 / 완료 내역 정리) -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 border border-slate-200 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto custom-scrollbar">
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
                 <div class="flex items-center space-x-2">
-                    <span class="w-2.5 h-2.5 rounded-full bg-[#159E8A]"></span>
-                    <h3 class="text-base font-bold text-slate-900">총괄 담당자 환경설정</h3>
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#0083CA]"></span>
+                    <h3 class="text-base font-bold text-slate-900">담당자 환경설정</h3>
                 </div>
-                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">×</button>
+                <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
             </div>
-            
+
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">상단 안내 공지 문구</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">상단 안내 공지 문구</label>
                     <input type="text" id="settingNoticeInput" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">담당자 비밀번호(PIN) 변경 <span class="text-[11px] font-normal text-[#159E8A]">(변경 즉시 모든 PC에 공통 적용)</span></label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">담당자 비밀번호(PIN) 변경</label>
                     <input type="password" id="settingNewPinInput" placeholder="새 비밀번호 입력 (변경 시에만 입력)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                    <p class="text-[11px] text-slate-400 mt-1">비워두면 기존 비밀번호가 그대로 유지되며, 저장 시 클라우드에 암호화되어 모든 접속자에게 동일하게 적용됩니다.</p>
+                    <p class="text-[11px] text-[#0083CA] font-medium mt-1">✓ 비밀번호를 바꾸고 [설정 저장]만 누르면 모든 직원의 컴퓨터에 즉시 적용됩니다.</p>
                 </div>
 
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-2">
-                    <div class="flex items-center justify-between">
+                <div class="pt-3 border-t border-slate-100 space-y-2">
+                    <label class="flex items-center justify-between cursor-pointer bg-slate-50 p-3 rounded-lg border border-slate-200">
                         <div>
-                            <p class="text-xs font-semibold text-slate-800">일반 직원 화면에서 '담당자 로그인' 버튼 숨기기</p>
-                            <p class="text-[11px] text-slate-500">켜두면 일반 링크에서는 로그인 버튼이 아예 보이지 않습니다.</p>
+                            <span class="block text-xs font-bold text-slate-800">일반 직원 화면에서 '담당자 로그인' 버튼 숨기기</span>
+                            <span class="block text-[11px] text-slate-500 mt-0.5">체크하면 일반 직원에게는 우측 상단 로그인 버튼이 보이지 않습니다.</span>
                         </div>
-                        <input type="checkbox" id="settingHideAdminBtn" class="w-4 h-4 accent-[#159E8A] rounded cursor-pointer">
-                    </div>
-                    <div class="text-[11px] bg-white p-2 rounded-lg border border-slate-200 text-slate-600">
-                        💡 버튼을 숨기더라도 <strong>푸터의 '© DadamLabs' 글자를 연속 3번 클릭</strong>하거나 주소 뒤에 <code>?admin=1</code>을 붙이면 언제든 담당자 로그인 창이 열립니다.
+                        <input type="checkbox" id="settingHideAdminBtn" class="w-4 h-4 accent-[#0083CA] rounded cursor-pointer">
+                    </label>
+                    <div class="text-[11px] bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-slate-600 leading-relaxed">
+                        💡 버튼을 숨기더라도 <strong>하단 카피라이트('© DadamLabs')를 연속 3번 클릭</strong>하거나 주소 뒤에 <code>?admin=1</code>을 붙이면 언제든 담당자 로그인 창이 열립니다.
                     </div>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
-                    <label class="block text-xs font-semibold text-slate-700">🌐 다른 모든 컴퓨터(깃허브 링크)에 내 설정 적용하기</label>
-                    <p class="text-[11px] text-slate-500 leading-relaxed">
-                        방금 변경한 <strong>새 비밀번호·공지문구·단골품목</strong>이 기본값으로 내장된 전체 HTML 코드를 복사합니다. 복사한 코드를 깃허브 <code>food.html</code>에 붙여넣으면 <strong>다른 모든 컴퓨터에서도 변경된 비밀번호가 즉시 적용</strong>됩니다.
-                    </p>
-                    <button type="button" onclick="exportBakeInHtml()" class="w-full text-xs bg-[#0083CA]/10 hover:bg-[#0083CA]/20 text-[#0083CA] border border-[#0083CA]/30 py-2.5 rounded-lg font-bold transition">
-                        📋 현재 비밀번호·설정이 박힌 '깃허브용 전체 코드' 복사하기
-                    </button>
+                    <div class="flex items-center justify-between">
+                        <label class="block text-xs font-semibold text-slate-700">🔗 담당자 전용 바로가기 링크</label>
+                        <button type="button" onclick="copyAdminDirectLink()" class="text-xs bg-[#0083CA]/10 hover:bg-[#0083CA]/20 text-[#0083CA] border border-[#0083CA]/30 px-3 py-1.5 rounded-lg font-bold transition">
+                            담당자 전용 링크 복사
+                        </button>
+                    </div>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
@@ -452,138 +320,147 @@
             </div>
 
             <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeSettingsModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">닫기</button>
-                <button type="button" onclick="saveAdminSettings()" class="text-xs px-4 py-2 rounded-lg dadam-gradient text-white font-semibold">설정 저장</button>
+                <button type="button" onclick="closeSettingsModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">닫기</button>
+                <button type="button" onclick="saveAdminSettings()" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">설정 저장</button>
             </div>
         </div>
     </div>
 
-    <!-- 3. 단골 품목 추가 모달 -->
-    <div id="presetAddModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+    <!-- 모달 3: 단골 품목 추가 -->
+    <div id="presetModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
         <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="text-sm font-bold text-slate-900">단골 품목 추가</h3>
-                <button onclick="closePresetAddModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">×</button>
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900">단골 품목 추가</h3>
+                <button onclick="closeAddPresetModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
             </div>
-            <form onsubmit="submitPresetAdd(event)" class="space-y-3">
+            <form onsubmit="handleAddPreset(event)" class="space-y-3.5">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">분류</label>
-                    <select id="newPresetCategory" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#0083CA]">
-                        <option value="스낵·간편식">스낵·간편식</option>
-                        <option value="음료·커피">음료·커피</option>
-                        <option value="탕비실 소모품">탕비실 소모품</option>
-                        <option value="사무용품">사무용품</option>
+                    <select id="presetCategoryInput" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] bg-white">
+                        <option value="과자·스낵">🍪 과자·스낵</option>
+                        <option value="커피·음료">🥤 커피·음료</option>
+                        <option value="라면·간편식">🍜 라면·간편식</option>
+                        <option value="탕비실 소모품">🧻 탕비실 소모품</option>
+                        <option value="사무용품">📎 사무용품</option>
                     </select>
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">품목명</label>
-                    <input type="text" id="newPresetName" required="" placeholder="예: 오리온 비쵸비 1박스" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">썸네일 이미지 URL (선택)</label>
-                    <input type="url" id="newPresetImage" placeholder="https://..." class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <input type="text" id="presetNameInput" required placeholder="예: 카누 미니 다크 (100T)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closePresetAddModal()" class="text-xs px-3.5 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">취소</button>
-                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient text-white font-semibold">추가하기</button>
+                    <button type="button" onclick="closeAddPresetModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
+                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">추가</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 4. 썸네일 이미지 확대 보기 모달 -->
-    <div id="imageZoomModal" onclick="closeImageZoom()" class="fixed inset-0 bg-slate-900/75 hidden items-center justify-center z-50 p-4 cursor-zoom-out">
-        <div class="bg-white p-3 rounded-2xl max-w-md w-full shadow-2xl space-y-2.5" onclick="event.stopPropagation()">
-            <div class="flex justify-between items-center px-1">
-                <h4 id="zoomModalTitle" class="text-xs font-bold text-slate-800 truncate pr-4">품목 이미지</h4>
-                <button onclick="closeImageZoom()" class="text-slate-400 hover:text-slate-700 text-lg leading-none">×</button>
+    <!-- 모달 4: 담당자 안내 메모 입력 -->
+    <div id="memoModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-base font-bold text-slate-900">담당자 안내 메모 작성</h3>
+                <button onclick="closeMemoModal()" class="text-slate-400 hover:text-slate-600 text-xl leading-none">&times;</button>
             </div>
-            <div class="w-full aspect-square rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
-                <img id="zoomModalImg" src="" alt="확대 이미지" class="w-full h-full object-contain">
-            </div>
+            <form onsubmit="handleSaveMemo(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">메모 내용 (도착 예정일 / 반려 사유 등)</label>
+                    <input type="text" id="adminMemoInput" placeholder="예: 금요일 오후 입고 예정입니다!" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                </div>
+                <div class="flex justify-end space-x-2 pt-2">
+                    <button type="button" onclick="closeMemoModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
+                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient-btn text-white font-semibold">저장</button>
+                </div>
+            </form>
         </div>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    <!-- 토스트 알림창 -->
+    <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden items-center bg-slate-900 text-white text-xs font-semibold px-4 py-3 rounded-xl shadow-lg border border-slate-700">
+        <span id="toastMessage">처리되었습니다.</span>
+    </div>
 
-        const CONFIG_KEY = 'dadamlabs_pantry_config_v1';
-        const PRESET_KEY = 'dadamlabs_pantry_presets_v1';
-        const ORDERS_KEY = 'dadamlabs_pantry_orders_v2';
-        const LIKED_IDS_KEY = 'dadamlabs_my_liked_ids_v1';
+    <script>
+        // 기본 초기 설정값
+        const DEFAULT_CONFIG = {
+            pin: "1234",
+            pinHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4", // "1234"
+            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.",
+            hideAdminBtn: false
+        };
 
-        let myLikedIds = JSON.parse(localStorage.getItem(LIKED_IDS_KEY)) || [103];
-
-        let appConfig = Object.assign({"notice":"먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.","pinHash":"6154779b2873e2c7fa3dface2ee1fa3f672833369c68b50d51917b604414f2e3","hideAdminBtn":false}, JSON.parse(localStorage.getItem(CONFIG_KEY)) || {}, { pinHash: "6154779b2873e2c7fa3dface2ee1fa3f672833369c68b50d51917b604414f2e3", notice: "먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.", hideAdminBtn: false });
-
-        let presetItems = JSON.parse(localStorage.getItem(PRESET_KEY)) || [
-            { name: "코카콜라 제로 355ml (24캔)", category: "음료·커피", image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=240&q=80" },
-            { name: "카누 미니 다크로스트 (100T)", category: "음료·커피", image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=240&q=80" },
-            { name: "오리온 비쵸비", category: "스낵·간편식", image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=240&q=80" },
-            { name: "구운란 30구", category: "스낵·간편식", image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=240&q=80" },
-            { name: "종이컵 1박스", category: "탕비실 소모품", image: "" },
-            { name: "더블에이 A4 복사용지 1박스", category: "사무용품", image: "" }
+        const DEFAULT_PRESETS = [
+            { name: "코카콜라 제로 355ml (24캔)", category: "커피·음료" },
+            { name: "카누 미니 다크로스트 (100T)", category: "커피·음료" },
+            { name: "오리온 비쵸비 (3박스)", category: "과자·스낵" },
+            { name: "무항생제 구운란 (30구)", category: "라면·간편식" },
+            { name: "종이컵 6.5온스 (1박스)", category: "탕비실 소모품" },
+            { name: "두툼한 물티슈 (10팩)", category: "탕비실 소모품" }
         ];
 
-        let orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [
+        const DEFAULT_ORDERS = [
             {
                 id: 101,
-                author: "김대리",
-                category: "음료·커피",
-                name: "코카콜라 제로 355ml (24캔) 2박스",
+                author: "개발팀",
+                category: "커피·음료",
+                name: "코카콜라 제로 355ml 1박스",
                 link: "https://www.coupang.com",
-                image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=300&q=80",
-                reqNote: "탕비실 냉장고 음료 재고가 거의 다 떨어졌어요!",
-                likes: 6,
+                reqNote: "오후 시간 당 충전용으로 신청합니다!",
+                likes: 5,
                 status: "pending",
                 adminMemo: "",
                 date: "11/13"
             },
             {
                 id: 102,
-                author: "이주임",
-                category: "스낵·간편식",
-                name: "고메 소바바 치킨 (달콤갈비맛) 2봉",
+                author: "기획팀",
+                category: "과자·스낵",
+                name: "오리온 비쵸비 3박스",
                 link: "https://shopping.naver.com",
-                image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=300&q=80",
-                reqNote: "오후 출출할 때 다 같이 돌려서 먹고 싶습니다",
-                likes: 4,
+                reqNote: "탕비실 과자 칸이 비었어요",
+                likes: 7,
                 status: "ordered",
-                adminMemo: "발주 완료 (다음 주 월요일 입고 예정)",
+                adminMemo: "주문 완료! 목요일 도착 예정입니다.",
                 date: "11/12"
             },
             {
                 id: 103,
-                author: "박선임",
-                category: "스낵·간편식",
-                name: "오리온 비쵸비 3박스",
+                author: "경영지원",
+                category: "탕비실 소모품",
+                name: "종이컵 6.5온스 1박스",
                 link: "",
-                image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=300&q=80",
-                reqNote: "커피랑 같이 먹을 달달한 과자 요청합니다",
-                likes: 8,
+                reqNote: "",
+                likes: 3,
                 status: "completed",
-                adminMemo: "탕비실 스낵 선반에 비치 완료했습니다!",
-                date: "11/10"
+                adminMemo: "탕비실 하단 수납장에 채워두었습니다.",
+                date: "11/11"
             }
         ];
 
+        const CONFIG_KEY = 'dadamlabs_pantry_config_v3';
+        const PRESET_KEY = 'dadamlabs_pantry_presets_v3';
+        const ORDERS_KEY = 'dadamlabs_pantry_orders_v3';
+        const LIKED_IDS_KEY = 'dadamlabs_my_liked_ids_v3';
+
+        // 깃허브 페이지(github.io)에서도 모든 직원이 실시간 공유할 수 있는 무료 공용 클라우드 저장소 주소
+        const CLOUD_SYNC_URL = "https://kvdb.io/A2x9kL5mP8qR3vW7yZ1cB4/dadamlabs_pantry_shared_2026_v3";
+
+        let appConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || Object.assign({}, DEFAULT_CONFIG);
+        let presetItems = JSON.parse(localStorage.getItem(PRESET_KEY)) || DEFAULT_PRESETS.slice();
+        let orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || DEFAULT_ORDERS.slice();
+        let myLikedIds = JSON.parse(localStorage.getItem(LIKED_IDS_KEY)) || [];
+
         let isAdmin = false;
         let editingMemoId = null;
-        let linkFetchTimer = null;
         let footerClickCount = 0;
         let footerClickTimer = null;
-
-        let db = null;
-        let auth = null;
-        let currentUser = null;
-        let sharedStateDocRef = null;
+        let lastCloudUpdatedAt = 0;
 
         async function sha256Hash(str) {
             try {
-                const msgBuffer = new TextEncoder().encode(str);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const buf = new TextEncoder().encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', buf);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
                 return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
             } catch (e) {
@@ -591,14 +468,25 @@
             }
         }
 
-        function setSyncBadge(status, label) {
+        function showToast(msg) {
+            const box = document.getElementById('toastBox');
+            const text = document.getElementById('toastMessage');
+            text.innerText = msg;
+            box.classList.remove('hidden');
+            box.classList.add('flex');
+            setTimeout(() => {
+                box.classList.add('hidden');
+                box.classList.remove('flex');
+            }, 2600);
+        }
+
+        function setSyncBadge(isLive, textLabel) {
             const dot = document.getElementById('syncDot');
             const text = document.getElementById('syncText');
             const badge = document.getElementById('syncStatusBadge');
             if (!dot || !text || !badge) return;
-
-            text.innerText = label;
-            if (status === 'live') {
+            text.innerText = textLabel;
+            if (isLive) {
                 dot.className = "w-1.5 h-1.5 rounded-full bg-[#43A842]";
                 badge.className = "inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25";
             } else {
@@ -607,225 +495,125 @@
             }
         }
 
-        async function initCloudSync() {
+        // 클라우드에서 최신 상태(비밀번호, 공지, 신청목록) 가져오기
+        async function pullFromCloud(forceRender = false) {
             try {
-                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
-                    setSyncBadge('local', '브라우저 저장 모드');
+                const res = await fetch(CLOUD_SYNC_URL + "?t=" + Date.now(), { cache: 'no-store' });
+                if (res.status === 404) {
+                    await pushToCloud();
                     return;
                 }
-                const firebaseConfig = JSON.parse(__firebase_config);
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'dadamlabs-pantry-app';
-                const app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data && (forceRender || !data.updatedAt || data.updatedAt > lastCloudUpdatedAt)) {
+                    lastCloudUpdatedAt = data.updatedAt || Date.now();
+                    if (data.appConfig) appConfig = data.appConfig;
+                    if (Array.isArray(data.presetItems)) presetItems = data.presetItems;
+                    if (Array.isArray(data.orders)) orders = data.orders;
 
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
+                    localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
+                    localStorage.setItem(PRESET_KEY, JSON.stringify(presetItems));
+                    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+
+                    applyUIWithConfig();
+                    renderPresets();
+                    renderOrders();
                 }
-
-                onAuthStateChanged(auth, (user) => {
-                    currentUser = user;
-                    if (!user) return;
-
-                    sharedStateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_board', 'shared_state');
-
-                    onSnapshot(sharedStateDocRef, (snapshot) => {
-                        setSyncBadge('live', '실시간 전사 공유중');
-
-                        if (snapshot.exists()) {
-                            const data = snapshot.data();
-                            if (data.appConfig) appConfig = data.appConfig;
-                            if (Array.isArray(data.presetItems)) presetItems = data.presetItems;
-                            if (Array.isArray(data.orders)) orders = data.orders;
-
-                            localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
-                            localStorage.setItem(PRESET_KEY, JSON.stringify(presetItems));
-                            localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
-
-                            applyUIWithConfig();
-                            renderPresets();
-                            renderOrders();
-                        } else {
-                            saveState();
-                        }
-                    }, (error) => {
-                        console.error("Realtime sync error:", error);
-                        setSyncBadge('local', '로컬 저장 모드');
-                    });
-                });
-            } catch (err) {
-                console.warn("Cloud init fallback:", err);
-                setSyncBadge('local', '로컬 저장 모드');
+                setSyncBadge(true, "실시간 전사 공유중");
+            } catch (e) {
+                setSyncBadge(false, "로컬 저장 모드");
             }
         }
 
-        function getSmartVisual(name = '', category = '') {
-            const text = (name + ' ' + category).toLowerCase();
-            if (text.includes('콜라') || text.includes('사이다') || text.includes('탄산') || text.includes('음료')) {
-                return { emoji: '🥤', bg: 'bg-sky-50 border-sky-200/70 text-sky-700', label: '음료' };
-            }
-            if (text.includes('커피') || text.includes('카누') || text.includes('캡슐') || text.includes('원두') || text.includes('차')) {
-                return { emoji: '☕', bg: 'bg-amber-50 border-amber-200/70 text-amber-800', label: '커피·차' };
-            }
-            if (text.includes('치킨') || text.includes('핫도그') || text.includes('만두') || text.includes('피자')) {
-                return { emoji: '🍗', bg: 'bg-orange-50 border-orange-200/70 text-orange-700', label: '간편식' };
-            }
-            if (text.includes('라면') || text.includes('컵라면') || text.includes('햇반')) {
-                return { emoji: '🍜', bg: 'bg-red-50 border-red-200/70 text-red-700', label: '라면·즉석식' };
-            }
-            if (text.includes('계란') || text.includes('구운란') || text.includes('훈제란')) {
-                return { emoji: '🥚', bg: 'bg-yellow-50 border-yellow-200/70 text-yellow-700', label: '영양간식' };
-            }
-            if (text.includes('과자') || text.includes('비쵸비') || text.includes('쿠키') || text.includes('초코') || category === '스낵·간편식') {
-                return { emoji: '🍪', bg: 'bg-amber-50/80 border-amber-200/70 text-amber-700', label: '스낵' };
-            }
-            if (text.includes('종이컵') || text.includes('물티슈') || text.includes('티슈') || text.includes('세제') || category === '탕비실 소모품') {
-                return { emoji: '🧻', bg: 'bg-teal-50 border-teal-200/70 text-teal-700', label: '소모품' };
-            }
-            if (text.includes('a4') || text.includes('복사용지') || text.includes('펜') || text.includes('노트') || category === '사무용품') {
-                return { emoji: '📄', bg: 'bg-indigo-50 border-indigo-200/70 text-indigo-700', label: '사무비품' };
-            }
-            return { emoji: '📦', bg: 'bg-slate-50 border-slate-200 text-slate-600', label: '기타품목' };
-        }
-
-        async function saveState() {
+        // 클라우드에 현재 상태(비밀번호, 공지, 신청목록) 저장하기
+        async function pushToCloud() {
             localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
             localStorage.setItem(PRESET_KEY, JSON.stringify(presetItems));
             localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
             localStorage.setItem(LIKED_IDS_KEY, JSON.stringify(myLikedIds));
 
-            if (currentUser && sharedStateDocRef) {
-                try {
-                    await setDoc(sharedStateDocRef, {
+            try {
+                const nowTs = Date.now();
+                lastCloudUpdatedAt = nowTs;
+                await fetch(CLOUD_SYNC_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
                         appConfig,
                         presetItems,
                         orders,
-                        updatedAt: Date.now()
-                    });
-                } catch (e) {
-                    console.error("Failed to sync state to cloud:", e);
-                }
+                        updatedAt: nowTs
+                    })
+                });
+                setSyncBadge(true, "실시간 전사 공유중");
+            } catch (e) {
+                setSyncBadge(false, "로컬 저장됨");
             }
         }
 
-        function showToast(msg) {
-            const box = document.getElementById('toastBox');
-            document.getElementById('toastText').innerText = msg;
-            box.classList.remove('hidden');
-            clearTimeout(window._toastTimer);
-            window._toastTimer = setTimeout(() => {
-                box.classList.add('hidden');
-            }, 2400);
+        // 품목명/카테고리 기반 깔끔한 아이콘 배지 자동 생성
+        function getSmartBadge(name = "", category = "") {
+            const text = (name + " " + category).toLowerCase();
+            if (text.includes("콜라") || text.includes("사이다") || text.includes("탄산") || text.includes("음료")) {
+                return { emoji: "🥤", bg: "bg-sky-50 border-sky-200 text-sky-700", label: "음료" };
+            }
+            if (text.includes("커피") || text.includes("카누") || text.includes("캡슐") || text.includes("차") || text.includes("티")) {
+                return { emoji: "☕", bg: "bg-amber-50 border-amber-200 text-amber-800", label: "커피·차" };
+            }
+            if (text.includes("라면") || text.includes("컵누들") || text.includes("햇반") || text.includes("구운란") || text.includes("간편식")) {
+                return { emoji: "🍜", bg: "bg-orange-50 border-orange-200 text-orange-700", label: "간편식" };
+            }
+            if (text.includes("물티슈") || text.includes("종이컵") || text.includes("휴지") || text.includes("소모품")) {
+                return { emoji: "🧻", bg: "bg-teal-50 border-teal-200 text-teal-700", label: "소모품" };
+            }
+            if (text.includes("사무") || text.includes("복사지") || text.includes("a4") || text.includes("볼펜") || text.includes("건전지")) {
+                return { emoji: "📎", bg: "bg-indigo-50 border-indigo-200 text-indigo-700", label: "사무용품" };
+            }
+            return { emoji: "🍪", bg: "bg-emerald-50 border-emerald-200 text-emerald-700", label: "과자·스낵" };
         }
 
         function applyUIWithConfig() {
-            document.getElementById('headerNoticeText').innerText = appConfig.notice || "먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.";
-            
-            const defaultHash = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
-            const hintEl = document.getElementById('defaultPinHint');
-            if (hintEl) {
-                if ((appConfig.pinHash && appConfig.pinHash !== defaultHash) || (appConfig.pin && appConfig.pin !== "1234")) {
-                    hintEl.innerText = "(담당자가 설정한 고유 비밀번호를 입력하세요)";
-                } else {
-                    hintEl.innerText = "(초기 비밀번호: 1234)";
-                }
-            }
+            document.getElementById('headerNoticeText').innerText = appConfig.notice || DEFAULT_CONFIG.notice;
+            const adminBtn = document.getElementById('adminBtn');
+            const settingsBtn = document.getElementById('settingsBtn');
+            const presetCtrl = document.getElementById('adminPresetControl');
 
             const urlParams = new URLSearchParams(window.location.search);
-            const forceAdminBtn = urlParams.get('admin') === '1' || urlParams.get('admin') === 'true';
-            const toggleBtn = document.getElementById('adminToggleBtn');
-            if (toggleBtn) {
-                if (!isAdmin && appConfig.hideAdminBtn && !forceAdminBtn) {
-                    toggleBtn.classList.add('hidden');
+            const hasAdminQuery = urlParams.get('admin') === '1' || urlParams.get('admin') === 'true';
+
+            if (isAdmin) {
+                adminBtn.classList.remove('hidden');
+                adminBtn.innerText = "🔓 담당자 모드 종료";
+                adminBtn.className = "text-xs bg-rose-600 hover:bg-rose-700 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm";
+                settingsBtn.classList.remove('hidden');
+                presetCtrl.classList.remove('hidden');
+            } else {
+                adminBtn.innerText = "🔒 담당자 로그인";
+                adminBtn.className = "text-xs bg-slate-900 hover:bg-slate-800 text-white px-3.5 py-2 rounded-lg font-semibold transition shadow-sm";
+                settingsBtn.classList.add('hidden');
+                presetCtrl.classList.add('hidden');
+
+                if (appConfig.hideAdminBtn && !hasAdminQuery) {
+                    adminBtn.classList.add('hidden');
                 } else {
-                    toggleBtn.classList.remove('hidden');
+                    adminBtn.classList.remove('hidden');
                 }
             }
-        }
-
-        function initApp() {
-            applyUIWithConfig();
-            renderPresets();
-            renderOrders();
-            initCloudSync();
-        }
-
-        function handleSecretFooterClick() {
-            footerClickCount += 1;
-            clearTimeout(footerClickTimer);
-            if (footerClickCount >= 3) {
-                footerClickCount = 0;
-                handleAdminButton();
-            } else {
-                footerClickTimer = setTimeout(() => {
-                    footerClickCount = 0;
-                }, 1000);
-            }
-        }
-
-        function detectMallName(url) {
-            if (!url) return '';
-            const lower = url.toLowerCase();
-            if (lower.includes('coupang.com')) return '쿠팡';
-            if (lower.includes('naver.com')) return '네이버쇼핑';
-            if (lower.includes('gmarket.co.kr')) return 'G마켓';
-            if (lower.includes('11st.co.kr')) return '11번가';
-            if (lower.includes('ssg.com')) return 'SSG';
-            if (lower.includes('kurly.com')) return '컬리';
-            return '구매링크';
-        }
-
-        function handleLinkInput(val) {
-            const badge = document.getElementById('mallBadgePreview');
-            const mall = detectMallName(val);
-            if (mall) {
-                badge.innerText = `🔗 ${mall} 링크 인식됨`;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        }
-
-        function openImageZoom(src, title) {
-            if (!src) return;
-            document.getElementById('zoomModalImg').src = src;
-            document.getElementById('zoomModalTitle').innerText = title || '품목 이미지';
-            const modal = document.getElementById('imageZoomModal');
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-        }
-
-        function closeImageZoom() {
-            const modal = document.getElementById('imageZoomModal');
-            modal.classList.add('hidden');
-            modal.classList.remove('flex');
         }
 
         function renderPresets() {
-            const container = document.getElementById('presetListContainer');
+            const container = document.getElementById('presetContainer');
             container.innerHTML = '';
 
-            if (presetItems.length === 0) {
-                container.innerHTML = `<span class="text-xs text-slate-400">등록된 단골 품목이 없습니다.</span>`;
-                return;
-            }
-
             presetItems.forEach((p, idx) => {
-                const visual = getSmartVisual(p.name, p.category);
+                const badge = getSmartBadge(p.name, p.category);
                 const chip = document.createElement('div');
-                chip.className = "inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5";
-                
-                const thumbHtml = p.image
-                    ? `<img src="${p.image}" alt="" class="w-5 h-5 rounded-full object-cover border border-slate-200 shrink-0" onerror="this.style.display='none'">`
-                    : `<span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">${visual.emoji}</span>`;
+                chip.className = "inline-flex items-center bg-slate-50 hover:bg-[#0083CA]/10 border border-slate-200 hover:border-[#0083CA]/40 text-slate-700 hover:text-[#0083CA] text-xs px-3 py-1.5 rounded-lg cursor-pointer transition font-medium gap-1.5";
 
-                const textSpan = document.createElement('span');
-                textSpan.className = "flex items-center gap-1.5 font-medium";
-                textSpan.innerHTML = `${thumbHtml}<span>${p.name}</span>`;
-                textSpan.onclick = () => applyPresetToForm(p.name, p.category, p.image || '');
-                chip.appendChild(textSpan);
+                const labelSpan = document.createElement('span');
+                labelSpan.innerText = `${badge.emoji} ${p.name}`;
+                labelSpan.onclick = () => selectPreset(p.name, p.category);
+                chip.appendChild(labelSpan);
 
                 if (isAdmin) {
                     const delBtn = document.createElement('button');
@@ -834,157 +622,176 @@
                     delBtn.title = "단골 품목 삭제";
                     delBtn.onclick = (e) => {
                         e.stopPropagation();
-                        presetItems.splice(idx, 1);
-                        saveState();
-                        renderPresets();
+                        deletePreset(idx);
                     };
                     chip.appendChild(delBtn);
                 }
-
                 container.appendChild(chip);
             });
         }
 
-        function applyPresetToForm(name, category, image = '') {
-            document.getElementById('reqName').value = name;
-            document.getElementById('reqCategory').value = category;
-            document.getElementById('reqAuthor').focus();
+        function selectPreset(name, category) {
+            document.getElementById('item_name').value = name;
+            document.getElementById('category').value = category;
+            document.getElementById('item_name').focus();
             showToast(`'${name}' 품목이 신청서에 입력되었습니다.`);
         }
 
-        function openPresetAddModal() {
-            document.getElementById('newPresetName').value = '';
-            document.getElementById('newPresetImage').value = '';
-            const modal = document.getElementById('presetAddModal');
+        function openAddPresetModal() {
+            document.getElementById('presetNameInput').value = '';
+            const modal = document.getElementById('presetModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
+            document.getElementById('presetNameInput').focus();
         }
 
-        function closePresetAddModal() {
-            const modal = document.getElementById('presetAddModal');
+        function closeAddPresetModal() {
+            const modal = document.getElementById('presetModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
 
-        function submitPresetAdd(e) {
+        async function handleAddPreset(e) {
             e.preventDefault();
-            const name = document.getElementById('newPresetName').value.trim();
-            const category = document.getElementById('newPresetCategory').value;
-            const image = document.getElementById('newPresetImage').value.trim();
+            const name = document.getElementById('presetNameInput').value.trim();
+            const category = document.getElementById('presetCategoryInput').value;
             if (!name) return;
-            presetItems.push({ name, category, image });
-            saveState();
+            presetItems.push({ name, category });
             renderPresets();
-            closePresetAddModal();
+            closeAddPresetModal();
+            await pushToCloud();
             showToast("단골 품목에 추가되었습니다.");
         }
 
-        function submitRequest(e) {
+        async function deletePreset(idx) {
+            presetItems.splice(idx, 1);
+            renderPresets();
+            await pushToCloud();
+            showToast("단골 품목이 삭제되었습니다.");
+        }
+
+        async function handleFormSubmit(e) {
             e.preventDefault();
             const now = new Date();
             const dateStr = `${now.getMonth() + 1}/${now.getDate()}`;
-            const newId = Date.now();
-            const itemName = document.getElementById('reqName').value.trim();
-            const matchedPreset = presetItems.find(p => p.name === itemName);
+            const authorVal = document.getElementById('author').value.trim() || "익명";
+            const nameVal = document.getElementById('item_name').value.trim();
+            const categoryVal = document.getElementById('category').value;
+            const linkVal = document.getElementById('link').value.trim();
+            const noteVal = document.getElementById('req_note').value.trim();
 
+            const newId = Date.now();
             const newItem = {
                 id: newId,
-                author: document.getElementById('reqAuthor').value.trim(),
-                category: document.getElementById('reqCategory').value,
-                name: itemName,
-                link: document.getElementById('reqLink').value.trim(),
-                image: matchedPreset && matchedPreset.image ? matchedPreset.image : '',
-                reqNote: document.getElementById('reqNote').value.trim(),
+                author: authorVal,
+                category: categoryVal,
+                name: nameVal,
+                link: linkVal,
+                reqNote: noteVal,
                 likes: 1,
                 status: 'pending',
                 adminMemo: '',
                 date: dateStr
             };
 
-            myLikedIds.push(newId);
             orders.unshift(newItem);
-            saveState();
+            myLikedIds.push(newId);
             renderOrders();
-
-            document.getElementById('requestForm').reset();
-            document.getElementById('mallBadgePreview').classList.add('hidden');
-            showToast("신청이 등록되어 모든 직원에게 공유되었습니다.");
+            document.getElementById('orderForm').reset();
+            await pushToCloud();
+            showToast("신청 목록에 등록되었습니다!");
         }
 
-        function toggleLike(id) {
+        async function toggleLike(id) {
             const item = orders.find(o => o.id === id);
             if (!item) return;
-            const alreadyLiked = myLikedIds.includes(id);
-            if (alreadyLiked) {
-                item.likes = Math.max(1, item.likes - 1);
-                myLikedIds = myLikedIds.filter(itemId => itemId !== id);
-            } else {
-                item.likes += 1;
+
+            const likedIndex = myLikedIds.indexOf(id);
+            if (likedIndex === -1) {
+                item.likes = (item.likes || 0) + 1;
                 myLikedIds.push(id);
+            } else {
+                item.likes = Math.max(1, (item.likes || 1) - 1);
+                myLikedIds.splice(likedIndex, 1);
             }
-            saveState();
             renderOrders();
+            await pushToCloud();
         }
 
-        function setOrderStatus(id, status) {
+        async function updateStatus(id, status) {
             const item = orders.find(o => o.id === id);
+            if (!item) return;
+            item.status = status;
+            renderOrders();
+            await pushToCloud();
+            showToast("진행 상태가 변경되었습니다.");
+        }
+
+        function openMemoModal(id) {
+            editingMemoId = id;
+            const item = orders.find(o => o.id === id);
+            document.getElementById('adminMemoInput').value = item ? (item.adminMemo || '') : '';
+            const modal = document.getElementById('memoModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('adminMemoInput').focus();
+        }
+
+        function closeMemoModal() {
+            editingMemoId = null;
+            const modal = document.getElementById('memoModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function handleSaveMemo(e) {
+            e.preventDefault();
+            if (editingMemoId === null) return;
+            const item = orders.find(o => o.id === editingMemoId);
             if (item) {
-                item.status = status;
-                saveState();
+                item.adminMemo = document.getElementById('adminMemoInput').value.trim();
                 renderOrders();
-                showToast("진행 상태가 변경되었습니다.");
-            }
-        }
-
-        function toggleMemoInput(id) {
-            editingMemoId = (editingMemoId === id) ? null : id;
-            renderOrders();
-        }
-
-        function saveInlineMemo(id) {
-            const inputEl = document.getElementById(`memoInput_${id}`);
-            const item = orders.find(o => o.id === id);
-            if (item && inputEl) {
-                item.adminMemo = inputEl.value.trim();
-                editingMemoId = null;
-                saveState();
-                renderOrders();
+                await pushToCloud();
                 showToast("담당자 안내 메모가 저장되었습니다.");
             }
+            closeMemoModal();
         }
 
-        function removeOrder(id) {
+        async function deleteOrder(id) {
             orders = orders.filter(o => o.id !== id);
-            saveState();
             renderOrders();
+            await pushToCloud();
             showToast("신청 내역이 삭제되었습니다.");
         }
 
-        function promoteToPreset(id) {
-            const item = orders.find(o => o.id === id);
-            if (!item) return;
-            if (!presetItems.some(p => p.name === item.name)) {
-                presetItems.push({ name: item.name, category: item.category, image: item.image || '' });
-                saveState();
+        async function registerToPreset(name, category) {
+            if (!presetItems.some(p => p.name === name)) {
+                presetItems.push({ name, category });
                 renderPresets();
+                await pushToCloud();
                 showToast("상단 단골 품목에 등록되었습니다.");
             } else {
                 showToast("이미 단골 품목에 등록되어 있습니다.");
             }
         }
 
-        function handleAdminButton() {
+        function openLoginModal() {
             if (isAdmin) {
-                setAdminState(false);
-                showToast("총괄 담당자 모드가 종료되었습니다.");
-            } else {
-                document.getElementById('loginPinInput').value = '';
-                document.getElementById('loginErrorText').classList.add('hidden');
-                const modal = document.getElementById('loginModal');
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                setTimeout(() => document.getElementById('loginPinInput').focus(), 50);
+                isAdmin = false;
+                applyUIWithConfig();
+                renderPresets();
+                renderOrders();
+                showToast("담당자 모드가 종료되었습니다.");
+                return;
             }
+            // 로그인 창을 열기 전에 클라우드에서 최신 비밀번호를 먼저 받아옴
+            pullFromCloud(false);
+            document.getElementById('loginPinInput').value = '';
+            document.getElementById('loginErrorMsg').classList.add('hidden');
+            const modal = document.getElementById('loginModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('loginPinInput').focus();
         }
 
         function closeLoginModal() {
@@ -993,55 +800,40 @@
             modal.classList.remove('flex');
         }
 
-        async function submitAdminLogin(e) {
+        async function handleAdminLogin(e) {
             e.preventDefault();
             const inputPin = document.getElementById('loginPinInput').value.trim();
             const inputHash = await sha256Hash(inputPin);
 
-            const isMatch = (appConfig.pinHash && inputHash === appConfig.pinHash) || (appConfig.pin && inputPin === appConfig.pin);
+            const isMatch = (appConfig.pin && inputPin === appConfig.pin) || (appConfig.pinHash && inputHash === appConfig.pinHash);
+
             if (isMatch) {
+                isAdmin = true;
                 closeLoginModal();
-                setAdminState(true);
-                showToast("총괄 담당자 모드로 전환되었습니다.");
+                applyUIWithConfig();
+                renderPresets();
+                renderOrders();
+                showToast("담당자 모드로 전환되었습니다.");
             } else {
-                document.getElementById('loginErrorText').classList.remove('hidden');
+                document.getElementById('loginErrorMsg').classList.remove('hidden');
             }
         }
 
-        function setAdminState(active) {
-            isAdmin = active;
-            const toggleBtn = document.getElementById('adminToggleBtn');
-            const settingsBtn = document.getElementById('settingsBtn');
-            const presetBtn = document.getElementById('addPresetTopBtn');
-            const adminBadge = document.getElementById('adminBadge');
-            const adminBanner = document.getElementById('adminBanner');
+        function handleSecretFooterClick() {
+            footerClickCount++;
+            clearTimeout(footerClickTimer);
+            footerClickTimer = setTimeout(() => {
+                footerClickCount = 0;
+            }, 1500);
 
-            if (isAdmin) {
-                toggleBtn.classList.remove('hidden');
-                toggleBtn.innerText = "담당자 모드 종료";
-                toggleBtn.className = "text-xs bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-lg font-semibold transition";
-                settingsBtn.classList.remove('hidden');
-                settingsBtn.classList.add('inline-flex');
-                presetBtn.classList.remove('hidden');
-                adminBadge.classList.remove('hidden');
-                adminBanner.classList.remove('hidden');
-            } else {
-                toggleBtn.innerText = "담당자 로그인";
-                toggleBtn.className = "text-xs dadam-gradient dadam-gradient-hover text-white px-3.5 py-2 rounded-lg font-semibold shadow-2xs transition";
-                settingsBtn.classList.add('hidden');
-                settingsBtn.classList.remove('inline-flex');
-                presetBtn.classList.add('hidden');
-                adminBadge.classList.add('hidden');
-                adminBanner.classList.add('hidden');
-                editingMemoId = null;
-                applyUIWithConfig();
+            if (footerClickCount >= 3) {
+                footerClickCount = 0;
+                openLoginModal();
             }
-            renderPresets();
-            renderOrders();
         }
 
         function openSettingsModal() {
-            document.getElementById('settingNoticeInput').value = appConfig.notice;
+            document.getElementById('settingNoticeInput').value = appConfig.notice || DEFAULT_CONFIG.notice;
             document.getElementById('settingNewPinInput').value = '';
             document.getElementById('settingHideAdminBtn').checked = !!appConfig.hideAdminBtn;
             const modal = document.getElementById('settingsModal');
@@ -1064,106 +856,89 @@
                 appConfig.notice = newNotice;
             }
             if (newPin) {
+                appConfig.pin = newPin;
                 appConfig.pinHash = await sha256Hash(newPin);
-                delete appConfig.pin;
             }
             appConfig.hideAdminBtn = hideBtn;
 
             applyUIWithConfig();
-            await saveState();
+            await pushToCloud();
             closeSettingsModal();
-            showToast("설정이 저장되어 모든 접속자에게 즉시 적용되었습니다.");
+            showToast("설정이 클라우드에 저장되어 모든 PC에 즉시 적용되었습니다!");
         }
 
-        function clearCompletedOrders() {
-            orders = orders.filter(o => o.status !== 'completed');
-            saveState();
-            renderOrders();
-            closeSettingsModal();
-            showToast("비치 완료된 지난 내역이 정리되었습니다.");
-        }
-
-        async function exportBakeInHtml() {
-            const newNotice = document.getElementById('settingNoticeInput').value.trim();
-            const newPin = document.getElementById('settingNewPinInput').value.trim();
-            const hideBtn = document.getElementById('settingHideAdminBtn').checked;
-
-            if (newNotice) appConfig.notice = newNotice;
-            if (newPin) {
-                appConfig.pinHash = await sha256Hash(newPin);
-                delete appConfig.pin;
-            }
-            appConfig.hideAdminBtn = hideBtn;
-            applyUIWithConfig();
-            await saveState();
-
-            const rawHtml = document.documentElement.outerHTML;
-            const bakedConfigJson = JSON.stringify(appConfig);
-            const bakedPresetsJson = JSON.stringify(presetItems);
-            const bakedOrdersJson = JSON.stringify(orders);
-
-            let updatedHtml = "<!DOCTYPE html>\n<html lang=\"ko\">\n" + rawHtml.substring(rawHtml.indexOf("<head>"));
-
-            updatedHtml = updatedHtml.replace(
-                /let appConfig = JSON\.parse\(localStorage\.getItem\(CONFIG_KEY\)\) \|\| \{[\s\S]*?\};/,
-                `let appConfig = Object.assign(${bakedConfigJson}, JSON.parse(localStorage.getItem(CONFIG_KEY)) || {}, { pinHash: "${appConfig.pinHash}", notice: ${JSON.stringify(appConfig.notice)}, hideAdminBtn: ${!!appConfig.hideAdminBtn} });`
-            );
-
+        function copyAdminDirectLink() {
+            const baseUrl = window.location.origin + window.location.pathname;
+            const adminUrl = `${baseUrl}?admin=1`;
             const tempArea = document.createElement('textarea');
-            tempArea.value = updatedHtml;
+            tempArea.value = adminUrl;
             document.body.appendChild(tempArea);
             tempArea.select();
             document.execCommand('copy');
             document.body.removeChild(tempArea);
-
-            closeSettingsModal();
-            showToast("변경된 비밀번호가 내장된 전체 코드가 복사되었습니다! 깃허브 food.html에 붙여넣으세요.");
+            showToast("담당자 전용 링크가 복사되었습니다!");
         }
 
-        function updateSummaryDashboard() {
-            const pendingCnt = orders.filter(o => o.status === 'pending').length;
-            const orderedCnt = orders.filter(o => o.status === 'ordered').length;
-            const completedCnt = orders.filter(o => o.status === 'completed').length;
+        async function clearCompletedOrders() {
+            orders = orders.filter(o => o.status !== 'completed');
+            renderOrders();
+            await pushToCloud();
+            closeSettingsModal();
+            showToast("'비치 완료'된 내역이 일괄 정리되었습니다.");
+        }
 
-            document.getElementById('statPending').innerText = `${pendingCnt}건`;
-            document.getElementById('statOrdered').innerText = `${orderedCnt}건`;
-            document.getElementById('statCompleted').innerText = `${completedCnt}건`;
+        function updateDashboardStats() {
+            const pendingCount = orders.filter(o => o.status === 'pending').length;
+            const orderedCount = orders.filter(o => o.status === 'ordered').length;
+            const completedCount = orders.filter(o => o.status === 'completed').length;
+
+            document.getElementById('statPending').innerText = `${pendingCount}건`;
+            document.getElementById('statOrdered').innerText = `${orderedCount}건`;
+            document.getElementById('statCompleted').innerText = `${completedCount}건`;
 
             const activeOrders = orders.filter(o => o.status !== 'completed');
             if (activeOrders.length > 0) {
                 const top = [...activeOrders].sort((a, b) => b.likes - a.likes)[0];
-                document.getElementById('statTopItem').innerText = `${top.name} (${top.likes}명)`;
+                document.getElementById('statTopItem').innerText = `${top.name} (👍${top.likes})`;
             } else {
                 document.getElementById('statTopItem').innerText = "대기 품목 없음";
             }
         }
 
-        function renderOrders() {
-            updateSummaryDashboard();
+        function getVendorLabel(url) {
+            if (!url) return "구매링크";
+            if (url.includes("coupang")) return "쿠팡 열기";
+            if (url.includes("naver")) return "네이버쇼핑 열기";
+            if (url.includes("gmarket") || url.includes("auction")) return "지마켓/옥션 열기";
+            return "구매링크 열기";
+        }
 
-            const sortVal = document.getElementById('sortSelect').value;
-            const statusVal = document.getElementById('statusFilter').value;
-            const catVal = document.getElementById('categoryFilter').value;
-            const container = document.getElementById('ordersContainer');
-            container.innerHTML = '';
+        function renderOrders() {
+            updateDashboardStats();
+
+            const sortType = document.getElementById('sortOrder').value;
+            const statusFilter = document.getElementById('filterStatus').value;
+            const catFilter = document.getElementById('filterCategory').value;
+            const listEl = document.getElementById('orderList');
+            listEl.innerHTML = '';
 
             let filtered = orders.filter(o => {
-                const mStatus = statusVal === 'all' || o.status === statusVal;
-                const mCat = catVal === 'all' || o.category === catVal;
-                return mStatus && mCat;
+                const matchStatus = statusFilter === 'all' || o.status === statusFilter;
+                const matchCat = catFilter === 'all' || o.category === catFilter;
+                return matchStatus && matchCat;
             });
 
-            if (sortVal === 'popular') {
+            if (sortType === 'popular') {
                 filtered.sort((a, b) => b.likes - a.likes);
             } else {
                 filtered.sort((a, b) => b.id - a.id);
             }
 
-            document.getElementById('orderCountBadge').innerText = `${filtered.length}건`;
+            document.getElementById('totalCount').innerText = `${filtered.length}건`;
 
             if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="bg-white rounded-xl p-12 text-center text-slate-400 border border-slate-200/80 text-sm">
+                listEl.innerHTML = `
+                    <div class="bg-white rounded-xl p-12 text-center text-slate-400 border border-slate-200/90 text-sm">
                         해당 조건의 신청 내역이 없습니다.
                     </div>
                 `;
@@ -1173,54 +948,46 @@
             filtered.forEach(o => {
                 let statusBadge = '';
                 if (o.status === 'pending') {
-                    statusBadge = '<span class="text-[11px] bg-[#0083CA]/10 text-[#0083CA] border border-[#0083CA]/25 px-2 py-0.5 rounded-md font-semibold">접수 대기</span>';
+                    statusBadge = '<span class="text-[11px] bg-[#0083CA]/10 text-[#0083CA] border border-[#0083CA]/25 px-2 py-0.5 rounded-md font-bold">⏳ 접수 대기</span>';
                 } else if (o.status === 'ordered') {
-                    statusBadge = '<span class="text-[11px] bg-[#159E8A]/10 text-[#159E8A] border border-[#159E8A]/25 px-2 py-0.5 rounded-md font-semibold">발주 완료</span>';
+                    statusBadge = '<span class="text-[11px] bg-[#159E8A]/10 text-[#0F766E] border border-[#159E8A]/25 px-2 py-0.5 rounded-md font-bold">🚚 발주 완료</span>';
                 } else if (o.status === 'completed') {
-                    statusBadge = '<span class="text-[11px] bg-[#43A842]/10 text-[#43A842] border border-[#43A842]/25 px-2 py-0.5 rounded-md font-semibold">비치 완료</span>';
+                    statusBadge = '<span class="text-[11px] bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25 px-2 py-0.5 rounded-md font-bold">✅ 비치 완료</span>';
                 }
 
-                const mallName = detectMallName(o.link);
-                const visual = getSmartVisual(o.name, o.category);
-                const safeTitle = (o.name || '').replace(/'/g, "\\'");
-                const isLikedByMe = myLikedIds.includes(o.id);
+                const isLiked = myLikedIds.includes(o.id);
+                const likeBtnStyle = isLiked
+                    ? "bg-[#0083CA] text-white border-[#0083CA]"
+                    : "bg-white hover:bg-slate-50 text-slate-700 border-slate-200";
 
-                const thumbnailBlock = o.image
-                    ? `<div onclick="openImageZoom('${o.image}', '${safeTitle}')" title="클릭하여 이미지 크게 보기" class="w-16 h-16 sm:w-18 sm:h-18 rounded-xl border border-slate-200 overflow-hidden shrink-0 bg-slate-50 cursor-zoom-in relative group shadow-2xs">
-                           <img src="${o.image}" alt="${o.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex flex-col items-center justify-center ${visual.bg}\\'><span class=\\'text-2xl\\'>${visual.emoji}</span></div>'">
-                           <span class="absolute bottom-1 right-1 bg-slate-900/60 text-white text-[9px] px-1 rounded opacity-0 group-hover:opacity-100 transition">확대</span>
-                       </div>`
-                    : `<div class="w-16 h-16 sm:w-18 sm:h-18 rounded-xl border ${visual.bg} flex flex-col items-center justify-center shrink-0 select-none shadow-2xs">
-                           <span class="text-2xl leading-none">${visual.emoji}</span>
-                           <span class="text-[10px] font-semibold mt-1 opacity-80">${visual.label}</span>
-                       </div>`;
+                const smartBadge = getSmartBadge(o.name, o.category);
 
                 const card = document.createElement('div');
-                card.className = "bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs transition hover:border-[#159E8A]/50";
+                card.className = "bg-white rounded-xl p-4 sm:p-5 border border-slate-200/90 shadow-sm transition hover:border-[#159E8A]/50";
 
                 let html = `
-                    <div class="flex justify-between items-start gap-3.5">
-                        ${thumbnailBlock}
-                        <div class="space-y-1 flex-1 min-w-0">
-                            <div class="flex flex-wrap items-center gap-2">
-                                ${statusBadge}
-                                <span class="text-xs font-semibold text-[#159E8A]">${o.category}</span>
-                                <span class="text-xs text-slate-300">|</span>
-                                <span class="text-xs text-slate-500">${o.author} · ${o.date || '오늘'}</span>
+                    <div class="flex flex-col sm:flex-row justify-between items-start gap-3.5">
+                        <div class="flex items-start gap-3.5 flex-1 min-w-0">
+                            <div class="w-12 h-12 rounded-xl border ${smartBadge.bg} flex flex-col items-center justify-center shrink-0 select-none">
+                                <span class="text-xl leading-none">${smartBadge.emoji}</span>
+                                <span class="text-[9px] font-bold mt-1 leading-none">${smartBadge.label}</span>
                             </div>
-                            <h3 class="text-sm font-bold text-slate-900 pt-0.5 break-words">${o.name}</h3>
-                            ${o.reqNote ? `<p class="text-xs text-slate-500">${o.reqNote}</p>` : ''}
+                            <div class="space-y-1 flex-1 min-w-0">
+                                <div class="flex flex-wrap items-center gap-1.5">
+                                    ${statusBadge}
+                                    <span class="text-xs font-semibold text-slate-600 bg-slate-100 px-2 py-0.5 rounded">${o.category}</span>
+                                    <span class="text-xs text-slate-400">· ${o.author} (${o.date || '오늘'})</span>
+                                </div>
+                                <h3 class="text-base font-bold text-slate-900 pt-0.5 break-words">${o.name}</h3>
+                                ${o.reqNote ? `<p class="text-xs text-slate-500">${o.reqNote}</p>` : ''}
+                            </div>
                         </div>
 
-                        <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
-                            ${o.link ? `
-                                <a href="${o.link}" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg font-medium transition">
-                                    ${mallName} ↗
-                                </a>
-                            ` : ''}
-                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${isLikedByMe ? 'dadam-gradient text-white border-transparent shadow-2xs' : 'bg-white hover:bg-[#159E8A]/5 text-slate-700 border-slate-200'}">
+                        <div class="flex items-center space-x-2 self-end sm:self-center shrink-0">
+                            ${o.link ? `<a href="${o.link}" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg font-semibold transition">${getVendorLabel(o.link)} ↗</a>` : ''}
+                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg border text-xs font-bold transition shadow-sm ${likeBtnStyle}">
                                 <span>👍 나도 원해요</span>
-                                <span class="font-bold">${o.likes}</span>
+                                <span class="px-1.5 py-0.2 rounded-full text-[11px] ${isLiked ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-800'}">${o.likes}</span>
                             </button>
                         </div>
                     </div>
@@ -1228,8 +995,8 @@
 
                 if (o.adminMemo) {
                     html += `
-                        <div class="mt-3 text-xs bg-[#159E8A]/5 text-slate-700 px-3 py-2 rounded-lg border border-[#159E8A]/20 flex items-center space-x-1.5">
-                            <span class="font-bold text-[#0083CA] shrink-0">담당자 안내:</span>
+                        <div class="mt-3 text-xs bg-[#159E8A]/10 text-[#0F766E] px-3.5 py-2.5 rounded-lg border border-[#159E8A]/20 flex items-center space-x-1.5">
+                            <span class="font-bold">📢 담당자 안내:</span>
                             <span>${o.adminMemo}</span>
                         </div>
                     `;
@@ -1237,45 +1004,36 @@
 
                 if (isAdmin) {
                     html += `
-                        <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
-                            <div class="flex flex-wrap items-center gap-1">
-                                <button onclick="setOrderStatus(${o.id}, 'pending')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition ${o.status==='pending' ? 'bg-[#0083CA] text-white border-[#0083CA]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">접수 대기</button>
-                                <button onclick="setOrderStatus(${o.id}, 'ordered')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition ${o.status==='ordered' ? 'bg-[#159E8A] text-white border-[#159E8A]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">발주 완료</button>
-                                <button onclick="setOrderStatus(${o.id}, 'completed')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition ${o.status==='completed' ? 'bg-[#43A842] text-white border-[#43A842]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">비치 완료</button>
-                                <button onclick="toggleMemoInput(${o.id})" class="text-[11px] px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">안내메모 입력</button>
+                        <div class="mt-3.5 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-[11px] font-bold text-slate-400 mr-1">상태 변경:</span>
+                                <button onclick="updateStatus(${o.id}, 'pending')" class="text-xs px-2.5 py-1 rounded-md font-semibold border transition ${o.status === 'pending' ? 'bg-[#0083CA] text-white border-[#0083CA]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">접수 대기</button>
+                                <button onclick="updateStatus(${o.id}, 'ordered')" class="text-xs px-2.5 py-1 rounded-md font-semibold border transition ${o.status === 'ordered' ? 'bg-[#159E8A] text-white border-[#159E8A]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">발주 완료</button>
+                                <button onclick="updateStatus(${o.id}, 'completed')" class="text-xs px-2.5 py-1 rounded-md font-semibold border transition ${o.status === 'completed' ? 'bg-[#43A842] text-white border-[#43A842]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">비치 완료</button>
+                                <button onclick="openMemoModal(${o.id})" class="text-xs px-2.5 py-1 rounded-md font-semibold border border-slate-200 text-slate-700 hover:bg-slate-50">💬 안내메모</button>
                             </div>
                             <div class="flex items-center space-x-1">
-                                <button onclick="promoteToPreset(${o.id})" class="text-[11px] px-2 py-1 text-[#0083CA] hover:bg-[#0083CA]/10 rounded font-medium">+단골등록</button>
-                                <button onclick="removeOrder(${o.id})" class="text-[11px] px-2 py-1 text-rose-600 hover:bg-rose-50 rounded font-medium">삭제</button>
+                                <button onclick="registerToPreset('${o.name.replace(/'/g, "\\'")}', '${o.category}')" class="text-xs px-2.5 py-1 text-[#0F766E] hover:bg-[#159E8A]/10 rounded-md font-semibold transition">+ 단골등록</button>
+                                <button onclick="deleteOrder(${o.id})" class="text-xs px-2.5 py-1 text-rose-600 hover:bg-rose-50 rounded-md font-semibold transition">삭제</button>
                             </div>
                         </div>
                     `;
-
-                    if (editingMemoId === o.id) {
-                        html += `
-                            <div class="mt-2.5 flex items-center space-x-2">
-                                <input type="text" id="memoInput_${o.id}" value="${o.adminMemo || ''}" placeholder="예: 금요일 입고 예정입니다 / 품절로 대체 상품 발주" class="flex-1 text-xs px-3 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:border-[#0083CA]">
-                                <button onclick="saveInlineMemo(${o.id})" class="text-xs dadam-gradient text-white px-3 py-1.5 rounded-lg font-semibold">저장</button>
-                            </div>
-                        `;
-                    }
                 }
 
                 card.innerHTML = html;
-                container.appendChild(card);
+                listEl.appendChild(card);
             });
         }
 
         function copyPendingOrders() {
-            const pendingList = orders.filter(o => o.status === 'pending');
-            if (pendingList.length === 0) {
+            const list = orders.filter(o => o.status === 'pending');
+            if (list.length === 0) {
                 showToast("현재 접수 대기 중인 품목이 없습니다.");
                 return;
             }
-
-            let text = "[(주)다담랩스 탕비실·비품 발주 대기 목록]\n\n";
-            pendingList.forEach((o, i) => {
-                text += `${i + 1}. [${o.category}] ${o.name} (공감 ${o.likes}명 / 신청: ${o.author})\n`;
+            let text = "[DadamLabs 탕비실·비품 발주 대기 목록]\n\n";
+            list.forEach((o, i) => {
+                text += `${i + 1}. [${o.category}] ${o.name} (공감 ${o.likes} / 신청: ${o.author})\n`;
                 if (o.link) text += `   - 구매링크: ${o.link}\n`;
             });
 
@@ -1285,39 +1043,17 @@
             tempArea.select();
             document.execCommand('copy');
             document.body.removeChild(tempArea);
-
-            showToast("발주 대기 목록이 클립보드에 복사되었습니다.");
+            showToast("대기 목록이 클립보드에 복사되었습니다!");
         }
 
-        Object.assign(window, {
-            openSettingsModal,
-            closeSettingsModal,
-            saveAdminSettings,
-            clearCompletedOrders,
-            exportBakeInHtml,
-            handleAdminButton,
-            closeLoginModal,
-            submitAdminLogin,
-            openPresetAddModal,
-            closePresetAddModal,
-            submitPresetAdd,
-            submitRequest,
-            handleLinkInput,
-            openImageZoom,
-            closeImageZoom,
-            renderOrders,
-            copyPendingOrders,
-            toggleLike,
-            setOrderStatus,
-            toggleMemoInput,
-            saveInlineMemo,
-            promoteToPreset,
-            removeOrder,
-            handleSecretFooterClick
-        });
-
-        window.addEventListener('DOMContentLoaded', initApp);
+        // 초기 실행 및 3초 주기 실시간 클라우드 동기화
+        applyUIWithConfig();
+        renderPresets();
+        renderOrders();
+        pullFromCloud(true);
+        setInterval(() => {
+            pullFromCloud(false);
+        }, 3500);
     </script>
-
-
-</body></html>
+</body>
+</html>
