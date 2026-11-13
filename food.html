@@ -88,22 +88,25 @@
                 </div>
             </div>
 
-            <div class="md:col-span-5 bg-slate-50 p-4 rounded-xl border border-slate-200/90 shadow-2xs flex flex-col justify-center space-y-2">
+            <div id="budgetCardBox" class="md:col-span-5 bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 shadow-2xs flex flex-col justify-center space-y-2 transition-colors duration-300">
                 <div class="flex justify-between items-center text-xs">
-                    <span class="font-bold text-slate-500">이번 달 탕비실 예산 현황</span>
+                    <span class="font-bold text-slate-600 flex items-center gap-1.5">
+                        <span id="budgetStatusDot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        <span>이번 달 탕비실 예산 현황</span>
+                    </span>
                     <div id="adminBudgetControl" class="hidden">
-                        <button onclick="openBudgetModal()" class="text-[11px] bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded font-bold transition">
+                        <button onclick="openBudgetModal()" class="text-[11px] bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded font-bold transition shadow-2xs">
                             ⚙️ 예산설정
                         </button>
                     </div>
                 </div>
-                <div class="flex justify-between items-baseline">
+                <div class="flex justify-between items-center">
                     <span class="text-sm font-extrabold text-slate-900" id="budgetDisplay">총 700,000원</span>
-                    <span class="text-sm font-extrabold text-emerald-700" id="balanceDisplay">잔액 700,000원</span>
+                    <span class="text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-2xs transition-colors duration-300" id="balanceDisplay">잔액 700,000원</span>
                 </div>
                 <!-- 예산 소진율 프로그레스 바 -->
-                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden shadow-inner">
-                    <div id="budgetProgressBar" class="bg-gradient-to-r from-[#0083CA] to-[#159E8A] h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                <div class="w-full bg-white/80 rounded-full h-2.5 overflow-hidden shadow-inner border border-slate-200/60">
+                    <div id="budgetProgressBar" class="bg-emerald-500 h-2.5 rounded-full transition-all duration-500" style="width: 100%"></div>
                 </div>
             </div>
         </section>
@@ -201,15 +204,6 @@
                             <option value="탕비실 소모품">탕비실 소모품</option>
                             <option value="사무용품">사무용품</option>
                         </select>
-                        <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3.5 py-2 rounded-xl font-bold transition shadow-2xs whitespace-nowrap">
-                            📋 발주 목록 복사
-                        </button>
-                        <!-- 담당자 로그인 시에만 나타나는 엑셀 정산 다운로드 버튼 -->
-                        <div id="adminExcelExportControl" class="hidden inline-block">
-                            <button onclick="exportToExcelCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl font-bold transition shadow-md flex items-center gap-1 whitespace-nowrap">
-                                <span>📊 엑셀 다운로드</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -551,28 +545,39 @@
                 : 700000;
             const totalSpent = orders.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
             const balance = totalBudget - totalSpent;
-            const usagePercent = totalBudget > 0 ? Math.min(100, Math.round((totalSpent / totalBudget) * 100)) : 0;
+            const remainPercent = totalBudget > 0 ? Math.max(0, Math.min(100, Math.round((balance / totalBudget) * 100))) : 0;
 
             document.getElementById('budgetDisplay').innerText = `총 ${totalBudget.toLocaleString()}원`;
             const balanceEl = document.getElementById('balanceDisplay');
-            balanceEl.innerText = `잔액 ${balance.toLocaleString()}원 (${usagePercent}% 소진)`;
-
             const progressBar = document.getElementById('budgetProgressBar');
+            const cardBox = document.getElementById('budgetCardBox');
+            const statusDot = document.getElementById('budgetStatusDot');
+
+            balanceEl.innerText = `잔액 ${balance.toLocaleString()}원 (${remainPercent}%)`;
+
             if (progressBar) {
-                progressBar.style.width = usagePercent + '%';
-                if (usagePercent >= 90) {
-                    progressBar.className = "bg-rose-500 h-2.5 rounded-full transition-all duration-500";
-                } else if (usagePercent >= 75) {
-                    progressBar.className = "bg-amber-500 h-2.5 rounded-full transition-all duration-500";
-                } else {
-                    progressBar.className = "bg-gradient-to-r from-[#0083CA] to-[#159E8A] h-2.5 rounded-full transition-all duration-500";
-                }
+                progressBar.style.width = remainPercent + '%';
             }
 
-            if (balance < 0) {
-                balanceEl.className = "text-sm font-extrabold text-rose-600";
+            // 잔액 비율에 따라 카드 배경, 배지, 상태 점, 게이지 바 색상이 직관적으로 변화
+            if (balance <= 0 || remainPercent <= 20) {
+                // 잔액 부족 또는 초과 (위험 - 로즈 레드)
+                if (cardBox) cardBox.className = "md:col-span-5 bg-rose-50/70 p-4 rounded-xl border border-rose-300 shadow-2xs flex flex-col justify-center space-y-2 transition-colors duration-300";
+                if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-ping";
+                balanceEl.className = "text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-lg bg-rose-600 text-white border border-rose-700 shadow-xs transition-colors duration-300";
+                if (progressBar) progressBar.className = "bg-rose-500 h-2.5 rounded-full transition-all duration-500";
+            } else if (remainPercent <= 50) {
+                // 잔액 절반 이하 (주의 - 앰버 오렌지)
+                if (cardBox) cardBox.className = "md:col-span-5 bg-amber-50/70 p-4 rounded-xl border border-amber-300 shadow-2xs flex flex-col justify-center space-y-2 transition-colors duration-300";
+                if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-amber-500";
+                balanceEl.className = "text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs transition-colors duration-300";
+                if (progressBar) progressBar.className = "bg-amber-500 h-2.5 rounded-full transition-all duration-500";
             } else {
-                balanceEl.className = "text-sm font-extrabold text-emerald-700";
+                // 잔액 여유 (안정 - 에메랄드 그린)
+                if (cardBox) cardBox.className = "md:col-span-5 bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 shadow-2xs flex flex-col justify-center space-y-2 transition-colors duration-300";
+                if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-emerald-500";
+                balanceEl.className = "text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-2xs transition-colors duration-300";
+                if (progressBar) progressBar.className = "bg-emerald-500 h-2.5 rounded-full transition-all duration-500";
             }
         };
 
@@ -582,7 +587,6 @@
             const settingsBtn = document.getElementById('settingsBtn');
             const presetCtrl = document.getElementById('adminPresetControl');
             const budgetCtrl = document.getElementById('adminBudgetControl');
-            const excelExportCtrl = document.getElementById('adminExcelExportControl');
 
             if (isAdmin) {
                 adminBtn.innerText = "🔓 담당자 모드 종료";
@@ -590,14 +594,12 @@
                 settingsBtn.classList.remove('hidden');
                 presetCtrl.classList.remove('hidden');
                 budgetCtrl.classList.remove('hidden');
-                if (excelExportCtrl) excelExportCtrl.classList.remove('hidden');
             } else {
                 adminBtn.innerText = "🔒 담당자 로그인";
                 adminBtn.className = "text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md";
                 settingsBtn.classList.add('hidden');
                 presetCtrl.classList.add('hidden');
                 budgetCtrl.classList.add('hidden');
-                if (excelExportCtrl) excelExportCtrl.classList.add('hidden');
             }
             updateBudgetUI();
         };
@@ -921,65 +923,6 @@
             saveStateToStorage();
             closeSettingsModal();
             showToast("설정이 저장되었습니다.");
-        };
-
-        window.exportToExcelCSV = function() {
-            if (orders.length === 0) { showToast("다운로드할 신청 내역이 없습니다."); return; }
-            let csvContent = "\uFEFF";
-            csvContent += "순번,등록일,분류,품목명,신청자,공감수,결제금액(원),구매링크,요청메모,담당자메모\n";
-
-            orders.forEach((o, i) => {
-                const row = [
-                    i + 1,
-                    o.date || '오늘',
-                    `"${(o.category || '').replace(/"/g, '""')}"`,
-                    `"${(o.name || '').replace(/"/g, '""')}"`,
-                    `"${(o.author || '').replace(/"/g, '""')}"`,
-                    o.likes,
-                    o.price || 0,
-                    `"${(o.link || '').replace(/"/g, '""')}"`,
-                    `"${(o.reqNote || '').replace(/"/g, '""')}"`,
-                    `"${(o.adminMemo || '').replace(/"/g, '""')}"`
-                ];
-                csvContent += row.join(",") + "\n";
-            });
-
-            const totalBudget = Number(appConfig.totalBudget) || 700000;
-            const totalSpent = orders.reduce((acc, cur) => acc + (Number(cur.price) || 0), 0);
-            const balance = totalBudget - totalSpent;
-
-            csvContent += `\n"요약","총 예산","","${totalBudget}원","","총 결제합계","${totalSpent}원","잔액","${balance}원",""\n`;
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `다담랩스_탕비실정산_${new Date().toISOString().slice(0, 10)}.csv`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            showToast("엑셀(CSV) 정산 파일이 다운로드되었습니다.");
-        };
-
-        window.copyPendingOrders = function() {
-            if (orders.length === 0) { showToast("복사할 신청 내역이 없습니다."); return; }
-            let text = "[다담랩스 화·목 정기 탕비실·비품 신청 목록]\n\n";
-            orders.forEach((o, idx) => {
-                text += `${idx + 1}. [${o.category}] ${o.name} (신청: ${o.author || '익명'}, 공감: ${o.likes}개)\n`;
-                if (o.link) text += `   - 링크: ${o.link}\n`;
-                if (o.reqNote) text += `   - 메모: ${o.reqNote}\n`;
-            });
-            const textarea = document.createElement("textarea");
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-                document.execCommand('copy');
-                showToast("발주 목록이 클립보드에 복사되었습니다.");
-            } catch (err) {
-                showToast("복사 실패. 브라우저 권한을 확인해주세요.");
-            }
-            document.body.removeChild(textarea);
         };
 
         window.showToast = function(msg) {
