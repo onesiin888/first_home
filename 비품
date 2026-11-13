@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사내 탕비실 & 비품 신청 보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        body {
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            background-color: #f8fafc;
+        }
+        .card-enter {
+            animation: slideUp 0.25s ease-out forwards;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* 스크롤바 커스텀 */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col">
+
+    <!-- 상단 헤더 & 담당자 모드 토글 -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center text-white shadow-sm">
+                    <i class="fa-solid fa-cookie-bite text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-tight">든든 탕비실 & 비품 신청함</h1>
+                    <p class="text-xs text-slate-500">필요한 간식이나 사무용품 링크를 편하게 남겨주세요!</p>
+                </div>
+            </div>
+
+            <!-- 우측 액션 영역: 담당자 모드 스위치 & 엑셀 복사 -->
+            <div class="flex items-center space-x-3">
+                <button onclick="copyPendingLinks()" id="bulkCopyBtn" class="hidden sm:flex items-center space-x-1.5 text-xs font-medium bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-lg transition">
+                    <i class="fa-regular fa-copy"></i>
+                    <span>대기 목록 복사</span>
+                </button>
+
+                <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+                    <button id="modeUserBtn" onclick="setRoleMode(false)" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 shadow-sm transition">
+                        🙋‍♂️ 일반 신청자
+                    </button>
+                    <button id="modeAdminBtn" onclick="requestAdminAuth()" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center gap-1">
+                        <i id="adminLockIcon" class="fa-solid fa-lock text-[10px]"></i>
+                        <span>담당자 모드</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 구조 설명 안내 배너 (접기 가능) -->
+    <div id="guideBanner" class="bg-indigo-50 border-b border-indigo-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <div class="flex items-start sm:items-center space-x-2.5 text-xs sm:text-sm text-indigo-900">
+                <span class="bg-indigo-600 text-white text-[11px] font-bold px-2 py-0.5 rounded-md shrink-0 mt-0.5 sm:mt-0">담당자 보호 적용됨</span>
+                <p>
+                    우측 상단 <strong>[🔒 담당자 모드]</strong> 클릭 시 <strong>비밀번호(기본값: <code>1234</code>)</strong>를 입력해야만 열립니다! (담당자 모드 안에서 비밀번호 변경 가능)
+                </p>
+            </div>
+            <button onclick="document.getElementById('guideBanner').classList.add('hidden')" class="text-indigo-400 hover:text-indigo-700 text-xs shrink-0 self-end sm:self-center">
+                <i class="fa-solid fa-xmark mr-1"></i>안내 닫기
+            </button>
+        </div>
+    </div>
+
+    <!-- 메인 레이아웃: 좌측 신청 폼 (고정) + 우측 현황 보드 -->
+    <main class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- [좌측 4칸] 초간편 3초 컷 신청 폼 -->
+            <section class="lg:col-span-4 bg-white rounded-2xl shadow-sm border border-slate-200 p-5 lg:sticky lg:top-22">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-pen-to-square text-amber-500"></i>
+                        새 물품 신청하기
+                    </h2>
+                    <span class="text-[11px] font-medium text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">3초 컷 입력</span>
+                </div>
+
+                <!-- 빠른 프리셋 버튼 (자주 찾는 품목) -->
+                <div class="mb-4">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1.5">⚡ 자주 찾는 단골 메뉴 (클릭 시 자동입력)</label>
+                    <div class="flex flex-wrap gap-1.5">
+                        <button type="button" onclick="fillPreset('간식/음료', '제로 콜라 355ml (1박스)', '단당류 걱정 없는 탄산 충전!')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">🥤 제로콜라</button>
+                        <button type="button" onclick="fillPreset('간식/음료', '일리 캡슐커피 디카페인', '오후에도 부담 없이 마시고 싶어요')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">☕ 캡슐커피</button>
+                        <button type="button" onclick="fillPreset('사무용품', 'A4 복사용지 (1박스)', '복합기 옆 용지가 거의 다 떨어졌어요')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">📄 A4용지</button>
+                        <button type="button" onclick="fillPreset('생활/기타', '물티슈 리필 (10팩)', '탕비실 식탁 닦는 물티슈가 다 썼습니다')" class="text-xs bg-slate-100 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 border border-slate-200 text-slate-600 px-2.5 py-1 rounded-lg transition">🧻 물티슈</button>
+                    </div>
+                </div>
+
+                <form id="requestForm" onsubmit="handleAddRequest(event)" class="space-y-4">
+                    <!-- 1. 카테고리 선택 탭 -->
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">카테고리 <span class="text-rose-500">*</span></label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" onclick="selectCategory('간식/음료')" id="catBtn-간식/음료" class="cat-btn py-2 px-2 rounded-xl text-xs font-bold border-2 border-amber-500 bg-amber-50 text-amber-700 transition flex flex-col items-center gap-1">
+                                <span class="text-base">🍪</span>
+                                <span>간식/음료</span>
+                            </button>
+                            <button type="button" onclick="selectCategory('사무용품')" id="catBtn-사무용품" class="cat-btn py-2 px-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition flex flex-col items-center gap-1">
+                                <span class="text-base">📎</span>
+                                <span>사무용품</span>
+                            </button>
+                            <button type="button" onclick="selectCategory('생활/기타')" id="catBtn-생활/기타" class="cat-btn py-2 px-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition flex flex-col items-center gap-1">
+                                <span class="text-base">🧼</span>
+                                <span>생활/기타</span>
+                            </button>
+                        </div>
+                        <input type="hidden" id="categoryInput" value="간식/음료">
+                    </div>
+
+                    <!-- 2. 품목명 & 수량 -->
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <div class="col-span-2">
+                            <label for="itemName" class="block text-xs font-semibold text-slate-700 mb-1">품목명 <span class="text-rose-500">*</span></label>
+                            <input type="text" id="itemName" required placeholder="예: 몽쉘 카카오 1박스" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label for="itemQty" class="block text-xs font-semibold text-slate-700 mb-1">수량</label>
+                            <input type="text" id="itemQty" value="1개(박스)" placeholder="예: 2박스" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- 3. 구매 링크 (핵심!) -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label for="itemUrl" class="block text-xs font-semibold text-slate-700">구매 링크 (URL)</label>
+                            <span id="domainPreview" class="text-[11px] font-medium text-emerald-600 hidden"></span>
+                        </div>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i class="fa-solid fa-link text-xs"></i>
+                            </span>
+                            <input type="url" id="itemUrl" oninput="detectMallDomain(this.value)" placeholder="https:// 쿠팡, 네이버 등 상품 주소 붙여넣기" class="w-full pl-8 pr-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        </div>
+                        <p class="text-[11px] text-slate-400 mt-1">링크를 넣어주시면 담당자가 정확히 같은 상품으로 빠르게 주문해요!</p>
+                    </div>
+
+                    <!-- 4. 신청자 & 한줄 메모 -->
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <div>
+                            <label for="requester" class="block text-xs font-semibold text-slate-700 mb-1">신청자 (선택)</label>
+                            <input type="text" id="requester" placeholder="익명 가능" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        </div>
+                        <div class="col-span-2">
+                            <label for="itemMemo" class="block text-xs font-semibold text-slate-700 mb-1">한줄 코멘트 / 옵션</label>
+                            <input type="text" id="itemMemo" placeholder="예: 오리지널 말고 초코맛으로 부탁드려요!" class="w-full px-3 py-2 text-sm rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <!-- 5. 긴급 여부 체크 (비품 다 떨어졌을 때) -->
+                    <div class="flex items-center justify-between pt-1">
+                        <label class="inline-flex items-center cursor-pointer select-none">
+                            <input type="checkbox" id="isUrgent" class="sr-only peer">
+                            <div class="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all relative peer-checked:bg-rose-500"></div>
+                            <span class="ml-2 text-xs font-medium text-slate-600">🚨 재고 소진 임박 (긴급 요청)</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 active:scale-[0.99] text-white font-bold rounded-xl shadow-sm hover:shadow transition flex items-center justify-center space-x-2 text-sm">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>신청함에 등록하기</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- [우측 8칸] 실시간 현황판 & 공감 보드 -->
+            <section class="lg:col-span-8 space-y-4">
+
+                <!-- 상단 요약 카드 3개 -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div onclick="setStatusFilter('대기중')" class="cursor-pointer bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:border-amber-400 transition flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500">접수 대기중</p>
+                            <p id="statPending" class="text-2xl font-extrabold text-amber-600 mt-0.5">0</p>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                        </div>
+                    </div>
+                    <div onclick="setStatusFilter('주문완료')" class="cursor-pointer bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:border-blue-400 transition flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500">주문/배송중</p>
+                            <p id="statOrdered" class="text-2xl font-extrabold text-blue-600 mt-0.5">0</p>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center">
+                            <i class="fa-solid fa-truck-fast"></i>
+                        </div>
+                    </div>
+                    <div onclick="setStatusFilter('비치완료')" class="cursor-pointer bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm hover:border-emerald-400 transition flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-medium text-slate-500">탕비실 비치완료</p>
+                            <p id="statDone" class="text-2xl font-extrabold text-emerald-600 mt-0.5">0</p>
+                        </div>
+                        <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center">
+                            <i class="fa-solid fa-circle-check"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 필터 바 & 정렬 옵션 -->
+                <div class="bg-white p-3 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                    <!-- 상태/카테고리 탭 -->
+                    <div class="flex items-center space-x-1 overflow-x-auto pb-1 sm:pb-0">
+                        <button onclick="setStatusFilter('ALL')" id="filter-ALL" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white shrink-0 transition">전체 보기</button>
+                        <button onclick="setStatusFilter('대기중')" id="filter-대기중" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition">⏳ 대기중</button>
+                        <button onclick="setStatusFilter('주문완료')" id="filter-주문완료" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition">🚚 주문완료</button>
+                        <button onclick="setStatusFilter('비치완료')" id="filter-비치완료" class="filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition">✅ 비치완료</button>
+                    </div>
+
+                    <!-- 검색 & 정렬 -->
+                    <div class="flex items-center space-x-2">
+                        <div class="relative flex-1 sm:w-44">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="searchInput" oninput="renderRequests()" placeholder="품목 검색 (중복 확인)" class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-amber-500">
+                        </div>
+                        <select id="sortSelect" onchange="renderRequests()" class="text-xs border border-slate-200 rounded-xl px-2.5 py-1.5 bg-slate-50 text-slate-700 font-medium focus:outline-none">
+                            <option value="popular">👍 공감 많은 순</option>
+                            <option value="latest">🕒 최신 등록 순</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 담당자 모드 활성화 알림바 -->
+                <div id="adminNoticeBar" class="hidden bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-md flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                    <div class="flex items-center space-x-2.5 text-xs sm:text-sm">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                        <span><strong>담당자 모드 잠금 해제됨:</strong> 상태 변경, 안내 메모 작성, PIN 변경이 가능합니다.</span>
+                    </div>
+                    <div class="flex items-center gap-2 self-end sm:self-center">
+                        <button onclick="openChangePinModal()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-200 font-semibold px-3 py-1.5 rounded-lg shrink-0 transition">
+                            🔑 비밀번호 변경
+                        </button>
+                        <button onclick="copyPendingLinks()" class="text-xs bg-amber-500 hover:bg-amber-600 text-white font-bold px-3 py-1.5 rounded-lg shrink-0 transition">
+                            대기 목록 엑셀용 복사
+                        </button>
+                        <button onclick="setRoleMode(false)" class="text-xs bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 font-semibold px-2.5 py-1.5 rounded-lg shrink-0 transition">
+                            잠그기
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 신청 카드 리스트 영역 -->
+                <div id="requestList" class="space-y-3">
+                    <!-- JS로 렌더링 -->
+                </div>
+
+            </section>
+        </div>
+    </main>
+
+    <!-- 하단 토스트 메시지 -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden bg-slate-900 text-white text-xs sm:text-sm font-medium px-4 py-3 rounded-xl shadow-lg flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toastMsg">처리가 완료되었습니다.</span>
+    </div>
+
+    <!-- 담당자 PIN 번호 입력 모달 -->
+    <div id="pinModal" class="fixed inset-0 z-50 hidden bg-slate-900/50 backdrop-blur-xs flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xs w-full p-6 shadow-xl border border-slate-200 text-center card-enter">
+            <div class="w-12 h-12 rounded-2xl bg-slate-900 text-amber-400 flex items-center justify-center mx-auto mb-3 shadow-sm">
+                <i class="fa-solid fa-user-lock text-xl"></i>
+            </div>
+            <h3 id="pinModalTitle" class="text-base font-bold text-slate-900">담당자 전용 잠금 해제</h3>
+            <p id="pinModalDesc" class="text-xs text-slate-500 mt-1 mb-4">담당자 비밀번호(PIN)를 입력해 주세요.<br><span class="text-amber-600 font-semibold">(초기 테스트 번호: 1234)</span></p>
+
+            <form onsubmit="handlePinSubmit(event)" class="space-y-3">
+                <input type="password" id="pinInput" maxlength="8" placeholder="••••" class="w-full text-center tracking-[0.5em] font-extrabold text-lg px-4 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-slate-900">
+                <p id="pinErrorMsg" class="text-xs text-rose-500 font-semibold hidden">비밀번호가 일치하지 않습니다.</p>
+                <div class="grid grid-cols-2 gap-2 pt-1">
+                    <button type="button" onclick="closePinModal()" class="py-2.5 rounded-xl text-xs font-semibold bg-slate-100 hover:bg-slate-200 text-slate-600 transition">취소</button>
+                    <button type="submit" class="py-2.5 rounded-xl text-xs font-bold bg-slate-900 hover:bg-slate-800 text-white transition">확인</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // 초기 샘플 데이터 (직관적인 이해를 돕기 위한 실제 시나리오 데이터)
+        let requests = [
+            {
+                id: 101,
+                category: '간식/음료',
+                name: '코카콜라 제로 355ml (24캔 1박스)',
+                qty: '2박스',
+                url: 'https://www.coupang.com/np/search?q=코카콜라+제로+355',
+                mallName: '쿠팡 링크',
+                requester: '김대리',
+                memo: '점심 먹고 오후 2시에 마시면 잠이 확 깹니다! 냉장고에 다 떨어졌어요 😭',
+                urgent: true,
+                likes: 9,
+                likedByMe: false,
+                status: '대기중',
+                adminMemo: '',
+                createdAt: '10분 전',
+                timestamp: 5
+            },
+            {
+                id: 102,
+                category: '사무용품',
+                name: '3M 포스트잇 노란색 (76x76mm)',
+                qty: '5묶음',
+                url: 'https://search.shopping.naver.com/search/all?query=3M+포스트잇',
+                mallName: '네이버쇼핑',
+                requester: '박주임',
+                memo: '비품실 서랍에 포스트잇이 마지막 1개 남았습니다.',
+                urgent: false,
+                likes: 4,
+                likedByMe: false,
+                status: '대기중',
+                adminMemo: '',
+                createdAt: '1시간 전',
+                timestamp: 4
+            },
+            {
+                id: 103,
+                category: '간식/음료',
+                name: '오리온 비쵸비 (3박스)',
+                qty: '3박스',
+                url: 'https://www.coupang.com/np/search?q=비쵸비',
+                mallName: '쿠팡 링크',
+                requester: '익명',
+                memo: '요즘 탕비실 최고 인기 과자예요! 순삭되어서 재입고 희망합니다 ㅎㅎ',
+                urgent: false,
+                likes: 12,
+                likedByMe: true,
+                status: '주문완료',
+                adminMemo: '내일(목) 로켓배송 도착 예정입니다!',
+                createdAt: '어제',
+                timestamp: 3
+            },
+            {
+                id: 104,
+                category: '생활/기타',
+                name: '일리 캡슐커피 클라시코 (미디엄 로스트)',
+                qty: '2통',
+                url: 'https://search.shopping.naver.com/search/all?query=일리+캡슐커피',
+                mallName: '네이버쇼핑',
+                requester: '이팀장',
+                memo: '캡슐 머신 옆에 비치할 기본 원두 캡슐입니다.',
+                urgent: false,
+                likes: 7,
+                likedByMe: false,
+                status: '비치완료',
+                adminMemo: '오늘 아침 탕비실 선반에 채워두었습니다 ☕',
+                createdAt: '2일 전',
+                timestamp: 2
+            }
+        ];
+
+        let isAdminMode = false;
+        let currentStatusFilter = 'ALL';
+        let adminPin = '1234'; // 담당자 기본 비밀번호
+        let isChangingPin = false;
+
+        // 담당자 모드 버튼 클릭 시 인증 모달 호출
+        function requestAdminAuth() {
+            if (isAdminMode) return;
+            isChangingPin = false;
+            document.getElementById('pinModalTitle').textContent = '담당자 전용 잠금 해제';
+            document.getElementById('pinModalDesc').innerHTML = `담당자 비밀번호(PIN)를 입력해 주세요.<br><span class="text-amber-600 font-semibold">(현재 설정 번호: ${adminPin})</span>`;
+            document.getElementById('pinInput').value = '';
+            document.getElementById('pinErrorMsg').classList.add('hidden');
+            document.getElementById('pinModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('pinInput').focus(), 50);
+        }
+
+        // 담당자 비밀번호 변경 모달 열기
+        function openChangePinModal() {
+            isChangingPin = true;
+            document.getElementById('pinModalTitle').textContent = '새 담당자 비밀번호 설정';
+            document.getElementById('pinModalDesc').innerHTML = '앞으로 사용할 새로운 비밀번호(숫자/영문 4~8자리)를 입력해 주세요.';
+            document.getElementById('pinInput').value = '';
+            document.getElementById('pinErrorMsg').classList.add('hidden');
+            document.getElementById('pinModal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('pinInput').focus(), 50);
+        }
+
+        function closePinModal() {
+            document.getElementById('pinModal').classList.add('hidden');
+        }
+
+        // PIN 입력 확인 처리
+        function handlePinSubmit(e) {
+            e.preventDefault();
+            const val = document.getElementById('pinInput').value.trim();
+
+            if (isChangingPin) {
+                if (val.length < 2) {
+                    const err = document.getElementById('pinErrorMsg');
+                    err.textContent = '2자리 이상 입력해 주세요.';
+                    err.classList.remove('hidden');
+                    return;
+                }
+                adminPin = val;
+                closePinModal();
+                showToast(`🔑 담당자 비밀번호가 '${adminPin}'(으)로 변경되었습니다!`);
+                return;
+            }
+
+            if (val === adminPin) {
+                closePinModal();
+                setRoleMode(true);
+            } else {
+                const err = document.getElementById('pinErrorMsg');
+                err.textContent = '비밀번호가 일치하지 않습니다.';
+                err.classList.remove('hidden');
+                document.getElementById('pinInput').value = '';
+                document.getElementById('pinInput').focus();
+            }
+        }
+
+        // 카테고리 선택 처리
+        function selectCategory(cat) {
+            document.getElementById('categoryInput').value = cat;
+            const buttons = document.querySelectorAll('.cat-btn');
+            buttons.forEach(btn => {
+                btn.className = 'cat-btn py-2 px-2 rounded-xl text-xs font-medium border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 transition flex flex-col items-center gap-1';
+            });
+            const activeBtn = document.getElementById('catBtn-' + cat);
+            if (activeBtn) {
+                activeBtn.className = 'cat-btn py-2 px-2 rounded-xl text-xs font-bold border-2 border-amber-500 bg-amber-50 text-amber-700 transition flex flex-col items-center gap-1';
+            }
+        }
+
+        // 단골 메뉴 프리셋 자동 입력
+        function fillPreset(cat, name, memo) {
+            selectCategory(cat);
+            document.getElementById('itemName').value = name;
+            document.getElementById('itemMemo').value = memo;
+            document.getElementById('itemUrl').focus();
+            showToast(`'${name}' 기본 정보가 입력되었습니다. 구매 링크만 붙여넣어 주세요!`);
+        }
+
+        // URL 입력 시 쇼핑몰 도메인 자동 인식 배지
+        function detectMallDomain(url) {
+            const preview = document.getElementById('domainPreview');
+            if (!url) {
+                preview.classList.add('hidden');
+                return '';
+            }
+            let mall = '외부 구매처';
+            if (url.includes('coupang.com')) mall = '🚀 쿠팡 링크 인식됨';
+            else if (url.includes('naver.com')) mall = '🟢 네이버쇼핑 인식됨';
+            else if (url.includes('gmarket.co.kr') || url.includes('auction.co.kr')) mall = '🛒 지마켓/옥션 인식됨';
+            else if (url.includes('11st.co.kr')) mall = '📦 11번가 인식됨';
+            else if (url.includes('kurly.com')) mall = '💜 컬리 인식됨';
+            else mall = '🔗 구매 링크 확인됨';
+
+            preview.textContent = mall;
+            preview.classList.remove('hidden');
+            return mall.replace(/^[^\s]+\s/, '').replace(' 인식됨', '');
+        }
+
+        // 새 신청 등록
+        function handleAddRequest(e) {
+            e.preventDefault();
+            const category = document.getElementById('categoryInput').value;
+            const name = document.getElementById('itemName').value.trim();
+            const qty = document.getElementById('itemQty').value.trim() || '1개';
+            const url = document.getElementById('itemUrl').value.trim();
+            const requester = document.getElementById('requester').value.trim() || '익명';
+            const memo = document.getElementById('itemMemo').value.trim();
+            const urgent = document.getElementById('isUrgent').checked;
+
+            if (!name) return;
+
+            let mallName = '링크 없음';
+            if (url) {
+                if (url.includes('coupang')) mallName = '쿠팡 링크';
+                else if (url.includes('naver')) mallName = '네이버쇼핑';
+                else mallName = '구매 링크';
+            }
+
+            const newItem = {
+                id: Date.now(),
+                category,
+                name,
+                qty,
+                url,
+                mallName,
+                requester,
+                memo: memo || '신청합니다!',
+                urgent,
+                likes: 1,
+                likedByMe: true,
+                status: '대기중',
+                adminMemo: '',
+                createdAt: '방금 전',
+                timestamp: Date.now()
+            };
+
+            requests.unshift(newItem);
+
+            // 폼 초기화
+            document.getElementById('itemName').value = '';
+            document.getElementById('itemQty').value = '1개(박스)';
+            document.getElementById('itemUrl').value = '';
+            document.getElementById('itemMemo').value = '';
+            document.getElementById('isUrgent').checked = false;
+            document.getElementById('domainPreview').classList.add('hidden');
+
+            renderRequests();
+            showToast('신청함에 등록되었습니다! 👍');
+        }
+
+        // 나도 원해요(공감) 토글
+        function toggleLike(id) {
+            const item = requests.find(r => r.id === id);
+            if (!item) return;
+
+            if (item.likedByMe) {
+                item.likes--;
+                item.likedByMe = false;
+            } else {
+                item.likes++;
+                item.likedByMe = true;
+                showToast(`'${item.name}'에 공감(+1)을 눌렀습니다!`);
+            }
+            renderRequests();
+        }
+
+        // 담당자 상태 변경
+        function changeStatus(id, newStatus) {
+            const item = requests.find(r => r.id === id);
+            if (!item) return;
+            item.status = newStatus;
+            renderRequests();
+            showToast(`상태가 [${newStatus}](으)로 변경되었습니다.`);
+        }
+
+        // 담당자 코멘트 업데이트
+        function updateAdminMemo(id, val) {
+            const item = requests.find(r => r.id === id);
+            if (!item) return;
+            item.adminMemo = val;
+            showToast('담당자 안내 메모가 저장되었습니다.');
+        }
+
+        // 항목 삭제
+        function deleteItem(id) {
+            requests = requests.filter(r => r.id !== id);
+            renderRequests();
+            showToast('항목이 삭제되었습니다.');
+        }
+
+        // 일반 / 담당자 모드 전환
+        function setRoleMode(admin) {
+            isAdminMode = admin;
+            const userBtn = document.getElementById('modeUserBtn');
+            const adminBtn = document.getElementById('modeAdminBtn');
+            const noticeBar = document.getElementById('adminNoticeBar');
+            const lockIcon = document.getElementById('adminLockIcon');
+
+            if (isAdminMode) {
+                adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-900 text-white shadow-sm transition flex items-center gap-1';
+                userBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 transition';
+                if (lockIcon) lockIcon.className = 'fa-solid fa-lock-open text-[10px] text-amber-400';
+                noticeBar.classList.remove('hidden');
+                showToast('🔓 인증 완료! 담당자 모드로 전환되었습니다.');
+            } else {
+                userBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-slate-800 shadow-sm transition';
+                adminBtn.className = 'px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-500 hover:text-slate-800 transition flex items-center gap-1';
+                if (lockIcon) lockIcon.className = 'fa-solid fa-lock text-[10px]';
+                noticeBar.classList.add('hidden');
+            }
+            renderRequests();
+        }
+
+        // 상태 필터 변경
+        function setStatusFilter(status) {
+            currentStatusFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-medium text-slate-600 hover:bg-slate-100 shrink-0 transition';
+            });
+            const active = document.getElementById('filter-' + status);
+            if (active) {
+                active.className = 'filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-900 text-white shrink-0 transition';
+            }
+            renderRequests();
+        }
+
+        // 대기중인 품목 클립보드 일괄 복사 (엑셀/메신저 붙여넣기용)
+        function copyPendingLinks() {
+            const pending = requests.filter(r => r.status === '대기중');
+            if (pending.length === 0) {
+                showToast('현재 접수 대기 중인 품목이 없습니다.');
+                return;
+            }
+            const lines = pending.map((r, idx) =>
+                `${idx + 1}. [${r.category}] ${r.name} (${r.qty}) - 공감 ${r.likes}명\n   링크: ${r.url || '없음'}`
+            ).join('\n\n');
+
+            const textArea = document.createElement('textarea');
+            textArea.value = `[탕비실/비품 구매 대기 목록 - 총 ${pending.length}건]\n\n` + lines;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+
+            showToast(`대기 중인 ${pending.length}건의 품목과 링크가 복사되었습니다! (엑셀/메신저에 붙여넣기 가능)`);
+        }
+
+        // 토스트 알림
+        let toastTimer;
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').textContent = msg;
+            toast.classList.remove('hidden');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+            }, 3000);
+        }
+
+        // 리스트 렌더링
+        function renderRequests() {
+            // 상단 카운트 업데이트
+            document.getElementById('statPending').textContent = requests.filter(r => r.status === '대기중').length;
+            document.getElementById('statOrdered').textContent = requests.filter(r => r.status === '주문완료').length;
+            document.getElementById('statDone').textContent = requests.filter(r => r.status === '비치완료').length;
+
+            const searchKeyword = document.getElementById('searchInput').value.trim().toLowerCase();
+            const sortType = document.getElementById('sortSelect').value;
+
+            let filtered = requests.filter(r => {
+                const matchStatus = currentStatusFilter === 'ALL' || r.status === currentStatusFilter;
+                const matchSearch = !searchKeyword ||
+                    r.name.toLowerCase().includes(searchKeyword) ||
+                    r.category.toLowerCase().includes(searchKeyword) ||
+                    r.memo.toLowerCase().includes(searchKeyword);
+                return matchStatus && matchSearch;
+            });
+
+            // 정렬
+            filtered.sort((a, b) => {
+                if (sortType === 'popular') return b.likes - a.likes;
+                return b.timestamp - a.timestamp;
+            });
+
+            const container = document.getElementById('requestList');
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="bg-white rounded-2xl border border-slate-200 p-10 text-center text-slate-400">
+                        <i class="fa-solid fa-box-open text-3xl mb-2"></i>
+                        <p class="text-sm font-medium text-slate-600">해당 조건의 신청 내역이 없습니다.</p>
+                        <p class="text-xs mt-1">왼쪽 입력창에서 필요한 간식이나 비품 링크를 가장 먼저 등록해 보세요!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(item => {
+                // 상태 배지 스타일
+                let statusBadge = '';
+                if (item.status === '대기중') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">⏳ 접수 대기중</span>`;
+                } else if (item.status === '주문완료') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">🚚 주문/배송중</span>`;
+                } else if (item.status === '비치완료') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">✅ 비치 완료</span>`;
+                } else {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-200 text-slate-700">보류/품절</span>`;
+                }
+
+                // 카테고리 아이콘
+                const catIcon = item.category === '간식/음료' ? '🍪' : (item.category === '사무용품' ? '📎' : '🧼');
+
+                return `
+                <div class="card-enter bg-white rounded-2xl border ${item.urgent && item.status === '대기중' ? 'border-rose-300 ring-1 ring-rose-100' : 'border-slate-200'} p-4 sm:p-5 shadow-sm hover:shadow transition">
+                    <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
+                        
+                        <!-- 좌측 정보 영역 -->
+                        <div class="space-y-1.5 flex-1">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                ${statusBadge}
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-600">${catIcon} ${item.category}</span>
+                                ${item.urgent ? `<span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200">🚨 긴급/재고소진</span>` : ''}
+                                <span class="text-xs text-slate-400 ml-1">${item.requester} · ${item.createdAt}</span>
+                            </div>
+
+                            <div class="flex items-baseline gap-2 pt-0.5">
+                                <h3 class="text-base font-bold text-slate-900 ${item.status === '비치완료' ? 'line-through text-slate-400' : ''}">${item.name}</h3>
+                                <span class="text-xs font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-md">수량: ${item.qty}</span>
+                            </div>
+
+                            <p class="text-xs sm:text-sm text-slate-600 bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+                                "${item.memo}"
+                            </p>
+
+                            ${item.adminMemo ? `
+                                <div class="flex items-center gap-2 text-xs text-indigo-700 bg-indigo-50 px-3 py-1.5 rounded-xl border border-indigo-100 mt-1">
+                                    <i class="fa-solid fa-bullhorn text-indigo-500"></i>
+                                    <span><strong>담당자 안내:</strong> ${item.adminMemo}</span>
+                                </div>
+                            ` : ''}
+                        </div>
+
+                        <!-- 우측 액션 영역: 구매 링크 열기 & 공감(나도 원해요) 버튼 -->
+                        <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-start gap-2 shrink-0 border-t sm:border-t-0 pt-2.5 sm:pt-0 border-slate-100">
+                            <!-- 나도 원해요 버튼 -->
+                            <button onclick="toggleLike(${item.id})" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold border transition ${item.likedByMe ? 'bg-amber-500 text-white border-amber-500 shadow-sm' : 'bg-white text-slate-700 border-slate-200 hover:bg-amber-50 hover:border-amber-300'}">
+                                <span>👍 나도 원해요</span>
+                                <span class="px-1.5 py-0.2 rounded-full text-[11px] ${item.likedByMe ? 'bg-amber-600 text-white' : 'bg-slate-100 text-slate-700'}">${item.likes}</span>
+                            </button>
+
+                            <!-- 구매 링크 바로가기 버튼 -->
+                            ${item.url ? `
+                                <a href="${item.url}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-xl transition">
+                                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                                    <span>${item.mallName} 열기</span>
+                                </a>
+                            ` : `<span class="text-[11px] text-slate-400">등록된 링크 없음</span>`}
+                        </div>
+                    </div>
+
+                    <!-- 담당자 전용 컨트롤 바 (담당자 모드일 때만 노출) -->
+                    ${isAdminMode ? `
+                        <div class="mt-3 pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 bg-slate-50 -mx-4 sm:-mx-5 -mb-4 sm:-mb-5 p-3 sm:px-5 rounded-b-2xl">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="text-[11px] font-bold text-slate-500 mr-1"><i class="fa-solid fa-wrench mr-1"></i>상태 변경:</span>
+                                <button onclick="changeStatus(${item.id}, '대기중')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '대기중' ? 'bg-amber-500 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">대기중</button>
+                                <button onclick="changeStatus(${item.id}, '주문완료')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '주문완료' ? 'bg-blue-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">🚚 주문완료</button>
+                                <button onclick="changeStatus(${item.id}, '비치완료')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '비치완료' ? 'bg-emerald-600 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">✅ 비치완료</button>
+                                <button onclick="changeStatus(${item.id}, '보류/품절')" class="px-2.5 py-1 rounded-lg text-xs font-semibold ${item.status === '보류/품절' ? 'bg-slate-700 text-white' : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'}">보류</button>
+                            </div>
+                            <div class="flex items-center gap-1.5">
+                                <input type="text" placeholder="담당자 한줄 안내 (예: 목요일 도착)" value="${item.adminMemo}" onchange="updateAdminMemo(${item.id}, this.value)" class="text-xs px-2.5 py-1 rounded-lg border border-slate-300 bg-white flex-1 sm:w-48 focus:outline-none focus:border-indigo-500">
+                                <button onclick="deleteItem(${item.id})" class="text-xs text-rose-500 hover:bg-rose-50 px-2 py-1 rounded-lg transition" title="삭제">
+                                    <i class="fa-regular fa-trash-can"></i>
+                                </button>
+                            </div>
+                        </div>
+                    ` : ''}
+                </div>
+                `;
+            }).join('');
+        }
+
+        // 초기 실행
+        window.onload = function () {
+            renderRequests();
+        };
+    </script>
+</body>
+</html>
