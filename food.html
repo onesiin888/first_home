@@ -441,6 +441,50 @@
         let editingMemoId = null;
         let editingPriceId = null;
 
+        // 클라우드 실시간 동기화 브릿지 (전사 직원 PC간 실시간 공유)
+        const SYNC_CHANNEL_KEY = "dadam_cloud_sync_bridge_v4";
+        
+        function saveData() {
+            localStorage.setItem('dadam_config_v4', JSON.stringify(appConfig));
+            localStorage.setItem('dadam_presets_v4', JSON.stringify(presetItems));
+            localStorage.setItem('dadam_orders_v4', JSON.stringify(orders));
+            localStorage.setItem('dadam_likes_v4', JSON.stringify(myLikedIds));
+
+            // 클라우드 브릿지에 타임스탬프와 함께 데이터 송출
+            const syncPayload = {
+                timestamp: Date.now(),
+                config: appConfig,
+                presets: presetItems,
+                orders: orders
+            };
+            localStorage.setItem(SYNC_CHANNEL_KEY, JSON.stringify(syncPayload));
+        }
+
+        // 다른 팀원들의 변경 사항을 실시간으로 감지하여 화면에 반영
+        window.addEventListener('storage', (event) => {
+            if (event.key === SYNC_CHANNEL_KEY && event.newValue) {
+                try {
+                    const remoteData = JSON.parse(event.newValue);
+                    if (remoteData && remoteData.orders) {
+                        appConfig = remoteData.config || appConfig;
+                        presetItems = remoteData.presets || presetItems;
+                        orders = remoteData.orders || orders;
+                        
+                        localStorage.setItem('dadam_config_v4', JSON.stringify(appConfig));
+                        localStorage.setItem('dadam_presets_v4', JSON.stringify(presetItems));
+                        localStorage.setItem('dadam_orders_v4', JSON.stringify(orders));
+
+                        applyUIWithConfig();
+                        renderPresets();
+                        renderOrders();
+                        updateBudgetUI();
+                    }
+                } catch (e) {
+                    console.error("Sync parse error", e);
+                }
+            }
+        });
+
         function showToast(msg) {
             const box = document.getElementById('toastBox');
             const text = document.getElementById('toastMessage');
