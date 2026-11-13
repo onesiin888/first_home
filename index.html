@@ -214,7 +214,7 @@
                             </div>
                         </div>
 
-                        <!-- 4. 원/달러 환율 (USD / KRW) -->
+                        <!-- 4. USD / KRW (환율) -->
                         <div class="bg-white rounded-2xl p-3.5 border border-slate-100 shadow-sm h-[106px] flex flex-col justify-between">
                             <div class="flex items-center justify-between gap-1">
                                 <span class="text-xs font-bold text-slate-500">USD / KRW (환율)</span>
@@ -222,127 +222,193 @@
                             </div>
                             <div>
                                 <div id="usdkrw-price" class="text-lg sm:text-xl font-black text-slate-900 tabular-nums tracking-tight">---</div>
-                                <div id="usdkrw-sub" class="text-[10px] font-semibold text-slate-400 mt-0.5">서울외국환중개 기준</div>
+                                <div id="usdkrw-sub" class="text-[10px] font-semibold text-slate-400 mt-0.5">실시간 매매기준율</div>
                             </div>
+                        </div>
+                    </div>
+
+                    <!-- 실시간 서울 기상 요약 카드 -->
+                    <div class="bg-gradient-to-r from-sky-50 to-indigo-50/70 rounded-2xl p-3.5 border border-sky-100 flex items-center justify-between gap-3">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <span id="weather-card-icon" class="text-2xl shrink-0">🌤️</span>
+                            <div class="min-w-0">
+                                <div class="text-xs font-extrabold text-slate-800">서울 현재 날씨</div>
+                                <div id="weather-card-desc" class="text-[11px] text-slate-500 truncate">기상청 데이터 불러오는 중...</div>
+                            </div>
+                        </div>
+                        <div class="text-right shrink-0">
+                            <div id="weather-card-temp" class="text-base font-black text-sky-700 tabular-nums">--°C</div>
+                            <div id="weather-card-wind" class="text-[10px] font-semibold text-slate-400">풍속 -- km/h</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- 실시간 서울 날씨 상세 카드 -->
-                <div class="bg-gradient-to-br from-sky-50 to-indigo-50/70 rounded-2xl p-4 border border-sky-100/80 flex items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div id="weather-card-icon" class="w-12 h-12 rounded-2xl bg-white shadow-xs flex items-center justify-center text-2xl shrink-0">🌤️</div>
-                        <div>
-                            <div class="text-xs font-bold text-sky-700">서울 실시간 날씨</div>
-                            <div id="weather-card-desc" class="text-sm font-extrabold text-slate-800 mt-0.5">기상 정보 불러오는 중...</div>
-                        </div>
-                    </div>
-                    <div class="text-right shrink-0">
-                        <div id="weather-card-temp" class="text-2xl font-black text-slate-900">--°C</div>
-                        <div id="weather-card-wind" class="text-[11px] font-semibold text-slate-500">풍속 -- km/h</div>
-                    </div>
+                <div class="pt-2 border-t border-slate-100 flex justify-between items-center text-[11px] text-slate-400">
+                    <span>실시간 증시·외환·기상 자동 동기화</span>
+                    <span>3분 주기 백그라운드 갱신</span>
                 </div>
             </div>
         </section>
     </div>
 
     <!-- ==========================================
-         모달 1: 팀원 상태 변경 및 정보 수정 모달
+         모달 1: 팀원 상태 / 이름 / 부서 수정 모달
          ========================================== -->
     <div id="status-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
         <div class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
         <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 z-10 max-h-[90vh] overflow-y-auto">
             <button type="button" class="close-status-modal absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold cursor-pointer">✕</button>
             
-            <div class="text-center mb-5">
-                <div id="modal-avatar" class="w-16 h-16 mx-auto rounded-2xl bg-indigo-50 flex items-center justify-center text-4xl mb-2 shadow-inner">🧑‍💻</div>
-                <h3 class="text-xl font-extrabold text-slate-900" id="modal-name">이름</h3>
-                <p class="text-xs text-slate-500 mt-0.5" id="modal-role">부서</p>
+            <div class="text-center mb-4">
+                <div id="modal-avatar" class="text-4xl mb-1">🧑‍💻</div>
+                <h3 class="text-lg font-extrabold text-slate-900" id="modal-name">이름</h3>
+                <p class="text-xs text-slate-500" id="modal-role">부서</p>
             </div>
 
             <div class="space-y-4">
-                <!-- 이름 및 부서 수정 -->
-                <div class="grid grid-cols-2 gap-2.5">
+                <!-- 이름 및 부서 직접 수정 -->
+                <div class="grid grid-cols-2 gap-2.5 bg-slate-50 p-3 rounded-2xl border border-slate-100">
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">이름</label>
-                        <input type="text" id="edit-member-name" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">이름 / 닉네임</label>
+                        <input type="text" id="edit-member-name" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
                     </div>
                     <div>
-                        <label class="block text-xs font-bold text-slate-700 mb-1">부서/담당</label>
-                        <input type="text" id="edit-member-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
+                        <label class="block text-[11px] font-bold text-slate-600 mb-1">부서 / 역할</label>
+                        <input type="text" id="edit-member-role" class="w-full px-3 py-1.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
                     </div>
                 </div>
 
                 <!-- 기분 선택 -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2">오늘의 기분</label>
+                    <label class="block text-xs font-bold text-slate-700 mb-2">오늘의 기분 (10종)</label>
                     <div class="grid grid-cols-5 gap-1.5 bg-slate-50 p-2 rounded-2xl border border-slate-100">
                         <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
                             <input type="radio" name="mood" value="😊" class="hidden peer">
-                            <span class="text-2xl peer-checked:scale-125 transition-transform">😊</span>
-                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">행복</span>
+                            <span class="text-xl peer-checked:scale-125 transition-transform">😊</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">행복</span>
                         </label>
                         <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
                             <input type="radio" name="mood" value="🔥" class="hidden peer">
-                            <span class="text-2xl peer-checked:scale-125 transition-transform">🔥</span>
-                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">열정</span>
+                            <span class="text-xl peer-checked:scale-125 transition-transform">🔥</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">열정</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="😎" class="hidden peer">
+                            <span class="text-xl peer-checked:scale-125 transition-transform">😎</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">여유</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="🤩" class="hidden peer">
+                            <span class="text-xl peer-checked:scale-125 transition-transform">🤩</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">신남</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="🤔" class="hidden peer">
+                            <span class="text-xl peer-checked:scale-125 transition-transform">🤔</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">고민</span>
                         </label>
                         <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
                             <input type="radio" name="mood" value="😴" class="hidden peer">
-                            <span class="text-2xl peer-checked:scale-125 transition-transform">😴</span>
-                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">피곤</span>
+                            <span class="text-xl peer-checked:scale-125 transition-transform">😴</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">피곤</span>
                         </label>
                         <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
                             <input type="radio" name="mood" value="🫠" class="hidden peer">
-                            <span class="text-2xl peer-checked:scale-125 transition-transform">🫠</span>
-                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">녹는중</span>
+                            <span class="text-xl peer-checked:scale-125 transition-transform">🫠</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">녹는중</span>
                         </label>
                         <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
                             <input type="radio" name="mood" value="🤯" class="hidden peer">
-                            <span class="text-2xl peer-checked:scale-125 transition-transform">🤯</span>
-                            <span class="text-[10px] mt-1 text-slate-500 peer-checked:text-indigo-600 font-bold">멘붕</span>
+                            <span class="text-xl peer-checked:scale-125 transition-transform">🤯</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">멘붕</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="🥺" class="hidden peer">
+                            <span class="text-xl peer-checked:scale-125 transition-transform">🥺</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">살려줘</span>
+                        </label>
+                        <label class="cursor-pointer flex flex-col items-center p-1.5 rounded-xl hover:bg-white transition-all">
+                            <input type="radio" name="mood" value="🤬" class="hidden peer">
+                            <span class="text-xl peer-checked:scale-125 transition-transform">🤬</span>
+                            <span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">예민함</span>
                         </label>
                     </div>
                 </div>
 
                 <!-- 현재 상태 배지 -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-2">현재 상태</label>
-                    <div class="grid grid-cols-2 gap-2">
+                    <label class="block text-xs font-bold text-slate-700 mb-2">현재 상태 (12종)</label>
+                    <div class="grid grid-cols-2 gap-1.5 max-h-44 overflow-y-auto pr-1">
                         <label class="cursor-pointer">
                             <input type="radio" name="status" value="🔋 풀충전 업무중" class="hidden peer">
-                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 transition-all text-xs font-bold">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 transition-all text-xs font-bold">
                                 🔋 풀충전 업무중
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="status" value="☕ 커피 수혈중" class="hidden peer">
-                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 transition-all text-xs font-bold">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:text-amber-700 transition-all text-xs font-bold">
                                 ☕ 커피 수혈중
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="status" value="🎧 집중 모드" class="hidden peer">
-                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all text-xs font-bold">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all text-xs font-bold">
                                 🎧 집중 모드
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="status" value="🗣️ 회의 / 미팅" class="hidden peer">
-                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:text-purple-700 transition-all text-xs font-bold">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-purple-500 peer-checked:bg-purple-50 peer-checked:text-purple-700 transition-all text-xs font-bold">
                                 🗣️ 회의 / 미팅
                             </div>
                         </label>
                         <label class="cursor-pointer">
+                            <input type="radio" name="status" value="💻 문서 / 기획중" class="hidden peer">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700 transition-all text-xs font-bold">
+                                💻 문서 / 기획중
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🛠️ 배포 / 장애대응" class="hidden peer">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700 transition-all text-xs font-bold">
+                                🛠️ 배포 / 장애대응
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="📞 통화 / CS응대" class="hidden peer">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-teal-500 peer-checked:bg-teal-50 peer-checked:text-teal-700 transition-all text-xs font-bold">
+                                📞 통화 / CS응대
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🏃 외근 / 이동중" class="hidden peer">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-cyan-500 peer-checked:bg-cyan-50 peer-checked:text-cyan-700 transition-all text-xs font-bold">
+                                🏃 외근 / 이동중
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
                             <input type="radio" name="status" value="🍔 식사 / 외출" class="hidden peer">
-                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all text-xs font-bold">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all text-xs font-bold">
                                 🍔 식사 / 외출
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="status" value="🏠 재택 / 반차" class="hidden peer">
-                            <div class="text-center p-2.5 rounded-xl border border-slate-200 bg-white peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 transition-all text-xs font-bold">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 transition-all text-xs font-bold">
                                 🏠 재택 / 반차
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🪫 배터리 방전" class="hidden peer">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-slate-500 peer-checked:bg-slate-100 peer-checked:text-slate-700 transition-all text-xs font-bold">
+                                🪫 배터리 방전
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="status" value="🎉 칼퇴 대기중" class="hidden peer">
+                            <div class="text-center p-2 rounded-xl border border-slate-200 bg-white peer-checked:border-pink-500 peer-checked:bg-pink-50 peer-checked:text-pink-700 transition-all text-xs font-bold">
+                                🎉 칼퇴 대기중
                             </div>
                         </label>
                     </div>
@@ -371,10 +437,10 @@
          ========================================== -->
     <div id="add-member-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4">
         <div class="modal-backdrop fixed inset-0 bg-slate-900/50 backdrop-blur-xs"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 z-10">
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-100 z-10 max-h-[90vh] overflow-y-auto">
             <button type="button" class="close-add-member-modal absolute top-4 right-4 w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 font-bold cursor-pointer">✕</button>
             <h3 class="text-lg font-extrabold text-slate-900 mb-1">👋 새 팀원 등록</h3>
-            <p class="text-xs text-slate-500 mb-4">라운지에 표시될 내 프로필을 만들어보세요</p>
+            <p class="text-xs text-slate-500 mb-4">라운지에 표시될 내 프로필과 현재 상태를 설정하세요</p>
 
             <div class="space-y-4">
                 <div>
@@ -388,13 +454,57 @@
                         <label class="cursor-pointer"><input type="radio" name="new-avatar" value="🐼" class="hidden peer"><span class="text-2xl block p-1 rounded-lg peer-checked:bg-white peer-checked:shadow-xs">🐼</span></label>
                     </div>
                 </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">이름 / 닉네임</label>
-                    <input type="text" id="new-member-name" placeholder="예: 홍길동 프로" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">이름 / 닉네임</label>
+                        <input type="text" id="new-member-name" placeholder="예: 홍길동 프로" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 mb-1">부서 / 담당 업무</label>
+                        <input type="text" id="new-member-role" placeholder="예: 서비스기획팀" class="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-bold">
+                    </div>
                 </div>
+
+                <!-- 등록 시 기분 선택 -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">부서 / 담당 업무</label>
-                    <input type="text" id="new-member-role" placeholder="예: 서비스기획팀" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm">
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">오늘의 기분</label>
+                    <div class="grid grid-cols-5 gap-1.5 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="😊" checked class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">😊</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">행복</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="🔥" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">🔥</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">열정</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="😎" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">😎</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">여유</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="🤩" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">🤩</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">신남</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="🤔" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">🤔</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">고민</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="😴" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">😴</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">피곤</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="🫠" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">🫠</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">녹는중</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="🤯" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">🤯</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">멘붕</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="🥺" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">🥺</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">살려줘</span></label>
+                        <label class="cursor-pointer flex flex-col items-center p-1 rounded-xl hover:bg-white transition-all"><input type="radio" name="new-mood" value="🤬" class="hidden peer"><span class="text-xl peer-checked:scale-125 transition-transform">🤬</span><span class="text-[10px] mt-0.5 text-slate-500 peer-checked:text-indigo-600 font-bold">예민함</span></label>
+                    </div>
+                </div>
+
+                <!-- 등록 시 현재 상태 선택 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1.5">현재 상태</label>
+                    <select id="new-member-status" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <option value="🔋 풀충전 업무중">🔋 풀충전 업무중</option>
+                        <option value="☕ 커피 수혈중">☕ 커피 수혈중</option>
+                        <option value="🎧 집중 모드">🎧 집중 모드</option>
+                        <option value="🗣️ 회의 / 미팅">🗣️ 회의 / 미팅</option>
+                        <option value="💻 문서 / 기획중">💻 문서 / 기획중</option>
+                        <option value="🛠️ 배포 / 장애대응">🛠️ 배포 / 장애대응</option>
+                        <option value="📞 통화 / CS응대">📞 통화 / CS응대</option>
+                        <option value="🏃 외근 / 이동중">🏃 외근 / 이동중</option>
+                        <option value="🍔 식사 / 외출">🍔 식사 / 외출</option>
+                        <option value="🏠 재택 / 반차">🏠 재택 / 반차</option>
+                        <option value="🪫 배터리 방전">🪫 배터리 방전</option>
+                        <option value="🎉 칼퇴 대기중">🎉 칼퇴 대기중</option>
+                    </select>
+                </div>
+
+                <!-- 등록 시 한줄 메시지 -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">한줄 메시지</label>
+                    <input type="text" id="new-member-message" maxlength="45" placeholder="예: 반갑습니다! 오늘도 화이팅!" class="w-full px-3.5 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-semibold">
                 </div>
             </div>
 
@@ -776,6 +886,8 @@
         document.getElementById('open-add-member-btn').addEventListener('click', () => {
             document.getElementById('new-member-name').value = '';
             document.getElementById('new-member-role').value = '';
+            document.getElementById('new-member-message').value = '';
+            document.getElementById('new-member-status').value = '🔋 풀충전 업무중';
             addMemberModal.classList.remove('hidden');
             addMemberModal.classList.add('flex');
         });
@@ -789,6 +901,9 @@
             const name = document.getElementById('new-member-name').value.trim();
             const role = document.getElementById('new-member-role').value.trim() || '팀원';
             const avatar = document.querySelector('input[name="new-avatar"]:checked')?.value || '🧑‍💻';
+            const mood = document.querySelector('input[name="new-mood"]:checked')?.value || '😊';
+            const status = document.getElementById('new-member-status').value || '🔋 풀충전 업무중';
+            const message = document.getElementById('new-member-message').value.trim() || '반갑습니다! 오늘도 화이팅!';
             if (!name) {
                 showToast('이름이나 닉네임을 입력해주세요!');
                 return;
@@ -800,9 +915,9 @@
                 role,
                 avatar,
                 bg: bgs[appState.members.length % bgs.length],
-                mood: '😊',
-                status: '🔋 풀충전 업무중',
-                message: '반갑습니다! 오늘도 화이팅!',
+                mood,
+                status,
+                message,
                 order: appState.members.length + 1
             });
             persistLocalBackup();
@@ -969,110 +1084,108 @@
         renderHeader();
         renderMembers();
         renderSchedules();
+        fetchSeoulWeather();
         initRealtimeCloud();
 
         // ==========================================
-        // 7. 분야별 데일리 뉴스 탭 기능 (IT·테크 / 경제 / 연예·라이프 / 스포츠)
+        // 7. 분야별 데일리 뉴스 탭 연동 (IT·테크 / 경제·비즈니스 / 연예·라이프 / 스포츠)
         // ==========================================
-        const NEWS_CATEGORIES = {
+        const NEWS_FEEDS = {
             tech: {
-                query: 'IT 테크 인공지능 AI',
+                url: 'https://news.google.com/rss/headlines/section/topic/TECHNOLOGY?hl=ko&gl=KR&ceid=KR:ko',
                 fallback: [
-                    { title: '생성형 AI 에이전트 시대 본격화… 업무 생산성 도구 판도 변화', source: '테크 브리핑', link: 'https://news.google.com/search?q=IT+AI&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '차세대 AI 반도체·HBM 경쟁 심화, 글로벌 빅테크 투자 확대', source: '반도체 리포트', link: 'https://news.google.com/search?q=반도체+AI&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '클라우드·보안 자동화 솔루션 도입 기업 전년 대비 40% 증가', source: '디지털 데일리', link: 'https://news.google.com/search?q=클라우드+보안&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '온디바이스 AI 탑재 신형 스마트폰·노트북 라인업 공개', source: '모바일 트렌드', link: 'https://news.google.com/search?q=온디바이스+AI&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '국내 주요 플랫폼 기업, 초개인화 추천 알고리즘 고도화 박차', source: '플랫폼 뉴스', link: 'https://news.google.com/search?q=플랫폼+IT&hl=ko&gl=KR&ceid=KR:ko' }
+                    { title: '생성형 AI 업무 도입 확산… 기업 생산성 지형 바뀐다', source: '테크 브리핑', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '차세대 AI 반도체 패키징 경쟁 가속화, 글로벌 빅테크 총력전', source: 'IT 트렌드', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '클라우드·보안 솔루션 수요 증가, 하반기 주요 소프트웨어 이슈 정리', source: '디지털 인사이트', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGRqTVhZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
                 ]
             },
             economy: {
-                query: '경제 증시 금리 환율',
+                url: 'https://news.google.com/rss/headlines/section/topic/BUSINESS?hl=ko&gl=KR&ceid=KR:ko',
                 fallback: [
-                    { title: '글로벌 주요 중앙은행 통화정책 방향 주목… 금융시장 숨고르기', source: '경제 브리핑', link: 'https://news.google.com/search?q=경제+금리&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '수출 호조세 이어가는 국내 주력 산업, 하반기 실적 전망 청신호', source: '산업 경제', link: 'https://news.google.com/search?q=수출+경제&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '원·달러 환율 변동성 주시 속 외국인 수급 흐름 변화 감지', source: '마켓 리포트', link: 'https://news.google.com/search?q=환율+증시&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '가치소비·가성비 트렌드 확산에 유통업계 PB 상품 경쟁 치열', source: '유통 트렌드', link: 'https://news.google.com/search?q=유통+소비&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '직장인 재테크 관심 급증… 배당주·ETF 분산투자 인기', source: '머니 라이프', link: 'https://news.google.com/search?q=ETF+재테크&hl=ko&gl=KR&ceid=KR:ko' }
+                    { title: '글로벌 금리 방향성과 원/달러 환율 흐름… 주요 경제 지표 점검', source: '경제 브리핑', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '국내외 증시 주요 섹터별 수급 동향 및 이번 주 체크포인트', source: '마켓 리포트', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '유통·소비 트렌드 변화, 직장인 점심 물가와 외식 소비 분석', source: '비즈니스 데일리', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRGx6TVdZU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
                 ]
             },
             life: {
-                query: '연예 영화 드라마 건강 라이프',
+                url: 'https://news.google.com/rss/headlines/section/topic/ENTERTAINMENT?hl=ko&gl=KR&ceid=KR:ko',
                 fallback: [
-                    { title: '주말 정주행하기 좋은 화제의 신작 OTT 시리즈 TOP 5', source: '컬처 매거진', link: 'https://news.google.com/search?q=OTT+드라마&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '환절기 컨디션 관리법… 점심시간 15분 산책이 업무 집중력 높인다', source: '헬스 라이프', link: 'https://news.google.com/search?q=건강+환절기&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '가을·겨울 시즌 가볼 만한 서울 근교 감성 카페 & 드라이브 코스', source: '트래블 노트', link: 'https://news.google.com/search?q=서울+근교+여행&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '극장가 기대작 개봉 러시… 주말 예매율 1위 작품은?', source: '무비 데일리', link: 'https://news.google.com/search?q=영화+개봉&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '직장인 점심 트렌드 변화… 샐러드·포케부터 국밥까지 취향 다변화', source: '푸드 트렌드', link: 'https://news.google.com/search?q=점심+트렌드&hl=ko&gl=KR&ceid=KR:ko' }
+                    { title: '주말 나들이·전시회 추천… 도심 속 힐링 문화 공간 화제', source: '컬처 라이프', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: 'OTT 신작 드라마·예능 화제성 순위, 직장인 점심시간 대화 단골 주제', source: '엔터 브리핑', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '환절기 직장인 컨디션 관리법과 간편 건강 식단 트렌드', source: '헬스 & 라이프', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNREpxYW5RU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
                 ]
             },
             sports: {
-                query: '스포츠 프로야구 해외축구 손흥민',
+                url: 'https://news.google.com/rss/headlines/section/topic/SPORTS?hl=ko&gl=KR&ceid=KR:ko',
                 fallback: [
-                    { title: '해외축구 빅리그 주말 빅매치 예고… 코리안리거 선발 출격 기대', source: '풋볼 뉴스', link: 'https://news.google.com/search?q=해외축구+손흥민&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '프로야구 스토브리그 개막… FA 대어들의 행선지 관심 집중', source: '베이스볼 투데이', link: 'https://news.google.com/search?q=프로야구+FA&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '겨울 실내 스포츠 시즌 개막, 프로농구·배구 흥행 열기 후끈', source: '코트 리포트', link: 'https://news.google.com/search?q=프로농구+프로배구&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '직장인 러닝 열풍 지속… 도심 야간 러닝 크루 참여자 급증', source: '스포츠 라이프', link: 'https://news.google.com/search?q=러닝+마라톤&hl=ko&gl=KR&ceid=KR:ko' },
-                    { title: '국가대표팀 A매치 일정 돌입, 최정예 명단 소집 완료', source: '스포츠 헤드라인', link: 'https://news.google.com/search?q=축구+국가대표&hl=ko&gl=KR&ceid=KR:ko' }
+                    { title: '프로야구 스토브리그 주요 FA 소식과 구단별 전력 보강 전망', source: '스포츠 데일리', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '해외축구 코리안리거 활약상 및 주말 빅매치 관전 포인트', source: '풋볼 리포트', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' },
+                    { title: '프로농구·프로배구 정규시즌 순위 경쟁 본격화', source: '코트 인사이드', link: 'https://news.google.com/topics/CAAqJggKIiBDQkFTRWdvSUwyMHZNRFp1ZEdvU0FtdHZHZ0pMVWlnQVAB?hl=ko&gl=KR&ceid=KR%3Ako' }
                 ]
             }
         };
 
-        let currentNewsCat = 'tech';
+        let currentNewsCategory = 'tech';
         const newsCache = {};
 
         function renderNewsItems(items) {
-            const list = document.getElementById('daily-news-list');
-            list.innerHTML = '';
+            const listEl = document.getElementById('daily-news-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
             items.slice(0, 5).forEach((item, idx) => {
                 const li = document.createElement('li');
                 li.innerHTML = `
-                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between gap-3 bg-white hover:bg-indigo-50/60 p-3 rounded-2xl border border-slate-100 hover:border-indigo-200 transition-all">
-                        <div class="flex items-center gap-3 min-w-0">
-                            <span class="w-5 h-5 rounded-lg bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-500 text-[11px] font-extrabold flex items-center justify-center shrink-0 transition-colors">${idx + 1}</span>
+                    <a href="${item.link}" target="_blank" rel="noopener noreferrer" class="flex items-center justify-between gap-3 p-2.5 rounded-xl bg-white hover:bg-indigo-50/60 border border-slate-100 hover:border-indigo-200 transition-all group">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-5 h-5 rounded-md bg-slate-100 group-hover:bg-indigo-600 group-hover:text-white text-slate-600 text-[11px] font-extrabold flex items-center justify-center shrink-0 transition-colors">${idx + 1}</span>
                             <span class="text-xs sm:text-sm font-bold text-slate-800 group-hover:text-indigo-700 truncate">${item.title}</span>
                         </div>
-                        <span class="text-[11px] font-semibold text-slate-400 shrink-0">${item.source || '뉴스'} ↗</span>
+                        <span class="text-[10px] font-semibold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-md shrink-0">${item.source || '뉴스'}</span>
                     </a>
                 `;
-                list.appendChild(li);
+                listEl.appendChild(li);
             });
         }
 
-        async function loadNewsCategory(catKey, forceRefresh = false) {
-            currentNewsCat = catKey;
-            const catConfig = NEWS_CATEGORIES[catKey] || NEWS_CATEGORIES.tech;
+        async function loadDailyNews(category, forceRefresh = false) {
+            const listEl = document.getElementById('daily-news-list');
+            if (!listEl) return;
 
-            if (!forceRefresh && newsCache[catKey]) {
-                renderNewsItems(newsCache[catKey]);
+            if (!forceRefresh && newsCache[category]) {
+                renderNewsItems(newsCache[category]);
                 return;
             }
 
-            const list = document.getElementById('daily-news-list');
-            list.innerHTML = `<li class="text-center py-8 text-xs text-slate-400">최신 헤드라인을 불러오는 중입니다...</li>`;
+            listEl.innerHTML = `<li class="text-center py-8 text-xs text-slate-400">최신 헤드라인을 불러오는 중입니다...</li>`;
+            const feedConfig = NEWS_FEEDS[category] || NEWS_FEEDS.tech;
 
             try {
-                const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(catConfig.query)}&hl=ko&gl=KR&ceid=KR:ko`;
-                const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-                const res = await fetch(apiUrl);
+                const rss2jsonUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feedConfig.url)}`;
+                const res = await fetch(rss2jsonUrl);
                 const data = await res.json();
 
                 if (data && data.status === 'ok' && Array.isArray(data.items) && data.items.length > 0) {
                     const parsed = data.items.slice(0, 5).map(entry => {
-                        const parts = entry.title.split(' - ');
+                        const parts = (entry.title || '').split(' - ');
                         const source = parts.length > 1 ? parts.pop() : '구글뉴스';
-                        const cleanTitle = parts.join(' - ');
-                        return { title: cleanTitle, source, link: entry.link };
+                        const cleanTitle = parts.join(' - ') || entry.title;
+                        return {
+                            title: cleanTitle,
+                            source,
+                            link: entry.link
+                        };
                     });
-                    newsCache[catKey] = parsed;
+                    newsCache[category] = parsed;
                     renderNewsItems(parsed);
                     return;
                 }
-            } catch (err) {
-                console.warn('실시간 RSS 지연, 기본 헤드라인 표시:', err);
+            } catch (e) {
+                console.warn('뉴스 피드 폴백 사용:', e);
             }
 
-            newsCache[catKey] = catConfig.fallback;
-            renderNewsItems(catConfig.fallback);
+            newsCache[category] = feedConfig.fallback;
+            renderNewsItems(feedConfig.fallback);
         }
 
         document.querySelectorAll('.news-cat-tab').forEach(tab => {
@@ -1083,22 +1196,74 @@
                 });
                 tab.classList.add('bg-white', 'text-slate-900', 'shadow-xs');
                 tab.classList.remove('text-slate-500');
-                loadNewsCategory(tab.getAttribute('data-news-cat'));
+                currentNewsCategory = tab.getAttribute('data-news-cat');
+                loadDailyNews(currentNewsCategory);
             });
         });
 
-        document.getElementById('refresh-news-btn').addEventListener('click', () => {
-            loadNewsCategory(currentNewsCat, true);
-            showToast('최신 뉴스를 새로고침했습니다.');
+        document.getElementById('refresh-news-btn')?.addEventListener('click', () => {
+            loadDailyNews(currentNewsCategory, true);
+            showToast('최신 뉴스 헤드라인을 새로고침했습니다.');
         });
 
-        // 초기 뉴스 및 서울 날씨 로드
-        loadNewsCategory('tech');
-        fetchSeoulWeather();
+        loadDailyNews('tech');
 
         // ==========================================
-        // 8. 4대 주요 지수(KOSPI, S&P 500, NASDAQ 100, USD/KRW) 실시간 연동
+        // 8. 4대 주요 지수(KOSPI, S&P 500, NASDAQ 100, USD/KRW) 초고속 실시간 연동
         // ==========================================
+        function applyMarketCardUI(prefix, data) {
+            const priceEl = document.getElementById(`${prefix}-price`);
+            const changeEl = document.getElementById(`${prefix}-change`);
+            const subEl = document.getElementById(`${prefix}-sub`);
+            if (!priceEl || !changeEl || !data) return;
+
+            priceEl.innerText = data.price.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const isUp = data.pct > 0;
+            const isDown = data.pct < 0;
+            const sign = isUp ? '+' : '';
+            changeEl.innerText = `${sign}${data.pct.toFixed(2)}%`;
+
+            changeEl.className = 'text-[11px] font-extrabold px-2 py-0.5 rounded-md ' + (
+                isUp ? 'bg-rose-50 text-rose-600' :
+                isDown ? 'bg-blue-50 text-blue-600' :
+                'bg-slate-100 text-slate-600'
+            );
+
+            if (subEl && !isNaN(data.diff)) {
+                const diffSign = data.diff > 0 ? '▲ ' : (data.diff < 0 ? '▼ ' : '');
+                subEl.innerText = `전일대비 ${diffSign}${Math.abs(data.diff).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+        }
+
+        async function fetchSingleProxy(url) {
+            const controller = new AbortController();
+            const timer = setTimeout(() => controller.abort(), 5000);
+            try {
+                const res = await fetch(url, { signal: controller.signal });
+                if (!res.ok) throw new Error('HTTP error');
+                const data = await res.json();
+
+                if (data && data.closePrice) {
+                    const price = Number(String(data.closePrice).replace(/,/g, ''));
+                    const pct = Number(data.fluctuationsRatio || 0);
+                    const diff = Number(String(data.compareToPreviousClosePrice || '0').replace(/,/g, ''));
+                    if (!isNaN(price) && price > 0) return { price, pct, diff };
+                }
+
+                const meta = data?.chart?.result?.[0]?.meta;
+                if (meta && meta.regularMarketPrice) {
+                    const price = Number(meta.regularMarketPrice);
+                    const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
+                    const diff = price - prev;
+                    const pct = prev ? (diff / prev) * 100 : 0;
+                    if (!isNaN(price) && price > 0) return { price, pct, diff };
+                }
+                throw new Error('Invalid payload');
+            } finally {
+                clearTimeout(timer);
+            }
+        }
+
         async function fetchIndexFromMultiSource(naverCode, yahooSymbol) {
             const urls = [];
             if (naverCode) {
@@ -1113,55 +1278,10 @@
                 urls.push('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(yahooApi));
             }
 
-            for (const url of urls) {
-                try {
-                    const res = await fetch(url);
-                    if (!res.ok) continue;
-                    const data = await res.json();
-
-                    if (data && data.closePrice) {
-                        const price = Number(String(data.closePrice).replace(/,/g, ''));
-                        const pct = Number(data.fluctuationsRatio || 0);
-                        const diff = Number(String(data.compareToPreviousClosePrice || '0').replace(/,/g, ''));
-                        return { price, pct, diff };
-                    }
-
-                    const meta = data?.chart?.result?.[0]?.meta;
-                    if (meta && meta.regularMarketPrice) {
-                        const price = Number(meta.regularMarketPrice);
-                        const prev = Number(meta.chartPreviousClose || meta.previousClose || price);
-                        const diff = price - prev;
-                        const pct = prev ? (diff / prev) * 100 : 0;
-                        return { price, pct, diff };
-                    }
-                } catch (e) {
-                    continue;
-                }
-            }
-            return null;
-        }
-
-        function applyMarketCardUI(prefix, result, unitSuffix = '') {
-            if (!result || isNaN(result.price)) return;
-            const priceEl = document.getElementById(`${prefix}-price`);
-            const badgeEl = document.getElementById(`${prefix}-change`);
-            const subEl = document.getElementById(`${prefix}-sub`);
-
-            const isUp = result.pct > 0;
-            const isDown = result.pct < 0;
-
-            priceEl.innerText = result.price.toLocaleString('ko-KR', {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2
-            }) + unitSuffix;
-
-            badgeEl.innerText = `${isUp ? '+' : ''}${result.pct.toFixed(2)}%`;
-            badgeEl.className = `text-[11px] font-extrabold px-2 py-0.5 rounded-md ${
-                isUp ? 'bg-rose-50 text-rose-600' : isDown ? 'bg-blue-50 text-blue-600' : 'bg-slate-100 text-slate-600'
-            }`;
-
-            if (subEl) {
-                subEl.innerText = `전일대비 ${isUp ? '▲' : isDown ? '▼' : '-'} ${Math.abs(result.diff).toFixed(2)}`;
+            try {
+                return await Promise.any(urls.map(u => fetchSingleProxy(u)));
+            } catch (e) {
+                return null;
             }
         }
 
