@@ -314,7 +314,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, onSnapshot, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'dadamlabs-pantry-prod-2026';
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
@@ -388,24 +388,29 @@
                 userId = 'fallback-user-' + Math.random().toString(36).substring(2, 9);
             }
 
-            // [확실한 실시간 싱크 보장] 전 세계 단 하나의 공통 마스터 문서 키 구독
+            // [초강력 듀얼 싱크 보장] Firestore 실시간 구독 + 0.8초 주기 강제 폴링 대조
             try {
                 const docRef = doc(db, 'artifacts', 'dadamlabs_master_shared_room_v2026', 'public', 'data', 'master_state');
+                
+                // 실시간 리스너
                 onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        if (data.orders) orders = data.orders;
-                        if (data.presets) presets = data.presets;
-                        if (data.appConfig) appConfig = { ...appConfig, ...data.appConfig };
-                        if (data.myLikedIds) myLikedIds = data.myLikedIds;
-                        
-                        renderPresets();
-                        renderOrders();
-                        applyUIWithConfig();
+                        applyCloudData(docSnap.data());
                     } else {
                         saveStateToCloud();
                     }
                 }, (error) => {});
+
+                // 주기적 폴링 백업 (엣지나 텔레그램 링크에서 놓치는 데이터가 없도록 강제 동기화)
+                setInterval(async () => {
+                    try {
+                        const snap = await getDoc(docRef);
+                        if (snap.exists()) {
+                            applyCloudData(snap.data());
+                        }
+                    } catch (e) {}
+                }, 800);
+
             } catch (e) {
                 loadLocalFallback();
             }
@@ -413,6 +418,30 @@
             renderPresets();
             renderOrders();
             applyUIWithConfig();
+        }
+
+        function applyCloudData(data) {
+            let needsRerender = false;
+            if (data.orders && JSON.stringify(data.orders) !== JSON.stringify(orders)) {
+                orders = data.orders;
+                needsRerender = true;
+            }
+            if (data.presets && JSON.stringify(data.presets) !== JSON.stringify(presets)) {
+                presets = data.presets;
+                renderPresets();
+            }
+            if (data.appConfig && JSON.stringify(data.appConfig) !== JSON.stringify(appConfig)) {
+                appConfig = { ...appConfig, ...data.appConfig };
+                needsRerender = true;
+                applyUIWithConfig();
+            }
+            if (data.myLikedIds) {
+                myLikedIds = data.myLikedIds;
+            }
+            if (needsRerender) {
+                renderOrders();
+                updateBudgetUI();
+            }
         }
 
         function saveStateToCloud() {
