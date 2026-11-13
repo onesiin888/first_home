@@ -11,695 +11,1036 @@
         body {
             font-family: 'Pretendard', sans-serif;
             background-color: #f8fafc;
-            background-image: radial-gradient(#e2e8f0 1px, transparent 1px);
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
             background-size: 24px 24px;
         }
         .glass-panel {
             background: rgba(255, 255, 255, 0.9);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
         }
-        .modal-enter {
-            opacity: 0;
-            transform: scale(0.95);
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
         }
-        .modal-enter-active {
-            opacity: 1;
-            transform: scale(1);
-            transition: all 0.2s ease-out;
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
         }
     </style>
 </head>
-<body class="text-slate-800 antialiased min-h-screen p-4 sm:p-6 lg:p-8 flex justify-center">
+<body class="text-slate-800 antialiased min-h-screen p-4 sm:p-6 lg:p-8">
 
-    <div class="max-w-4xl w-full space-y-6">
-        <!-- 헤더 영역 -->
-        <header class="glass-panel rounded-3xl p-6 shadow-sm flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div>
-                <div class="flex items-center gap-2 mb-1 flex-wrap">
-                    <span class="bg-indigo-100 text-indigo-700 text-xs font-bold px-2.5 py-1 rounded-full">TEAM SPACE</span>
-                    <span class="text-xs text-slate-400 font-medium" id="current-date">2026년 11월 13일 금요일</span>
-                    <!-- 실시간 시계 & 날씨 배지 -->
-                    <span class="bg-slate-100 text-slate-600 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                        <i class="ph ph-clock"></i> <span id="clock-time">00:00:00</span>
-                    </span>
-                    <span class="bg-amber-50 text-amber-700 border border-amber-200/60 text-xs font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                        <i class="ph ph-sun"></i> <span id="weather-text">서울 맑음 15°C</span>
+    <div class="max-w-7xl mx-auto space-y-6">
+        <!-- 상단 헤더 바 -->
+        <header class="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+            <div class="space-y-1.5">
+                <div class="flex items-center gap-2.5 flex-wrap">
+                    <button type="button" id="space-title-container" class="group flex items-center gap-2 text-left hover:bg-slate-100 px-2.5 py-1 -ml-2.5 rounded-2xl transition-all cursor-pointer">
+                        <h1 id="space-title-display" class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900">
+                            생존신고 라운지 🏕️
+                        </h1>
+                        <i class="ph-bold ph-pencil-simple text-slate-400 group-hover:text-indigo-600 text-lg transition-colors"></i>
+                    </button>
+                    <span class="bg-emerald-50 text-emerald-700 border border-emerald-200 text-xs font-extrabold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span> 실시간 작동중
                     </span>
                 </div>
-                <!-- 타이틀 (클릭해서 이름 변경 가능) -->
-                <div class="flex items-center gap-2 group cursor-pointer inline-flex" id="space-title-container" title="클릭해서 라운지 이름 바꾸기">
-                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900" id="space-title-display">
-                        생존신고 라운지 🏕️
-                    </h1>
-                    <i class="ph ph-pencil-simple text-slate-400 group-hover:text-indigo-600 transition-colors text-lg"></i>
+                
+                <!-- 날짜, 시간, 날씨 정보 -->
+                <div class="flex flex-wrap items-center gap-3 text-xs sm:text-sm font-semibold text-slate-500">
+                    <span id="current-date" class="flex items-center gap-1">
+                        <i class="ph-duotone ph-calendar-blank text-indigo-500"></i> 날짜 로딩중...
+                    </span>
+                    <span class="text-slate-300">|</span>
+                    <span class="flex items-center gap-1 text-indigo-600 font-bold bg-indigo-50/80 px-2.5 py-0.5 rounded-lg">
+                        <i class="ph-bold ph-clock"></i>
+                        <span id="clock-time">00:00:00</span>
+                    </span>
+                    <span class="text-slate-300">|</span>
+                    <span class="flex items-center gap-1 text-sky-700 bg-sky-50 border border-sky-100 px-2.5 py-0.5 rounded-lg font-bold">
+                        <span>☀️ 서울 맑음 14°C</span>
+                    </span>
                 </div>
             </div>
-            <div class="flex items-center gap-3 w-full sm:w-auto justify-end flex-wrap">
-                <!-- 공지사항 바 (클릭해서 수정 가능) -->
-                <div id="notice-container" class="bg-indigo-50/80 hover:bg-indigo-100/80 border border-indigo-100 px-4 py-2.5 rounded-2xl flex items-center gap-3 flex-1 sm:flex-initial cursor-pointer transition-colors group" title="클릭해서 공지사항 수정">
-                    <span class="text-lg">📢</span>
-                    <span class="text-xs sm:text-sm font-medium text-indigo-900 truncate max-w-[200px] sm:max-w-[260px]" id="notice-text">링크를 공유하여 팀원들을 등록해 보세요!</span>
-                    <i class="ph ph-pencil text-indigo-400 group-hover:text-indigo-700 text-xs ml-auto"></i>
+
+            <!-- 우측 공지사항 배너 (클릭하여 수정) -->
+            <button type="button" id="notice-container" class="w-full lg:w-auto text-left group bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 hover:from-indigo-100 hover:to-pink-100 border border-indigo-200/70 px-4 py-3 rounded-2xl shadow-sm transition-all flex items-center justify-between lg:justify-start gap-3 cursor-pointer">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <span class="bg-indigo-600 text-white text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">공지</span>
+                    <p id="notice-text" class="text-xs sm:text-sm font-bold text-slate-800 truncate">
+                        오늘 점심 메뉴 추천 받습니다! 🍔 (클릭해서 공지 수정)
+                    </p>
                 </div>
-                <!-- 팀원 직접 등록 버튼 -->
-                <button id="btn-open-register" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs px-3.5 py-3 rounded-2xl transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap">
-                    <i class="ph ph-user-plus text-base"></i> 팀원 등록
-                </button>
-            </div>
+                <i class="ph-bold ph-note-pencil text-indigo-500 group-hover:scale-110 transition-transform shrink-0"></i>
+            </button>
         </header>
 
-        <!-- 메인 콘텐츠 그리드 (상태 보드 + 일정판 한눈에) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- 메인 대시보드 영역 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- 좌측: 팀원 상태 컴팩트 카드 (4~7명 최적화, 2칸 차지) -->
-            <div class="lg:col-span-2 space-y-4">
-                <div class="flex justify-between items-center px-1">
-                    <h2 class="text-base font-bold text-slate-700 flex items-center gap-2">
-                        <i class="ph-bold ph-users text-indigo-600"></i> 팀원 상태 보드
-                    </h2>
-                    <span class="text-xs text-slate-400">카드를 눌러 내 상태를 변경하세요</span>
-                </div>
-
-                <!-- 팀원 카드 그리드 -->
-                <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-                    <!-- JS 렌더링 -->
-                </div>
-            </div>
-
-            <!-- 우측: 이번 주 일정 및 연차 현황 (1칸 차지) -->
-            <div class="space-y-4">
-                <div class="flex justify-between items-center px-1">
-                    <h2 class="text-base font-bold text-slate-700 flex items-center gap-2">
-                        <i class="ph-bold ph-calendar-check text-indigo-600"></i> 팀 일정 & 연차
-                    </h2>
-                    <button id="btn-open-schedule" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-bold px-2.5 py-1.5 rounded-xl transition-colors flex items-center gap-1">
-                        <i class="ph ph-plus font-bold"></i> 일정 추가
+            <!-- 왼쪽: 팀원 생존신고 상태 보드 (7칸) -->
+            <div class="lg:col-span-7 space-y-4">
+                <div class="flex flex-wrap justify-between items-center gap-2 px-1">
+                    <div>
+                        <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                            👀 팀원 실시간 상태 보드
+                            <span id="member-count-badge" class="bg-slate-200 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold">4명</span>
+                        </h2>
+                        <p class="text-xs text-slate-500 mt-0.5">본인 카드를 클릭해 오늘 기분과 현재 상태를 자유롭게 변경하세요!</p>
+                    </div>
+                    <button type="button" id="btn-open-register" class="bg-indigo-600 hover:bg-indigo-700 active:scale-95 text-white text-xs sm:text-sm font-extrabold px-4 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                        <i class="ph-bold ph-user-plus text-base"></i> + 팀원 등록
                     </button>
                 </div>
 
-                <div class="space-y-3">
-                    <!-- 연차 카드 -->
-                    <div class="glass-panel rounded-2xl p-4 shadow-sm">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">🏖️ 휴가 / 반차 현황</h3>
-                        <ul class="space-y-2.5" id="leave-list">
-                            <!-- JS 렌더링 -->
-                        </ul>
-                    </div>
-
-                    <!-- 회사 주요 행사 카드 -->
-                    <div class="glass-panel rounded-2xl p-4 shadow-sm">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">🎉 사내 주요 일정 & 공휴일</h3>
-                        <ul class="space-y-2.5" id="event-list">
-                            <!-- JS 렌더링 -->
-                        </ul>
-                    </div>
+                <!-- 팀원 카드 그리드 -->
+                <div id="members-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- JS로 렌더링 -->
                 </div>
             </div>
+
+            <!-- 오른쪽: 팀 일정 & 연차 & 공휴일 보드 (5칸) -->
+            <div class="lg:col-span-5 space-y-5">
+                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 space-y-6">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h2 class="text-lg font-extrabold text-slate-800 flex items-center gap-2">
+                                📅 팀 일정 & 연차 현황
+                            </h2>
+                            <p class="text-xs text-slate-500 mt-0.5">휴가, 외근, 주요 행사 및 대한민국 공휴일</p>
+                        </div>
+                        <button type="button" id="btn-open-schedule" class="bg-slate-900 hover:bg-slate-800 active:scale-95 text-white text-xs font-extrabold px-3.5 py-2.5 rounded-xl shadow-sm transition-all flex items-center gap-1.5 cursor-pointer">
+                            <i class="ph-bold ph-calendar-plus text-sm"></i> + 일정 추가
+                        </button>
+                    </div>
+
+                    <!-- 카테고리 탭 필터 -->
+                    <div class="flex gap-1.5 bg-slate-100 p-1 rounded-xl text-xs font-bold">
+                        <button type="button" data-filter="all" class="sched-tab-btn flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all">전체보기</button>
+                        <button type="button" data-filter="leave" class="sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🏖️ 휴가/반차</button>
+                        <button type="button" data-filter="event" class="sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🎉 주요일정</button>
+                        <button type="button" data-filter="holiday" class="sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all">🔴 공휴일</button>
+                    </div>
+
+                    <!-- 통합 일정 리스트 -->
+                    <div class="space-y-4 max-h-[460px] overflow-y-auto custom-scrollbar pr-1" id="schedule-container">
+                        <!-- JS로 렌더링 -->
+                    </div>
+                </div>
+
+                <!-- 추가된 실시간 미니 잡담 톡방 박스 -->
+                <div class="glass-panel rounded-3xl p-5 sm:p-6 shadow-sm border border-slate-200/80 space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                            💬 탕비실 실시간 한줄 잡담
+                        </h2>
+                        <span class="text-[11px] font-bold text-slate-400">자유로운 소통 공간</span>
+                    </div>
+                    
+                    <!-- 채팅 목록 -->
+                    <div id="chat-messages-container" class="space-y-2.5 max-h-48 overflow-y-auto custom-scrollbar pr-1 bg-slate-50/80 p-3 rounded-2xl border border-slate-200/60">
+                        <!-- JS로 렌더링 -->
+                    </div>
+
+                    <!-- 채팅 입력폼 -->
+                    <form id="chat-form" class="flex gap-2">
+                        <input type="text" id="chat-sender" placeholder="이름" class="w-24 px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="text" id="chat-text" placeholder="잡담이나 질문을 남겨보세요..." class="flex-1 px-3.5 py-2 rounded-xl border border-slate-200 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-extrabold shadow-sm transition-all shrink-0 cursor-pointer">
+                            전송
+                        </button>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <!-- 팀원 신규 등록 모달 -->
+    <!-- ========================================== -->
+    <!-- 모달 1: 팀원 신규 등록 모달 -->
+    <!-- ========================================== -->
     <div id="register-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" id="close-register-backdrop"></div>
-        
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
-            <button id="btn-close-register-x" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center transition-colors">
-                <i class="ph ph-x font-bold"></i>
-            </button>
-            
-            <div class="text-center mb-5">
-                <div class="text-3xl mb-1 inline-block p-2 bg-indigo-50 text-indigo-600 rounded-2xl">👋</div>
-                <h3 class="text-lg font-extrabold text-slate-900">새 팀원 등록하기</h3>
-                <p class="text-xs text-slate-400">본인의 이름과 직무를 입력해 라운지에 참여하세요</p>
+        <div id="close-register-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                    🙋‍♂️ 새 팀원 프로필 등록
+                </h3>
+                <button type="button" id="btn-close-register-x" class="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">이름 (닉네임)</label>
-                    <input type="text" id="reg-name" placeholder="예: 홍길동" maxlength="10" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">이름 (또는 직급/닉네임) *</label>
+                    <input type="text" id="reg-name" placeholder="예: 김대리, 박사원" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">직무 / 부서</label>
-                    <input type="text" id="reg-role" placeholder="예: 프론트엔드 / 기획" maxlength="10" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">담당 업무 / 부서</label>
+                    <input type="text" id="reg-role" placeholder="예: 디자인, 프론트엔드, 기획" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">대표 아바타 캐릭터</label>
-                    <div id="reg-avatar-selector" class="grid grid-cols-8 gap-1 bg-slate-50 p-2 rounded-xl border border-slate-100">
-                        <!-- JS 렌더링 -->
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">프로필 캐릭터 선택</label>
+                    <div id="reg-avatar-selector" class="grid grid-cols-8 gap-1.5 bg-slate-50 p-2.5 rounded-2xl border border-slate-200/80 max-h-36 overflow-y-auto">
+                        <!-- JS로 아바타 렌더링 -->
                     </div>
                 </div>
             </div>
 
-            <button id="btn-submit-register" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md text-sm">
-                라운지 입장하기
-            </button>
+            <div class="flex gap-2 pt-2">
+                <button type="button" id="btn-cancel-register" class="w-1/3 py-3 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">취소</button>
+                <button type="button" id="btn-submit-register" class="w-2/3 py-3 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700 shadow-md transition-colors">라운지에 합류하기</button>
+            </div>
         </div>
     </div>
 
-    <!-- 팀원 상태 변경 모달 -->
+    <!-- ========================================== -->
+    <!-- 모달 2: 팀원 상태 변경 모달 -->
+    <!-- ========================================== -->
     <div id="status-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" id="close-status-backdrop"></div>
-        
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl modal-enter max-h-[90vh] overflow-y-auto">
-            <button id="btn-close-status-x" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center transition-colors">
-                <i class="ph ph-x font-bold"></i>
-            </button>
-            
-            <div class="text-center mb-5">
-                <div id="modal-avatar" class="text-4xl mb-1 inline-block p-2 bg-slate-50 rounded-2xl border border-slate-100">🧑‍💻</div>
-                <h3 class="text-lg font-extrabold text-slate-900" id="modal-name">이름</h3>
-                <p class="text-xs text-slate-400">내 상태와 기분을 업데이트하세요</p>
+        <div id="close-status-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100 max-h-[90vh] overflow-y-auto custom-scrollbar">
+            <div class="flex justify-between items-start">
+                <div class="flex items-center gap-3">
+                    <div id="modal-avatar" class="w-14 h-14 bg-indigo-50 rounded-2xl flex items-center justify-center text-3xl shadow-inner">🧑‍💻</div>
+                    <div>
+                        <h3 id="modal-name" class="text-lg font-extrabold text-slate-900">이름</h3>
+                        <p class="text-xs text-slate-400">프로필 정보 및 오늘의 상태 업데이트</p>
+                    </div>
+                </div>
+                <button type="button" id="btn-close-status-x" class="text-slate-400 hover:text-slate-700 p-1">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
             </div>
 
             <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">오늘의 기분</label>
-                    <div class="grid grid-cols-4 gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-100" id="mood-selector">
-                        <!-- JS 렌더링 -->
+                <!-- 이름 및 부서 수정 -->
+                <div class="grid grid-cols-2 gap-2.5">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">이름 / 닉네임</label>
+                        <input type="text" id="edit-name" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">담당 업무 / 부서</label>
+                        <input type="text" id="edit-role" class="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                 </div>
 
+                <!-- 캐릭터 변경 (아바타) -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">상태 뱃지</label>
-                    <div class="grid grid-cols-3 gap-2" id="status-selector">
-                        <!-- JS 렌더링 -->
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">프로필 캐릭터 변경</label>
+                    <div id="edit-avatar-selector" class="grid grid-cols-8 gap-1.5 bg-slate-50 p-2 rounded-2xl border border-slate-100">
+                        <!-- JS로 렌더링 -->
                     </div>
                 </div>
 
+                <!-- 오늘 기분 -->
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">한줄 메시지</label>
-                    <input type="text" id="modal-message" placeholder="현재 상황이나 기분을 짧게 남겨주세요!" maxlength="35" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">오늘 나의 기분</label>
+                    <div id="mood-selector" class="grid grid-cols-4 gap-2 bg-slate-50 p-2.5 rounded-2xl border border-slate-100">
+                        <!-- JS로 렌더링 -->
+                    </div>
+                </div>
+
+                <!-- 현재 상태 뱃지 -->
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">현재 상태 뱃지 (화장실, 커피 등)</label>
+                    <div id="status-selector" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <!-- JS로 렌더링 -->
+                    </div>
+                </div>
+
+                <!-- 한줄 상태 메시지 -->
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">한줄 생존신고 메시지</label>
+                    <input type="text" id="modal-message" placeholder="지금 하고 있는 일이나 하고 싶은 말을 적어주세요!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
             </div>
 
-            <div class="flex gap-2 mt-5">
-                <button id="btn-delete-member" class="w-1/3 bg-slate-100 hover:bg-rose-50 text-slate-500 hover:text-rose-600 font-bold py-3 px-2 rounded-xl transition-all text-xs">
-                    멤버 삭제
+            <div class="flex items-center justify-between gap-2 pt-2 border-t border-slate-100">
+                <button type="button" id="btn-delete-member" class="px-3.5 py-3 rounded-xl font-bold text-xs text-rose-600 bg-rose-50 hover:bg-rose-100 transition-colors flex items-center gap-1">
+                    <i class="ph-bold ph-trash"></i> 삭제
                 </button>
-                <button id="btn-save-status" class="w-2/3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md text-sm">
-                    저장하기
-                </button>
+                <div class="flex gap-2 flex-1 justify-end">
+                    <button type="button" id="btn-cancel-status" class="px-4 py-3 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
+                    <button type="button" id="btn-save-status" class="px-6 py-3 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700 shadow-md">상태 저장하기</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- 신규 일정 추가 모달 -->
+    <!-- ========================================== -->
+    <!-- 모달 3: 일정 및 연차 추가 모달 (날짜 선택기 포함) -->
+    <!-- ========================================== -->
     <div id="schedule-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" id="close-sched-backdrop"></div>
-        
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
-            <button id="btn-close-sched-x" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center transition-colors">
-                <i class="ph ph-x font-bold"></i>
-            </button>
-            
-            <div class="text-center mb-5">
-                <div class="text-3xl mb-1 inline-block p-2 bg-indigo-50 text-indigo-600 rounded-2xl">📅</div>
-                <h3 class="text-lg font-extrabold text-slate-900">새 일정 등록</h3>
-                <p class="text-xs text-slate-400">팀원들과 공유할 휴가나 행사를 추가하세요</p>
+        <div id="close-sched-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-5 border border-slate-100">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                    📅 새 팀 일정 / 휴가 등록
+                </h3>
+                <button type="button" id="btn-close-sched-x" class="text-slate-400 hover:text-slate-700 p-1">
+                    <i class="ph-bold ph-x text-xl"></i>
+                </button>
             </div>
 
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">일정 종류</label>
-                    <div class="grid grid-cols-2 gap-2">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">카테고리 선택</label>
+                    <div class="grid grid-cols-3 gap-2">
                         <label class="cursor-pointer">
                             <input type="radio" name="sched_type" value="leave" checked class="hidden peer">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-white peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all text-xs font-bold">
-                                🏖️ 휴가 / 반차
+                            <div class="text-center py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-bold peer-checked:border-orange-500 peer-checked:bg-orange-50 peer-checked:text-orange-700 transition-all">
+                                🏖️ 휴가/반차
                             </div>
                         </label>
                         <label class="cursor-pointer">
                             <input type="radio" name="sched_type" value="event" class="hidden peer">
-                            <div class="text-center py-2 px-3 rounded-xl border border-slate-200 bg-white peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all text-xs font-bold">
-                                🎉 회사 행사
+                            <div class="text-center py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-bold peer-checked:border-indigo-500 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 transition-all">
+                                🎉 주요일정/회식
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="sched_type" value="holiday" class="hidden peer">
+                            <div class="text-center py-2.5 px-2 rounded-xl border border-slate-200 text-xs font-bold peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:text-rose-700 transition-all">
+                                🔴 공휴일/휴무
                             </div>
                         </label>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">날짜 선택</label>
-                    <input type="date" id="sched-date" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium text-slate-700">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">날짜 선택 (달력 클릭)</label>
+                    <input type="date" id="sched-date" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1.5">내용 (이름 또는 타이틀)</label>
-                    <input type="text" id="sched-title" placeholder="예: 박사원 연차 / 전체 회식" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
+                    <label class="block text-xs font-extrabold text-slate-700 mb-1.5">일정 내용 또는 이름</label>
+                    <input type="text" id="sched-title" placeholder="예: 이대리 오전 반차 / 전체 팀 회식" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
             </div>
 
-            <button id="btn-submit-sched" class="w-full mt-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl transition-all shadow-md text-sm">
-                일정 추가하기
-            </button>
-        </div>
-    </div>
-
-    <!-- 라운지 공간 이름 변경 모달 -->
-    <div id="space-name-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" id="close-spacename-backdrop"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
-            <h3 class="text-lg font-extrabold text-slate-900 mb-1">라운지 이름 정하기 🏕️</h3>
-            <p class="text-xs text-slate-400 mb-4">팀원들이 공감할 센스 있는 이름을 입력하세요</p>
-            
-            <div class="space-y-3 mb-4">
-                <input type="text" id="space-name-input" placeholder="예: 생존신고 라운지 ☕" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
-                
-                <div>
-                    <span class="text-[10px] font-bold text-slate-400 block mb-1.5">💡 추천 이름 (클릭시 자동입력)</span>
-                    <div class="flex flex-wrap gap-1.5">
-                        <button type="button" class="preset-title-btn text-[11px] bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1 rounded-lg text-slate-600 transition-colors" data-title="☕ 탕비실 베이스캠프">☕ 탕비실 베이스캠프</button>
-                        <button type="button" class="preset-title-btn text-[11px] bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1 rounded-lg text-slate-600 transition-colors" data-title="🚀 마감 구조대 아지트">🚀 마감 구조대 아지트</button>
-                        <button type="button" class="preset-title-btn text-[11px] bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1 rounded-lg text-slate-600 transition-colors" data-title="💻 생존신고 라운지">💻 생존신고 라운지</button>
-                        <button type="button" class="preset-title-btn text-[11px] bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1 rounded-lg text-slate-600 transition-colors" data-title="🍔 오늘뭐먹지 타운">🍔 오늘뭐먹지 타운</button>
-                        <button type="button" class="preset-title-btn text-[11px] bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1 rounded-lg text-slate-600 transition-colors" data-title="🌴 도파민 충전소">🌴 도파민 충전소</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="flex gap-2">
-                <button id="btn-cancel-spacename" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-xs">취소</button>
-                <button id="btn-save-spacename" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md">저장하기</button>
+            <div class="flex gap-2 pt-2">
+                <button type="button" id="btn-cancel-sched" class="w-1/3 py-3 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
+                <button type="button" id="btn-submit-sched" class="w-2/3 py-3 rounded-xl font-extrabold text-xs text-white bg-slate-900 hover:bg-slate-800 shadow-md">일정 등록하기</button>
             </div>
         </div>
     </div>
 
-    <!-- 공지사항 수정 모달 -->
+    <!-- ========================================== -->
+    <!-- 모달 4: 공지사항 수정 모달 -->
+    <!-- ========================================== -->
     <div id="notice-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" id="close-notice-backdrop"></div>
-        <div class="relative bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl modal-enter">
-            <h3 class="text-lg font-extrabold text-slate-900 mb-1">📢 공지사항 편집</h3>
-            <p class="text-xs text-slate-400 mb-4">팀원들에게 전달할 오늘의 메시지를 남기세요</p>
-            
-            <div class="mb-4">
-                <input type="text" id="notice-input" placeholder="예: 오늘 점심 회식 12시 30분 로비 집결!" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 text-xs font-medium">
-            </div>
-
-            <div class="flex gap-2">
-                <button id="btn-cancel-notice" class="w-1/2 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2.5 rounded-xl text-xs">취소</button>
-                <button id="btn-save-notice" class="w-1/2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs shadow-md">변경하기</button>
+        <div id="close-notice-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-4 border border-slate-100">
+            <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
+                📢 상단 한줄 공지사항 수정
+            </h3>
+            <input type="text" id="notice-input" placeholder="팀원들에게 알릴 공지나 점심 메뉴를 적어보세요!" class="w-full px-3.5 py-3 rounded-xl border border-slate-200 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <div class="flex gap-2 justify-end pt-2">
+                <button type="button" id="btn-cancel-notice" class="px-4 py-2.5 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
+                <button type="button" id="btn-save-notice" class="px-5 py-2.5 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700">공지 반영하기</button>
             </div>
         </div>
     </div>
 
-    <!-- 토스트 알림 -->
-    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-4 py-2 rounded-full text-xs shadow-lg opacity-0 pointer-events-none transition-opacity duration-300 z-50 flex items-center gap-2">
-        <i class="ph-fill ph-check-circle text-emerald-400"></i>
-        <span id="toast-msg">저장되었습니다.</span>
+    <!-- ========================================== -->
+    <!-- 모달 5: 라운지 이름 변경 모달 -->
+    <!-- ========================================== -->
+    <div id="space-name-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4">
+        <div id="close-spacename-backdrop" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+        <div class="relative bg-white rounded-3xl p-6 w-full max-w-md shadow-2xl z-10 space-y-4 border border-slate-100">
+            <h3 class="text-lg font-extrabold text-slate-900">🏕️ 우리팀 라운지 이름 변경</h3>
+            <input type="text" id="space-name-input" class="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <div class="space-y-1.5">
+                <span class="text-[11px] font-bold text-slate-400">추천 라운지 이름 (클릭 시 자동 입력)</span>
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" data-title="생존신고 라운지 🏕️" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">생존신고 라운지 🏕️</button>
+                    <button type="button" data-title="탕비실 베이스캠프 ☕" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">탕비실 베이스캠프 ☕</button>
+                    <button type="button" data-title="마감 구조대 아지트 🚀" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">마감 구조대 아지트 🚀</button>
+                    <button type="button" data-title="도파민 충전소 🌴" class="preset-title-btn text-xs bg-slate-100 hover:bg-indigo-50 hover:text-indigo-600 px-2.5 py-1.5 rounded-lg font-bold transition-colors">도파민 충전소 🌴</button>
+                </div>
+            </div>
+            <div class="flex gap-2 justify-end pt-2">
+                <button type="button" id="btn-cancel-spacename" class="px-4 py-2.5 rounded-xl font-bold text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">취소</button>
+                <button type="button" id="btn-save-spacename" class="px-5 py-2.5 rounded-xl font-extrabold text-xs text-white bg-indigo-600 hover:bg-indigo-700">변경 저장</button>
+            </div>
+        </div>
     </div>
 
-    <!-- Firebase SDK 및 앱 로직 -->
+    <!-- 토스트 알림창 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold shadow-xl opacity-0 pointer-events-none transition-all duration-300 z-50 flex items-center gap-2">
+        <i class="ph-fill ph-check-circle text-emerald-400 text-lg"></i>
+        <span id="toast-msg">반영되었습니다!</span>
+    </div>
+
+    <!-- 메인 스크립트 (클라우드 실시간 영구 저장 연동) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, onSnapshot, collection, addDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'team-lounge-demo-app';
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            projectId: "demo-project"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
-
-        let teamMembers = [];
-        let leaves = [
-            { date: '2026-11-13', name: '이대리 (오전 반차)', color: 'text-orange-600 bg-orange-50 border-orange-200' },
-            { date: '2026-11-16', name: '김팀장 (연차)', color: 'text-purple-600 bg-purple-50 border-purple-200' }
-        ];
-        let events = [
-            { date: '2026-11-17', title: '🔴 국경일 / 공휴일 참고', type: 'holiday' },
-            { date: '2026-11-20', title: '🎂 11월 생일자 파티', type: 'event' },
-            { date: '2026-11-27', title: '🥩 전체 팀 회식', type: 'event' }
+        // 깔끔하게 정돈된 캐릭터/동물 이모지 목록
+        const fixedAvatars = [
+            '👩‍💼', '👨‍💼', '🧑‍💻', '👩‍🎨', '🕵️‍♂️', '🦸‍♀️', '🧙‍♂️', '🧑‍🚀',
+            '🐶', '🐱', '🦊', '🐼', '🐰', '🐯', '🐨', '🐸'
         ];
 
-        let currentEditingDocId = null;
-        let regSelectedAvatar = '👩‍💼';
-        let selectedMood = '😊';
-        let selectedStatus = '🔋 풀충전';
-
-        const fixedAvatars = ['👩‍💼', '🧑‍💻', '👱‍♀️', '👦', '👨‍💼', '👩‍🎤', '🕵️‍♂️', '👩‍🎨', '🐶', '🐱', '🦊', '🐼', '🐰', '🐯', '🐨', '🦄'];
-
+        // 다양한 기분 선택지
         const moodOptions = [
-            { emoji: '😊', label: '행복' },
-            { emoji: '🥳', label: '신남' },
-            { emoji: '😎', label: '여유' },
-            { emoji: '😴', label: '피곤' },
-            { emoji: '🫠', label: '녹음' },
-            { emoji: '🤬', label: '분노' },
-            { emoji: '🤔', label: '고민' },
-            { emoji: '🤒', label: '아픔' }
+            { emoji: '😊', label: '행복/평온' },
+            { emoji: '🥳', label: '신남/최고' },
+            { emoji: '😎', label: '여유로움' },
+            { emoji: '😴', label: '피곤/졸림' },
+            { emoji: '🫠', label: '영혼가출' },
+            { emoji: '🤯', label: '멘붕/바쁨' },
+            { emoji: '🤬', label: '건들지마' },
+            { emoji: '🤒', label: '컨디션난조' }
         ];
 
+        // 화장실, 회의, 커피 등 실무 밀착형 상태 뱃지
         const statusOptions = [
-            { text: '🔋 풀충전', color: 'border-emerald-500 bg-emerald-50 text-emerald-700' },
-            { text: '☕ 커피수혈', color: 'border-amber-500 bg-amber-50 text-amber-700' },
-            { text: '🚽 화장실행', color: 'border-blue-400 bg-blue-50 text-blue-700' },
-            { text: '🍔 밥생각', color: 'border-orange-500 bg-orange-50 text-orange-700' },
-            { text: '🔥 불태우는중', color: 'border-rose-500 bg-rose-50 text-rose-700' },
-            { text: '🎧 집중모드', color: 'border-indigo-500 bg-indigo-50 text-indigo-700' },
-            { text: '💬 회의중', color: 'border-purple-500 bg-purple-50 text-purple-700' },
-            { text: '💼 외근/미팅', color: 'border-violet-500 bg-violet-50 text-violet-700' },
-            { text: '🍃 자리비움/휴식', color: 'border-teal-500 bg-teal-50 text-teal-700' },
-            { text: '🎉 칼퇴예정', color: 'border-pink-500 bg-pink-50 text-pink-700' }
+            { text: '🔋 풀충전 열일', color: 'border-emerald-500 bg-emerald-50 text-emerald-700' },
+            { text: '☕ 커피수혈 시급', color: 'border-amber-500 bg-amber-50 text-amber-700' },
+            { text: '🚽 화장실행', color: 'border-sky-500 bg-sky-50 text-sky-700' },
+            { text: '🍔 배고픔/밥생각', color: 'border-orange-500 bg-orange-50 text-orange-700' },
+            { text: '🔥 마감 불태우는중', color: 'border-rose-500 bg-rose-50 text-rose-700' },
+            { text: '🎧 집중모드(방해금지)', color: 'border-indigo-500 bg-indigo-50 text-indigo-700' },
+            { text: '💬 회의/미팅중', color: 'border-purple-500 bg-purple-50 text-purple-700' },
+            { text: '🌿 잠시 자리비움', color: 'border-teal-500 bg-teal-50 text-teal-700' },
+            { text: '🏠 재택근무중', color: 'border-blue-500 bg-blue-50 text-blue-700' },
+            { text: '🏃‍♂️ 칼퇴 준비완료', color: 'border-pink-500 bg-pink-50 text-pink-700' }
         ];
 
-        // 이벤트 리스너 바인딩 함수
-        function bindEventHandlers() {
-            // 라운지 이름 모달
-            document.getElementById('space-title-container').addEventListener('click', () => {
-                document.getElementById('space-name-input').value = document.getElementById('space-title-display').innerText.trim();
-                document.getElementById('space-name-modal').classList.remove('hidden');
-            });
-            document.getElementById('close-spacename-backdrop').addEventListener('click', () => document.getElementById('space-name-modal').classList.add('hidden'));
-            document.getElementById('btn-cancel-spacename').addEventListener('click', () => document.getElementById('space-name-modal').classList.add('hidden'));
-            document.getElementById('btn-save-spacename').addEventListener('click', async () => {
-                const val = document.getElementById('space-name-input').value.trim();
-                if(!val) return;
-                document.getElementById('space-title-display').innerText = val;
-                try {
-                    const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general');
-                    await setDoc(configRef, { spaceTitle: val }, { merge: true });
-                } catch(e) { console.error(e); }
-                document.getElementById('space-name-modal').classList.add('hidden');
-                showToast("라운지 이름이 변경되었습니다!");
-            });
+        // 초기 기본 데이터 (최초 1회 클라우드에 없을 경우 세팅)
+        const defaultMembers = [
+            { id: 'm1', name: '김팀장', role: '기획/총괄', avatar: '👩‍💼', mood: '😴', status: '☕ 커피수혈 시급', message: '오전 회의 달리는 중입니다...' },
+            { id: 'm2', name: '이대리', role: '개발팀', avatar: '🧑‍💻', mood: '🤯', status: '🔥 마감 불태우는중', message: '배포 전 집중모드입니다!' },
+            { id: 'm3', name: '박사원', role: '디자인', avatar: '🐱', mood: '🥳', status: '🔋 풀충전 열일', message: '시안 컨펌 완료! 기분 최고~' },
+            { id: 'm4', name: '최인턴', role: '마케팅', avatar: '🐶', mood: '🫠', status: '🍔 배고픔/밥생각', message: '점심시간만 기다리고 있어요' }
+        ];
 
-            // 추천 타이틀 버튼들
-            document.querySelectorAll('.preset-title-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.getElementById('space-name-input').value = e.currentTarget.getAttribute('data-title');
-                });
-            });
+        const defaultSchedules = [
+            { id: 's1', type: 'leave', date: '2026-11-13', title: '이대리 (오후 반차)' },
+            { id: 's2', type: 'leave', date: '2026-11-16', title: '김팀장 (연차 휴가)' },
+            { id: 's3', type: 'event', date: '2026-11-20', title: '🎂 11월 팀원 생일파티 (오후 4시)' },
+            { id: 's4', type: 'event', date: '2026-11-27', title: '🥩 전체 팀 회식 (삼겹살)' },
+            { id: 'h1', type: 'holiday', date: '2026-12-25', title: '🎄 크리스마스 (공휴일)' },
+            { id: 'h2', type: 'holiday', date: '2027-01-01', title: '☀️ 신정 새해 첫날 (공휴일)' }
+        ];
 
-            // 공지사항 모달
-            document.getElementById('notice-container').addEventListener('click', () => {
-                document.getElementById('notice-input').value = document.getElementById('notice-text').innerText.trim();
-                document.getElementById('notice-modal').classList.remove('hidden');
-            });
-            document.getElementById('close-notice-backdrop').addEventListener('click', () => document.getElementById('notice-modal').classList.add('hidden'));
-            document.getElementById('btn-cancel-notice').addEventListener('click', () => document.getElementById('notice-modal').classList.add('hidden'));
-            document.getElementById('btn-save-notice').addEventListener('click', async () => {
-                const val = document.getElementById('notice-input').value.trim();
-                if(!val) return;
-                document.getElementById('notice-text').innerText = val;
-                try {
-                    const configRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general');
-                    await setDoc(configRef, { notice: val }, { merge: true });
-                } catch(e) { console.error(e); }
-                document.getElementById('notice-modal').classList.add('hidden');
-                showToast("공지사항이 업데이트되었습니다!");
-            });
+        const defaultChats = [
+            { id: 'c1', sender: '김팀장', text: '다들 오늘 점심 뭐 드실 건가요?', time: '11:30' },
+            { id: 'c2', sender: '이대리', text: '저는 회사 근처 김치찌개 콜입니다!', time: '11:31' }
+        ];
 
-            // 팀원 등록 모달
-            document.getElementById('btn-open-register').addEventListener('click', () => {
-                document.getElementById('register-modal').classList.remove('hidden');
-            });
-            document.getElementById('close-register-backdrop').addEventListener('click', () => document.getElementById('register-modal').classList.add('hidden'));
-            document.getElementById('btn-close-register-x').addEventListener('click', () => document.getElementById('register-modal').classList.add('hidden'));
-            document.getElementById('btn-submit-register').addEventListener('click', async () => {
-                const name = document.getElementById('reg-name').value.trim();
-                const role = document.getElementById('reg-role').value.trim();
-                if(!name) {
-                    showToast("이름을 입력해주세요!");
-                    return;
-                }
-                const membersRef = collection(db, 'artifacts', appId, 'public', 'data', 'team_members');
-                await addDoc(membersRef, {
-                    name,
-                    role: role || '팀원',
-                    avatar: regSelectedAvatar,
-                    mood: '😊',
-                    status: '🔋 풀충전',
-                    message: '반갑습니다!',
-                    createdAt: Date.now()
-                });
-                document.getElementById('reg-name').value = '';
-                document.getElementById('reg-role').value = '';
-                document.getElementById('register-modal').classList.add('hidden');
-                showToast(`${name}님이 라운지에 합류했습니다!`);
-            });
+        const STORAGE_KEY = 'survival_lounge_state_v3';
 
-            // 일정 추가 모달
-            document.getElementById('btn-open-schedule').addEventListener('click', () => {
-                document.getElementById('sched-date').value = new Date().toISOString().split('T')[0];
-                document.getElementById('schedule-modal').classList.remove('hidden');
-            });
-            document.getElementById('close-sched-backdrop').addEventListener('click', () => document.getElementById('schedule-modal').classList.add('hidden'));
-            document.getElementById('btn-close-sched-x').addEventListener('click', () => document.getElementById('schedule-modal').classList.add('hidden'));
-            document.getElementById('btn-submit-sched').addEventListener('click', async () => {
-                const type = document.querySelector('input[name="sched_type"]:checked').value;
-                const date = document.getElementById('sched-date').value;
-                const title = document.getElementById('sched-title').value.trim();
-                if(!date || !title) {
-                    showToast("날짜와 내용을 모두 입력해주세요!");
-                    return;
-                }
-                const schedRef = collection(db, 'artifacts', appId, 'public', 'data', 'team_schedules');
-                await addDoc(schedRef, {
-                    type,
-                    date,
-                    title,
-                    createdAt: Date.now()
-                });
-                document.getElementById('sched-title').value = '';
-                document.getElementById('schedule-modal').classList.add('hidden');
-                showToast("새 일정이 등록되었습니다!");
-            });
-
-            // 상태 변경 모달 닫기
-            document.getElementById('close-status-backdrop').addEventListener('click', () => document.getElementById('status-modal').classList.add('hidden'));
-            document.getElementById('btn-close-status-x').addEventListener('click', () => document.getElementById('status-modal').classList.add('hidden'));
-            document.getElementById('btn-save-status').addEventListener('click', async () => {
-                const message = document.getElementById('modal-message').value.trim();
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'team_members', currentEditingDocId);
-                await updateDoc(docRef, {
-                    mood: selectedMood,
-                    status: selectedStatus,
-                    message: message || '오늘도 화이팅!'
-                });
-                document.getElementById('status-modal').classList.add('hidden');
-                showToast("상태가 업데이트되었습니다!");
-            });
-            document.getElementById('btn-delete-member').addEventListener('click', async () => {
-                if(!confirm("해당 팀원을 라운지에서 삭제하시겠습니까?")) return;
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'team_members', currentEditingDocId);
-                await deleteDoc(docRef);
-                document.getElementById('status-modal').classList.add('hidden');
-                showToast("팀원이 삭제되었습니다.");
-            });
-        }
-
-        function buildSelectors() {
-            const regAvGrid = document.getElementById('reg-avatar-selector');
-            if(regAvGrid) {
-                regAvGrid.innerHTML = '';
-                fixedAvatars.forEach(av => {
-                    const btn = document.createElement('button');
-                    btn.type = 'button';
-                    btn.className = `text-xl p-1.5 rounded-lg hover:bg-white hover:shadow-sm transition-all text-center flex items-center justify-center reg-avatar-btn`;
-                    if(av === regSelectedAvatar) btn.classList.add('bg-white', 'ring-2', 'ring-indigo-500', 'shadow-sm');
-                    btn.innerText = av;
-                    btn.onclick = () => {
-                        regSelectedAvatar = av;
-                        document.querySelectorAll('.reg-avatar-btn').forEach(b => b.classList.remove('bg-white', 'ring-2', 'ring-indigo-500', 'shadow-sm'));
-                        btn.classList.add('bg-white', 'ring-2', 'ring-indigo-500', 'shadow-sm');
-                    };
-                    regAvGrid.appendChild(btn);
-                });
-            }
-
-            const moodGrid = document.getElementById('mood-selector');
-            if(moodGrid) {
-                moodGrid.innerHTML = '';
-                moodOptions.forEach(m => {
-                    const label = document.createElement('label');
-                    label.className = 'cursor-pointer flex flex-col items-center p-1.5 rounded-lg hover:bg-white hover:shadow-sm transition-all';
-                    label.innerHTML = `
-                        <input type="radio" name="mood_choice" value="${m.emoji}" class="hidden peer">
-                        <span class="text-xl peer-checked:scale-125 transition-transform grayscale peer-checked:grayscale-0 opacity-40 peer-checked:opacity-100">${m.emoji}</span>
-                        <span class="text-[9px] mt-0.5 text-slate-400 peer-checked:text-indigo-600 font-bold">${m.label}</span>
-                    `;
-                    label.querySelector('input').onchange = (e) => { selectedMood = e.target.value; };
-                    moodGrid.appendChild(label);
-                });
-            }
-
-            const statusGrid = document.getElementById('status-selector');
-            if(statusGrid) {
-                statusGrid.innerHTML = '';
-                statusOptions.forEach(s => {
-                    const label = document.createElement('label');
-                    label.className = 'cursor-pointer';
-                    label.innerHTML = `
-                        <input type="radio" name="status_choice" value="${s.text}" class="hidden peer">
-                        <div class="text-center py-2 px-2 rounded-xl border border-slate-200 bg-white peer-checked:${s.color} transition-all text-xs font-bold truncate">
-                            ${s.text}
-                        </div>
-                    `;
-                    label.querySelector('input').onchange = (e) => { selectedStatus = e.target.value; };
-                    statusGrid.appendChild(label);
-                });
-            }
-        }
-
-        const today = new Date();
-        document.getElementById('current-date').innerText = today.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-
-        function updateClock() {
-            const now = new Date();
-            const timeEl = document.getElementById('clock-time');
-            if(timeEl) timeEl.innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        async function initFirebase() {
+        function loadLocalBackup() {
             try {
+                const raw = localStorage.getItem(STORAGE_KEY) || (window.name && window.name.startsWith('{') ? window.name : null);
+                if (raw) return JSON.parse(raw);
+            } catch (e) {
+                console.warn('로컬 백업 로드 실패:', e);
+            }
+            return null;
+        }
+
+        function saveLocalBackup(payload) {
+            try {
+                const serialized = JSON.stringify(payload);
+                localStorage.setItem(STORAGE_KEY, serialized);
+                window.name = serialized;
+            } catch (e) {
+                try {
+                    window.name = JSON.stringify(payload);
+                } catch (_) {}
+            }
+        }
+
+        const cachedState = loadLocalBackup();
+
+        // 상태 변수
+        let teamMembers = cachedState && Array.isArray(cachedState.teamMembers) ? cachedState.teamMembers : [...defaultMembers];
+        let schedules = cachedState && Array.isArray(cachedState.schedules) ? cachedState.schedules : [...defaultSchedules];
+        let chats = cachedState && Array.isArray(cachedState.chats) ? cachedState.chats : [...defaultChats];
+        let spaceTitle = cachedState && cachedState.spaceTitle ? cachedState.spaceTitle : '생존신고 라운지 🏕️';
+        let noticeText = cachedState && cachedState.noticeText ? cachedState.noticeText : '오늘 점심 메뉴 추천 받습니다! 🍔 (클릭해서 공지 수정)';
+
+        let currentScheduleFilter = 'all';
+        let currentEditingId = null;
+        let regSelectedAvatar = fixedAvatars[0];
+        let editSelectedAvatar = fixedAvatars[0];
+        let selectedMood = moodOptions[0].emoji;
+        let selectedStatus = statusOptions[0].text;
+
+        // Firebase 설정 및 초기화
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-lounge-app';
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let stateDocRef = null;
+
+        async function initCloudSync() {
+            try {
+                if (typeof __firebase_config === 'undefined') return;
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
+
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
                     await signInWithCustomToken(auth, __initial_auth_token);
                 } else {
                     await signInAnonymously(auth);
                 }
-                setupRealtimeListeners();
-            } catch (e) {
-                console.error("Firebase Auth Error:", e);
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (user) {
+                        stateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'lounge_board', 'main_state');
+                        
+                        onSnapshot(stateDocRef, (snapshot) => {
+                            if (snapshot.exists()) {
+                                const data = snapshot.data();
+                                if (Array.isArray(data.teamMembers)) teamMembers = data.teamMembers;
+                                if (Array.isArray(data.schedules)) schedules = data.schedules;
+                                if (Array.isArray(data.chats)) chats = data.chats;
+                                if (data.spaceTitle) spaceTitle = data.spaceTitle;
+                                if (data.noticeText) noticeText = data.noticeText;
+                                
+                                saveLocalBackup({ teamMembers, schedules, chats, spaceTitle, noticeText });
+                                renderHeaderInfo();
+                                renderMembers();
+                                renderSchedules();
+                                renderChats();
+                            } else {
+                                saveToCloud();
+                            }
+                        }, (error) => {
+                            console.error("실시간 동기화 오류:", error);
+                        });
+                    }
+                });
+            } catch (err) {
+                console.error("클라우드 초기화 오류:", err);
             }
         }
 
-        function setupRealtimeListeners() {
-            const membersRef = collection(db, 'artifacts', appId, 'public', 'data', 'team_members');
-            onSnapshot(membersRef, (snapshot) => {
-                teamMembers = [];
-                snapshot.forEach(docSnap => {
-                    teamMembers.push({ docId: docSnap.id, ...docSnap.data() });
-                });
-                teamMembers.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-                renderMembers();
-            });
+        // 클라우드 + 브라우저 영구 저장 함수
+        async function saveToCloud() {
+            const payload = {
+                teamMembers,
+                schedules,
+                chats,
+                spaceTitle,
+                noticeText,
+                updatedAt: Date.now()
+            };
+            saveLocalBackup(payload);
 
-            const settingsRef = doc(db, 'artifacts', appId, 'public', 'data', 'settings', 'general');
-            onSnapshot(settingsRef, (docSnap) => {
-                if(docSnap.exists()) {
-                    const data = docSnap.data();
-                    if(data.spaceTitle) document.getElementById('space-title-display').innerText = data.spaceTitle;
-                    if(data.notice) document.getElementById('notice-text').innerText = data.notice;
-                } else {
-                    document.getElementById('space-title-display').innerText = "생존신고 라운지 🏕️";
-                }
-            });
-
-            const schedulesRef = collection(db, 'artifacts', appId, 'public', 'data', 'team_schedules');
-            onSnapshot(schedulesRef, (snapshot) => {
-                snapshot.forEach(docSnap => {
-                    const data = docSnap.data();
-                    if(data.type === 'leave') {
-                        if(!leaves.some(l => l.date === data.date && l.name === data.title)) {
-                            leaves.push({ date: data.date, name: data.title, color: 'text-orange-600 bg-orange-50 border-orange-200' });
-                        }
-                    } else {
-                        if(!events.some(e => e.date === data.date && e.title === data.title)) {
-                            events.push({ date: data.date, title: data.title, type: 'event' });
-                        }
-                    }
-                });
-                renderSchedules();
-            });
+            if (!currentUser || !stateDocRef) return;
+            try {
+                await setDoc(stateDocRef, payload);
+            } catch (e) {
+                console.error("저장 실패:", e);
+            }
         }
 
+        // 실시간 시계 및 날짜 업데이트
+        function startClock() {
+            const update = () => {
+                const now = new Date();
+                const dateEl = document.getElementById('current-date');
+                if (dateEl) {
+                    dateEl.innerHTML = `<i class="ph-duotone ph-calendar-blank text-indigo-500"></i> ` + 
+                        now.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
+                }
+                const timeEl = document.getElementById('clock-time');
+                if (timeEl) {
+                    timeEl.innerText = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+                }
+            };
+            update();
+            setInterval(update, 1000);
+        }
+
+        // 토스트 알림 표시
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-msg');
+            if (!toast || !msgEl) return;
+            msgEl.innerText = msg;
+            toast.classList.remove('opacity-0', 'translate-y-2');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 2200);
+        }
+
+        // 헤더 텍스트 렌더링
+        function renderHeaderInfo() {
+            document.getElementById('space-title-display').innerText = spaceTitle;
+            document.getElementById('notice-text').innerText = noticeText;
+        }
+
+        // 팀원 카드 렌더링
         function renderMembers() {
             const grid = document.getElementById('members-grid');
-            if(!grid) return;
+            const countBadge = document.getElementById('member-count-badge');
+            if (countBadge) countBadge.innerText = `${teamMembers.length}명`;
+            if (!grid) return;
+
             grid.innerHTML = '';
 
-            if(teamMembers.length === 0) {
-                grid.innerHTML = `<div class="col-span-2 text-center py-10 text-slate-400 text-xs bg-white/50 rounded-2xl border border-dashed border-slate-200">등록된 팀원이 없습니다. 상단 우측 '팀원 등록' 버튼을 눌러 참여해보세요!</div>`;
+            if (teamMembers.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-2 text-center py-12 bg-white/60 rounded-3xl border border-dashed border-slate-300 text-slate-400 text-sm">
+                        아직 등록된 팀원이 없습니다.<br>우측 상단 <b>[+ 팀원 등록]</b> 버튼을 눌러 첫 번째로 합류해보세요!
+                    </div>
+                `;
                 return;
             }
 
-            teamMembers.forEach(m => {
+            teamMembers.forEach(member => {
+                const statusObj = statusOptions.find(s => s.text === member.status) || statusOptions[0];
                 const card = document.createElement('div');
-                card.className = "glass-panel rounded-2xl p-4 shadow-sm hover:shadow-md transition-all cursor-pointer flex flex-col justify-between";
-                card.onclick = () => {
-                    currentEditingDocId = m.docId;
-                    document.getElementById('modal-avatar').innerText = m.avatar;
-                    document.getElementById('modal-name').innerText = m.name;
-                    document.getElementById('modal-message').value = m.message || '';
-
-                    document.querySelectorAll('#mood-selector input').forEach(r => r.checked = (r.value === m.mood));
-                    document.querySelectorAll('#status-selector input').forEach(r => r.checked = (r.value === m.status));
-
-                    document.getElementById('status-modal').classList.remove('hidden');
-                };
+                card.className = "glass-panel rounded-3xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all cursor-pointer border border-slate-200/70 flex flex-col justify-between group relative";
+                card.onclick = () => openStatusModal(member.id);
 
                 card.innerHTML = `
                     <div>
-                        <div class="flex items-center gap-3 mb-3">
-                            <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-2xl shadow-sm">
-                                ${m.avatar || '🧑‍💻'}
+                        <div class="flex items-start justify-between gap-2 mb-3.5">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-14 h-14 bg-slate-100 group-hover:bg-indigo-50 rounded-2xl flex items-center justify-center text-3xl shadow-inner transition-colors relative shrink-0">
+                                    ${member.avatar || '🧑‍💻'}
+                                    <span class="absolute -bottom-1 -right-1 bg-white rounded-full w-6 h-6 flex items-center justify-center text-sm shadow border border-slate-100" title="오늘 기분">
+                                        ${member.mood || '😊'}
+                                    </span>
+                                </div>
+                                <div class="min-w-0">
+                                    <h3 class="font-extrabold text-slate-900 text-base group-hover:text-indigo-600 transition-colors truncate">
+                                        ${member.name}
+                                    </h3>
+                                    <span class="text-xs font-semibold text-slate-400 block truncate">${member.role || '팀원'}</span>
+                                </div>
                             </div>
-                            <div>
-                                <h3 class="font-extrabold text-slate-900 text-sm">${m.name}</h3>
-                                <p class="text-[11px] text-slate-400">${m.role || '팀원'}</p>
+                            <div class="flex items-center gap-1 shrink-0">
+                                <span class="text-[11px] font-bold text-slate-400 group-hover:text-indigo-500 bg-slate-100 group-hover:bg-indigo-50 px-2 py-1 rounded-lg transition-colors">
+                                    상태변경
+                                </span>
+                                <button type="button" class="card-delete-btn text-slate-300 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-xl transition-colors" title="이 팀원 삭제">
+                                    <i class="ph-bold ph-trash text-base"></i>
+                                </button>
                             </div>
-                            <div class="ml-auto text-xl" title="기분">${m.mood || '😊'}</div>
                         </div>
-                        <div class="mb-2">
-                            <span class="bg-indigo-50 text-indigo-700 text-[11px] font-bold px-2.5 py-1 rounded-lg">
-                                ${m.status || '🔋 풀충전'}
+
+                        <div class="mb-3">
+                            <span class="inline-block text-xs font-extrabold px-3 py-1 rounded-xl border ${statusObj.color}">
+                                ${member.status}
                             </span>
                         </div>
-                        <div class="bg-slate-50/80 rounded-xl p-2.5 text-xs text-slate-600 border border-slate-100">
-                            "${m.message || '오늘도 화이팅!'}"
-                        </div>
+                    </div>
+
+                    <div class="bg-slate-50/90 rounded-2xl p-3 text-xs font-medium text-slate-600 border border-slate-100">
+                        "${member.message || '오늘도 화이팅!'}"
                     </div>
                 `;
+
+                // 카드 우측 상단 휴지통 아이콘 클릭 시 즉시 삭제
+                const delBtn = card.querySelector('.card-delete-btn');
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    teamMembers = teamMembers.filter(m => m.id !== member.id);
+                    renderMembers();
+                    saveToCloud();
+                    showToast(`${member.name} 카드가 삭제되었습니다.`);
+                };
+
                 grid.appendChild(card);
             });
         }
 
+        // 일정 및 공휴일 렌더링
         function renderSchedules() {
-            const leaveList = document.getElementById('leave-list');
-            if(leaveList) {
-                leaveList.innerHTML = '';
-                leaves.forEach(l => {
-                    leaveList.innerHTML += `
-                        <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 text-xs">
-                            <span class="font-bold text-slate-700">${l.name}</span>
-                            <span class="px-2 py-1 rounded-md font-bold ${l.color || 'text-orange-600 bg-orange-50'}">${l.date}</span>
-                        </li>
-                    `;
-                });
+            const container = document.getElementById('schedule-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            const sorted = [...schedules].sort((a, b) => a.date.localeCompare(b.date));
+            const filtered = sorted.filter(item => currentScheduleFilter === 'all' ? true : item.type === currentScheduleFilter);
+
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">해당 카테고리에 등록된 일정이 없습니다.</div>`;
+                return;
             }
 
-            const eventList = document.getElementById('event-list');
-            if(eventList) {
-                eventList.innerHTML = '';
-                events.forEach(e => {
-                    eventList.innerHTML += `
-                        <li class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-100 text-xs">
-                            <span class="font-bold text-slate-800">${e.title}</span>
-                            <span class="px-2 py-1 rounded-md font-bold text-indigo-600 bg-indigo-50">${e.date}</span>
-                        </li>
-                    `;
+            filtered.forEach(item => {
+                let badgeHtml = '';
+                if (item.type === 'leave') {
+                    badgeHtml = `<span class="bg-orange-50 text-orange-600 border border-orange-200 text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">🏖️ 휴가/반차</span>`;
+                } else if (item.type === 'holiday') {
+                    badgeHtml = `<span class="bg-rose-50 text-rose-600 border border-rose-200 text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">🔴 공휴일</span>`;
+                } else {
+                    badgeHtml = `<span class="bg-indigo-50 text-indigo-600 border border-indigo-200 text-[11px] font-extrabold px-2 py-0.5 rounded-md shrink-0">🎉 주요일정</span>`;
+                }
+
+                const row = document.createElement('div');
+                row.className = "flex items-center justify-between gap-2 bg-white p-3.5 rounded-2xl border border-slate-100 shadow-sm hover:border-slate-200 transition-all";
+                row.innerHTML = `
+                    <div class="flex items-center gap-2.5 min-w-0">
+                        ${badgeHtml}
+                        <div class="min-w-0">
+                            <p class="text-xs sm:text-sm font-extrabold text-slate-800 truncate">${item.title}</p>
+                            <p class="text-[11px] font-bold text-slate-400">${item.date}</p>
+                        </div>
+                    </div>
+                    <button type="button" data-id="${item.id}" class="delete-sched-btn text-slate-300 hover:text-rose-500 p-1.5 rounded-lg transition-colors shrink-0" title="일정 삭제">
+                        <i class="ph-bold ph-trash text-sm"></i>
+                    </button>
+                `;
+                row.querySelector('.delete-sched-btn').onclick = () => {
+                    schedules = schedules.filter(s => s.id !== item.id);
+                    renderSchedules();
+                    saveToCloud();
+                    showToast("일정이 삭제되었습니다.");
+                };
+                container.appendChild(row);
+            });
+        }
+
+        // 실시간 미니 잡담 톡방 렌더링
+        function renderChats() {
+            const chatContainer = document.getElementById('chat-messages-container');
+            if (!chatContainer) return;
+            chatContainer.innerHTML = '';
+
+            if (chats.length === 0) {
+                chatContainer.innerHTML = `<div class="text-center py-4 text-xs text-slate-400">첫 번째 메시지를 남겨보세요!</div>`;
+                return;
+            }
+
+            chats.slice(-20).forEach(chat => {
+                const bubble = document.createElement('div');
+                bubble.className = "bg-white p-2.5 rounded-2xl border border-slate-200/60 shadow-sm text-xs space-y-0.5";
+                bubble.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-extrabold text-indigo-600">${chat.sender}</span>
+                        <span class="text-[10px] text-slate-400">${chat.time}</span>
+                    </div>
+                    <p class="text-slate-700 font-medium break-all">${chat.text}</p>
+                `;
+                chatContainer.appendChild(bubble);
+            });
+
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // 모달 내부 선택기 생성
+        function buildModalSelectors() {
+            // 1. 신규 등록용 아바타 그리드
+            const regAvGrid = document.getElementById('reg-avatar-selector');
+            regAvGrid.innerHTML = '';
+            fixedAvatars.forEach(av => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `text-2xl p-1.5 rounded-xl hover:bg-white transition-all flex items-center justify-center reg-av-item ${av === regSelectedAvatar ? 'bg-white ring-2 ring-indigo-600 shadow-sm' : ''}`;
+                btn.innerText = av;
+                btn.onclick = () => {
+                    regSelectedAvatar = av;
+                    document.querySelectorAll('.reg-av-item').forEach(el => el.classList.remove('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm'));
+                    btn.classList.add('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
+                };
+                regAvGrid.appendChild(btn);
+            });
+
+            // 2. 상태 수정용 아바타 그리드
+            const editAvGrid = document.getElementById('edit-avatar-selector');
+            editAvGrid.innerHTML = '';
+            fixedAvatars.forEach(av => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = `text-xl p-1 rounded-xl hover:bg-white transition-all flex items-center justify-center edit-av-item`;
+                btn.setAttribute('data-av', av);
+                btn.innerText = av;
+                btn.onclick = () => {
+                    editSelectedAvatar = av;
+                    document.getElementById('modal-avatar').innerText = av;
+                    document.querySelectorAll('.edit-av-item').forEach(el => el.classList.remove('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm'));
+                    btn.classList.add('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
+                };
+                editAvGrid.appendChild(btn);
+            });
+
+            // 3. 기분 선택기
+            const moodGrid = document.getElementById('mood-selector');
+            moodGrid.innerHTML = '';
+            moodOptions.forEach(m => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('data-mood', m.emoji);
+                btn.className = "mood-item flex flex-col items-center p-2 rounded-xl border border-transparent hover:bg-white transition-all";
+                btn.innerHTML = `
+                    <span class="text-2xl mb-1">${m.emoji}</span>
+                    <span class="text-[10px] font-bold text-slate-500">${m.label}</span>
+                `;
+                btn.onclick = () => {
+                    selectedMood = m.emoji;
+                    highlightMoodAndStatus();
+                };
+                moodGrid.appendChild(btn);
+            });
+
+            // 4. 상태 뱃지 선택기
+            const statusGrid = document.getElementById('status-selector');
+            statusGrid.innerHTML = '';
+            statusOptions.forEach(s => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.setAttribute('data-status', s.text);
+                btn.className = "status-item text-center py-2.5 px-2 rounded-xl border border-slate-200 bg-white text-xs font-extrabold text-slate-600 hover:border-slate-300 transition-all truncate";
+                btn.innerText = s.text;
+                btn.onclick = () => {
+                    selectedStatus = s.text;
+                    highlightMoodAndStatus();
+                };
+                statusGrid.appendChild(btn);
+            });
+        }
+
+        function highlightMoodAndStatus() {
+            document.querySelectorAll('.mood-item').forEach(btn => {
+                if (btn.getAttribute('data-mood') === selectedMood) {
+                    btn.className = "mood-item flex flex-col items-center p-2 rounded-xl bg-white border-2 border-indigo-600 shadow-sm transition-all scale-105";
+                } else {
+                    btn.className = "mood-item flex flex-col items-center p-2 rounded-xl border border-transparent opacity-60 hover:opacity-100 hover:bg-white transition-all";
+                }
+            });
+
+            document.querySelectorAll('.status-item').forEach(btn => {
+                if (btn.getAttribute('data-status') === selectedStatus) {
+                    btn.className = "status-item text-center py-2.5 px-2 rounded-xl border-2 border-indigo-600 bg-indigo-50 text-xs font-extrabold text-indigo-700 shadow-sm transition-all truncate";
+                } else {
+                    btn.className = "status-item text-center py-2.5 px-2 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 transition-all truncate";
+                }
+            });
+        }
+
+        // 팀원 카드 클릭 -> 상태 모달 열기
+        function openStatusModal(memberId) {
+            const member = teamMembers.find(m => m.id === memberId);
+            if (!member) return;
+
+            currentEditingId = memberId;
+            editSelectedAvatar = member.avatar || fixedAvatars[0];
+            selectedMood = member.mood || moodOptions[0].emoji;
+            selectedStatus = member.status || statusOptions[0].text;
+
+            document.getElementById('modal-avatar').innerText = editSelectedAvatar;
+            document.getElementById('modal-name').innerText = `${member.name} (${member.role || '팀원'})`;
+            document.getElementById('edit-name').value = member.name || '';
+            document.getElementById('edit-role').value = member.role || '';
+            document.getElementById('modal-message').value = member.message || '';
+
+            document.querySelectorAll('.edit-av-item').forEach(el => {
+                if (el.getAttribute('data-av') === editSelectedAvatar) {
+                    el.classList.add('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
+                } else {
+                    el.classList.remove('bg-white', 'ring-2', 'ring-indigo-600', 'shadow-sm');
+                }
+            });
+
+            highlightMoodAndStatus();
+            document.getElementById('status-modal').classList.remove('hidden');
+        }
+
+        // 모든 버튼 이벤트 연결
+        function bindEvents() {
+            // 1. 팀원 등록 모달 열기/닫기/저장
+            document.getElementById('btn-open-register').onclick = () => {
+                document.getElementById('reg-name').value = '';
+                document.getElementById('reg-role').value = '';
+                document.getElementById('register-modal').classList.remove('hidden');
+            };
+            ['close-register-backdrop', 'btn-close-register-x', 'btn-cancel-register'].forEach(id => {
+                document.getElementById(id).onclick = () => document.getElementById('register-modal').classList.add('hidden');
+            });
+            document.getElementById('btn-submit-register').onclick = () => {
+                const name = document.getElementById('reg-name').value.trim();
+                const role = document.getElementById('reg-role').value.trim() || '팀원';
+                if (!name) {
+                    showToast("이름 또는 닉네임을 입력해주세요!");
+                    return;
+                }
+                teamMembers.push({
+                    id: 'm_' + Date.now(),
+                    name,
+                    role,
+                    avatar: regSelectedAvatar,
+                    mood: '😊',
+                    status: '🔋 풀충전 열일',
+                    message: '반갑습니다! 오늘도 화이팅!'
                 });
+                renderMembers();
+                saveToCloud();
+                document.getElementById('register-modal').classList.add('hidden');
+                showToast(`${name}님이 라운지에 등록되었습니다!`);
+            };
+
+            // 2. 상태 수정 모달 닫기/저장/삭제
+            ['close-status-backdrop', 'btn-close-status-x', 'btn-cancel-status'].forEach(id => {
+                document.getElementById(id).onclick = () => document.getElementById('status-modal').classList.add('hidden');
+            });
+            document.getElementById('btn-save-status').onclick = () => {
+                const idx = teamMembers.findIndex(m => m.id === currentEditingId);
+                if (idx !== -1) {
+                    const newName = document.getElementById('edit-name').value.trim();
+                    const newRole = document.getElementById('edit-role').value.trim();
+                    if (newName) teamMembers[idx].name = newName;
+                    if (newRole) teamMembers[idx].role = newRole;
+                    teamMembers[idx].avatar = editSelectedAvatar;
+                    teamMembers[idx].mood = selectedMood;
+                    teamMembers[idx].status = selectedStatus;
+                    teamMembers[idx].message = document.getElementById('modal-message').value.trim() || '오늘도 화이팅!';
+                    renderMembers();
+                    saveToCloud();
+                    showToast("상태가 실시간으로 저장되었습니다!");
+                }
+                document.getElementById('status-modal').classList.add('hidden');
+            };
+            document.getElementById('btn-delete-member').onclick = () => {
+                teamMembers = teamMembers.filter(m => m.id !== currentEditingId);
+                renderMembers();
+                saveToCloud();
+                document.getElementById('status-modal').classList.add('hidden');
+                showToast("팀원 카드가 삭제되었습니다.");
+            };
+
+            // 3. 일정 추가 모달 열기/닫기/저장
+            document.getElementById('btn-open-schedule').onclick = () => {
+                document.getElementById('sched-date').value = new Date().toISOString().split('T')[0];
+                document.getElementById('sched-title').value = '';
+                document.getElementById('schedule-modal').classList.remove('hidden');
+            };
+            ['close-sched-backdrop', 'btn-close-sched-x', 'btn-cancel-sched'].forEach(id => {
+                document.getElementById(id).onclick = () => document.getElementById('schedule-modal').classList.add('hidden');
+            });
+            document.getElementById('btn-submit-sched').onclick = () => {
+                const typeRadio = document.querySelector('input[name="sched_type"]:checked');
+                const type = typeRadio ? typeRadio.value : 'leave';
+                const date = document.getElementById('sched-date').value;
+                const title = document.getElementById('sched-title').value.trim();
+
+                if (!date || !title) {
+                    showToast("날짜와 일정 내용을 모두 입력해주세요!");
+                    return;
+                }
+                schedules.push({
+                    id: 's_' + Date.now(),
+                    type,
+                    date,
+                    title
+                });
+                renderSchedules();
+                saveToCloud();
+                document.getElementById('schedule-modal').classList.add('hidden');
+                showToast("새 일정이 등록되었습니다!");
+            };
+
+            // 일정 카테고리 필터 탭
+            document.querySelectorAll('.sched-tab-btn').forEach(btn => {
+                btn.onclick = () => {
+                    currentScheduleFilter = btn.getAttribute('data-filter');
+                    document.querySelectorAll('.sched-tab-btn').forEach(b => {
+                        b.className = "sched-tab-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all";
+                    });
+                    btn.className = "sched-tab-btn flex-1 py-2 rounded-lg bg-white text-slate-900 shadow-sm transition-all font-extrabold";
+                    renderSchedules();
+                };
+            });
+
+            // 4. 공지사항 모달 열기/닫기/저장
+            document.getElementById('notice-container').onclick = () => {
+                document.getElementById('notice-input').value = noticeText;
+                document.getElementById('notice-modal').classList.remove('hidden');
+            };
+            ['close-notice-backdrop', 'btn-cancel-notice'].forEach(id => {
+                document.getElementById(id).onclick = () => document.getElementById('notice-modal').classList.add('hidden');
+            });
+            document.getElementById('btn-save-notice').onclick = () => {
+                const val = document.getElementById('notice-input').value.trim();
+                if (val) {
+                    noticeText = val;
+                    renderHeaderInfo();
+                    saveToCloud();
+                    showToast("공지사항이 실시간 반영되었습니다!");
+                }
+                document.getElementById('notice-modal').classList.add('hidden');
+            };
+
+            // 5. 라운지 이름 변경 모달 열기/닫기/저장
+            document.getElementById('space-title-container').onclick = () => {
+                document.getElementById('space-name-input').value = spaceTitle;
+                document.getElementById('space-name-modal').classList.remove('hidden');
+            };
+            ['close-spacename-backdrop', 'btn-cancel-spacename'].forEach(id => {
+                document.getElementById(id).onclick = () => document.getElementById('space-name-modal').classList.add('hidden');
+            });
+            document.querySelectorAll('.preset-title-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.getElementById('space-name-input').value = btn.getAttribute('data-title');
+                };
+            });
+            document.getElementById('btn-save-spacename').onclick = () => {
+                const val = document.getElementById('space-name-input').value.trim();
+                if (val) {
+                    spaceTitle = val;
+                    renderHeaderInfo();
+                    saveToCloud();
+                    showToast("라운지 이름이 실시간 변경되었습니다!");
+                }
+                document.getElementById('space-name-modal').classList.add('hidden');
+            };
+
+            // 6. 실시간 잡담 톡방 전송 이벤트
+            const chatForm = document.getElementById('chat-form');
+            if (chatForm) {
+                chatForm.onsubmit = (e) => {
+                    e.preventDefault();
+                    const senderInput = document.getElementById('chat-sender');
+                    const textInput = document.getElementById('chat-text');
+                    const sender = senderInput.value.trim() || '익명';
+                    const text = textInput.value.trim();
+
+                    if (!text) return;
+
+                    const now = new Date();
+                    const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+                    chats.push({
+                        id: 'c_' + Date.now(),
+                        sender,
+                        text,
+                        time: timeStr
+                    });
+
+                    textInput.value = '';
+                    renderChats();
+                    saveToCloud();
+                };
             }
         }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toast-msg').innerText = msg;
-            toast.classList.remove('opacity-0');
-            setTimeout(() => toast.classList.add('opacity-0'), 2000);
-        }
-
-        window.onload = () => {
-            buildSelectors();
-            renderSchedules();
-            bindEventHandlers();
-            initFirebase();
-        };
+        // 초기 실행
+        startClock();
+        renderHeaderInfo();
+        buildModalSelectors();
+        renderMembers();
+        renderSchedules();
+        renderChats();
+        bindEvents();
+        initCloudSync();
     </script>
 </body>
 </html>
