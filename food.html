@@ -56,7 +56,7 @@
                         </span>
                         <div class="inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-2xs">
                             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span>구글 클라우드 실시간 연동</span>
+                            <span>실시간 연동중</span>
                         </div>
                     </div>
                     <p class="text-xs font-medium text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
@@ -388,9 +388,9 @@
                 userId = 'fallback-user-' + Math.random().toString(36).substring(2, 9);
             }
 
-            // 구글 클라우드 Firestore 실시간 리스너 구독 (엣지/크롬 실시간 동기화)
+            // [핵심 보장] 전 세계 단 하나의 공통 마스터 문서 키 고정 (크롬/엣지 완벽 동기화)
             try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_master_state_2026');
+                const docRef = doc(db, 'artifacts', 'dadamlabs_master_shared_room_v2026', 'public', 'data', 'master_state');
                 onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
                         const data = docSnap.data();
@@ -425,7 +425,7 @@
             };
             try {
                 if (db) {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_master_state_2026');
+                    const docRef = doc(db, 'artifacts', 'dadamlabs_master_shared_room_v2026', 'public', 'data', 'master_state');
                     setDoc(docRef, payload, { merge: true }).catch(() => {});
                 }
             } catch (e) {}
