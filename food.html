@@ -3,263 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DadamLabs 비품 · 탕비실 신청 데스크</title>
+    <title>(주)다담랩스 | 탕비실 · 비품 신청 데스크</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-
-        :root {
-            --dadam-blue: #0083CA;
-            --dadam-teal: #159E8A;
-            --dadam-green: #43A842;
-        }
-
         body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            background-color: #F4F8F9;
-            color: #0F172A;
-            letter-spacing: -0.015em;
+            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #F4F7F9;
         }
-
-        /* 다담랩스 시그니처 그라데이션 */
         .dadam-gradient {
-            background: linear-gradient(135deg, #0083CA 0%, #159E8A 52%, #43A842 100%);
-        }
-        .dadam-gradient-hover:hover {
-            background: linear-gradient(135deg, #0072B1 0%, #118876 52%, #399338 100%);
-        }
-        .dadam-border-top {
             background: linear-gradient(90deg, #0083CA 0%, #159E8A 50%, #43A842 100%);
         }
+        .dadam-gradient-hover:hover {
+            background: linear-gradient(90deg, #0072B1 0%, #118775 50%, #399138 100%);
+        }
         .dadam-text-gradient {
-            background: linear-gradient(90deg, #0083CA 0%, #159E8A 55%, #43A842 100%);
+            background: linear-gradient(90deg, #0083CA 0%, #159E8A 50%, #43A842 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
-        .modal-enter {
-            animation: modalFadeIn 0.16s ease-out forwards;
-        }
-        @keyframes modalFadeIn {
-            from { opacity: 0; transform: scale(0.98) translateY(4px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #F1F5F9; }
-        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 9999px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col selection:bg-[#159E8A] selection:text-white">
+<body class="min-h-screen text-slate-900 flex flex-col">
 
-    <!-- 상단 다담랩스 그라데이션 포인트 라인 -->
-    <div class="h-1.5 w-full dadam-border-top sticky top-0 z-40"></div>
+    <!-- 상단 다담랩스 시그니처 그라데이션 포인트 바 -->
+    <div class="h-1.5 w-full dadam-gradient"></div>
 
-    <!-- 상단 헤더 -->
-    <header class="bg-white border-b border-slate-200/80 sticky top-1.5 z-30 shadow-2xs">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
-            <!-- 다담랩스 Dd 공식 로고 (SVG 구현) 및 타이틀 -->
+    <!-- 메인 헤더 -->
+    <header class="bg-white border-b border-slate-200/90 sticky top-0 z-20 shadow-2xs">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-18 py-3 flex justify-between items-center gap-3">
+            
+            <!-- 다담랩스(DadamLabs) 공식 로고 및 타이틀 -->
             <div class="flex items-center space-x-3.5 min-w-0">
-                <div class="flex flex-col items-center justify-center shrink-0 select-none">
-                    <!-- 보내주신 Dd 인피니티 그라데이션 로고 SVG -->
-                    <svg class="w-12 h-8" viewBox="0 0 130 82" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <a href="http://dadamlabs.com/" target="_blank" rel="noopener noreferrer" class="flex flex-col items-center shrink-0 group" title="(주)다담랩스 홈페이지">
+                    <svg class="w-12 h-8 transition-transform group-hover:scale-105" viewBox="0 0 130 82" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <defs>
-                            <linearGradient id="dadamLogoGrad" x1="0%" y1="50%" x2="100%" y2="50%">
+                            <linearGradient id="dadamLogoGrad" x1="0" y1="41" x2="130" y2="41" gradientUnits="userSpaceOnUse">
                                 <stop offset="0%" stop-color="#0083CA"/>
                                 <stop offset="50%" stop-color="#159E8A"/>
                                 <stop offset="100%" stop-color="#43A842"/>
                             </linearGradient>
                         </defs>
-                        <!-- 좌측 D 외곽 및 상단 아치 -->
-                        <path d="M44 43 C44 33, 36 27, 25 27 H13 V67 H27 C37 67, 45 61, 52 52 L69 31 C76 23, 86 21, 96 25 C106 29, 112 39, 112 49 C112 60, 104 68, 92 68 C82 68, 74 62, 71 53" 
+                        <path d="M 52 38 C 46 27 36 22 22 22 L 12 22 L 12 66 L 26 66 C 40 66 51 58 63 44 L 74 31 C 84 20 98 20 108 31 C 117 41 117 55 108 63 C 98 71 84 69 75 56 M 113 10 L 113 68"
                               stroke="url(#dadamLogoGrad)" stroke-width="13" stroke-linecap="round" stroke-linejoin="round"/>
-                        <!-- 우측 d 기둥 (세로 줄기) -->
-                        <path d="M112 9 V52" stroke="#43A842" stroke-width="13" stroke-linecap="round"/>
                     </svg>
-                    <span class="text-[10px] font-bold tracking-tight text-slate-800 leading-none -mt-0.5">DadamLabs</span>
-                </div>
+                    <span class="text-[11px] font-bold tracking-tight text-slate-800 leading-none mt-0.5">DadamLabs</span>
+                </a>
 
-                <div class="h-7 w-[1px] bg-slate-200 hidden sm:block"></div>
+                <div class="h-7 w-px bg-slate-200 shrink-0"></div>
 
-                <div class="truncate">
-                    <div class="flex items-center gap-2">
+                <div class="min-w-0">
+                    <div class="flex flex-wrap items-center gap-2">
                         <h1 class="text-base font-bold text-slate-900 tracking-tight truncate">탕비실 · 비품 신청 데스크</h1>
+                        <span id="syncStatusBadge" class="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                            <span id="syncDot" class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span id="syncText">동기화 연결중</span>
+                        </span>
                         <span id="adminBadge" class="hidden dadam-gradient text-white text-[11px] font-semibold px-2 py-0.5 rounded-md shadow-2xs">총괄 담당자 모드</span>
                     </div>
-                    <p id="headerNoticeText" class="text-xs text-slate-500 truncate">먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.</p>
+                    <p id="headerNoticeText" class="text-xs text-slate-500 truncate mt-0.5">먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.</p>
                 </div>
             </div>
 
-            <!-- 우측 담당자 전용 컨트롤 영역 (불필요한 외부 링크 제거) -->
+            <!-- 우측 담당자 전용 컨트롤 영역 -->
             <div class="flex items-center space-x-2 shrink-0">
-                <button id="settingsBtn" onclick="openSettingsModal()" class="hidden text-xs bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg font-semibold transition items-center gap-1.5">
+                <button onclick="openSettingsModal()" id="settingsBtn" class="hidden text-xs bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3 py-2 rounded-lg font-medium transition items-center gap-1">
                     <span>⚙️ 환경설정</span>
                 </button>
-                <button id="adminToggleBtn" onclick="handleAdminButton()" class="text-xs dadam-gradient dadam-gradient-hover text-white px-3.5 py-2 rounded-lg font-semibold shadow-2xs transition">
+                <button onclick="handleAdminButton()" id="adminToggleBtn" class="text-xs dadam-gradient dadam-gradient-hover text-white px-3.5 py-2 rounded-lg font-semibold shadow-2xs transition">
                     담당자 로그인
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- 메인 컨텐츠 영역 -->
-    <main class="max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 flex-1 space-y-5">
+    <!-- 상단 우측 토스트 알림 -->
+    <div id="toastBox" class="fixed top-20 right-4 z-50 hidden">
+        <div class="bg-slate-900 text-white text-xs font-medium px-4 py-2.5 rounded-lg shadow-lg border border-slate-700 flex items-center space-x-2">
+            <span class="w-2 h-2 rounded-full bg-[#43A842]"></span>
+            <span id="toastText">처리되었습니다.</span>
+        </div>
+    </div>
 
-        <!-- 상단 총괄 현황 & 인기 간식 요약 바 -->
+    <!-- 본문 컨테이너 -->
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-6 space-y-5 flex-1 w-full">
+
+        <!-- 총괄 현황 요약 카드 (접수 대기 / 발주 완료 / 비치 완료 / 최다 공감 메뉴) -->
         <section class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div class="bg-white rounded-xl p-3.5 border border-slate-200/90 shadow-2xs flex items-center justify-between">
+            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-semibold text-slate-400">접수 대기</p>
+                    <p class="text-[11px] font-medium text-slate-500">접수 대기</p>
                     <p id="statPending" class="text-lg font-bold text-[#0083CA] mt-0.5">0건</p>
                 </div>
-                <div class="w-9 h-9 rounded-lg bg-[#0083CA]/10 text-[#0083CA] flex items-center justify-center text-sm font-bold">⏳</div>
+                <span class="w-8 h-8 rounded-lg bg-[#0083CA]/10 text-[#0083CA] flex items-center justify-center text-sm font-bold">⏳</span>
             </div>
-            <div class="bg-white rounded-xl p-3.5 border border-slate-200/90 shadow-2xs flex items-center justify-between">
+            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-semibold text-slate-400">발주 완료 (배송중)</p>
+                    <p class="text-[11px] font-medium text-slate-500">발주 완료 (배송중)</p>
                     <p id="statOrdered" class="text-lg font-bold text-[#159E8A] mt-0.5">0건</p>
                 </div>
-                <div class="w-9 h-9 rounded-lg bg-[#159E8A]/10 text-[#159E8A] flex items-center justify-center text-sm font-bold">🚚</div>
+                <span class="w-8 h-8 rounded-lg bg-[#159E8A]/10 text-[#159E8A] flex items-center justify-center text-sm font-bold">🚚</span>
             </div>
-            <div class="bg-white rounded-xl p-3.5 border border-slate-200/90 shadow-2xs flex items-center justify-between">
+            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
                 <div>
-                    <p class="text-[11px] font-semibold text-slate-400">탕비실 비치 완료</p>
+                    <p class="text-[11px] font-medium text-slate-500">탕비실 비치 완료</p>
                     <p id="statCompleted" class="text-lg font-bold text-[#43A842] mt-0.5">0건</p>
                 </div>
-                <div class="w-9 h-9 rounded-lg bg-[#43A842]/10 text-[#43A842] flex items-center justify-center text-sm font-bold">✅</div>
+                <span class="w-8 h-8 rounded-lg bg-[#43A842]/10 text-[#43A842] flex items-center justify-center text-sm font-bold">✓</span>
             </div>
-            <div class="bg-white rounded-xl p-3.5 border border-[#159E8A]/30 shadow-2xs flex flex-col justify-center">
-                <div class="flex items-center justify-between">
-                    <span class="text-[11px] font-bold dadam-text-gradient">🔥 현재 최다 공감 메뉴</span>
-                    <span id="topLikeCount" class="text-[11px] font-bold text-[#159E8A] bg-[#159E8A]/10 px-1.5 py-0.5 rounded">0명</span>
+            <div class="bg-white rounded-xl p-3.5 border border-slate-200/80 shadow-2xs flex items-center justify-between">
+                <div class="min-w-0 pr-2">
+                    <p class="text-[11px] font-medium text-slate-500">최다 공감 희망 메뉴</p>
+                    <p id="statTopItem" class="text-xs font-bold text-slate-800 truncate mt-1">-</p>
                 </div>
-                <p id="topLikedItemName" class="text-xs font-bold text-slate-800 truncate mt-1">집계 중...</p>
+                <span class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-600 flex items-center justify-center text-sm font-bold shrink-0">👍</span>
             </div>
         </section>
 
-        <!-- 1. 자주 찾는 단골 메뉴 바 -->
+        <!-- 자주 신청하는 단골 품목 (원클릭 자동 입력 + 미니 썸네일) -->
         <section class="bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs">
-            <div class="flex items-center justify-between gap-2 mb-3">
-                <div class="flex items-center gap-2 flex-wrap">
+            <div class="flex justify-between items-center mb-2.5">
+                <div class="flex items-center space-x-2">
                     <span class="w-2 h-2 rounded-full bg-[#159E8A]"></span>
-                    <h2 class="text-xs font-bold text-slate-800 tracking-tight">자주 찾는 단골 메뉴 · 비품</h2>
-                    <span class="text-xs text-slate-400">클릭하면 좌측 신청 칸에 자동으로 입력됩니다</span>
+                    <span class="text-xs font-bold text-slate-800">자주 찾는 단골 메뉴 · 비품</span>
+                    <span class="text-xs text-slate-400 hidden sm:inline">클릭하면 좌측 신청서에 썸네일과 함께 자동 입력됩니다</span>
                 </div>
-                <button id="addPresetTopBtn" onclick="openPresetAddModal()" class="hidden text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#0F766E] px-2.5 py-1 rounded-md font-semibold transition">
+                <button onclick="openPresetAddModal()" id="addPresetTopBtn" class="hidden text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#159E8A] px-2.5 py-1 rounded-md font-semibold transition">
                     + 단골 품목 추가
                 </button>
             </div>
-            <div id="presetList" class="flex flex-wrap gap-2">
-                <!-- JS 렌더링 -->
-            </div>
+            <div id="presetListContainer" class="flex flex-wrap gap-2"></div>
         </section>
 
-        <!-- 2. 좌/우 2단 레이아웃 -->
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        <!-- 좌/우 메인 분할 레이아웃 -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- 좌측: 간식·비품 신청서 (4칸) -->
+            <div class="lg:col-span-4">
+                <div class="bg-white rounded-xl border border-slate-200/90 shadow-2xs overflow-hidden sticky top-24">
+                    <div class="dadam-gradient px-5 py-3.5 flex items-center justify-between">
+                        <h2 class="text-sm font-bold text-white">간식 · 비품 신청하기</h2>
+                        <span class="text-[11px] text-white/90 font-medium">DadamLabs Pantry</span>
+                    </div>
 
-            <!-- [좌측 4칸] 간식 · 비품 신청하기 폼 -->
-            <section class="lg:col-span-4 bg-white rounded-xl border border-slate-200/90 shadow-2xs lg:sticky lg:top-22 overflow-hidden">
-                <div class="h-1 w-full dadam-border-top"></div>
-                <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-                    <h2 class="text-sm font-bold text-slate-900">먹고 싶은 간식 · 비품 신청</h2>
-                    <span class="text-[11px] text-[#159E8A] font-semibold">필수 입력 *</span>
+                    <form id="requestForm" onsubmit="submitRequest(event)" class="p-5 space-y-3.5">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">신청자 (또는 익명)</label>
+                                <input type="text" id="reqAuthor" required placeholder="예: 홍길동 / 익명" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">분류</label>
+                                <select id="reqCategory" onchange="updateThumbPreview()" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] bg-white">
+                                    <option value="스낵·간편식">스낵·간편식</option>
+                                    <option value="음료·커피">음료·커피</option>
+                                    <option value="탕비실 소모품">탕비실 소모품</option>
+                                    <option value="사무용품">사무용품</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">희망 품목명 및 수량</label>
+                            <input type="text" id="reqName" required oninput="updateThumbPreview()" placeholder="예: 코카콜라 제로 355ml 1박스" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-xs font-semibold text-slate-700">구매 링크 (쿠팡·네이버 등)</label>
+                                <span id="mallBadgePreview" class="text-[11px] text-[#0083CA] font-semibold hidden"></span>
+                            </div>
+                            <input type="url" id="reqLink" oninput="handleLinkInput(this.value)" placeholder="https://... (링크 입력 시 썸네일 자동 탐색)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
+                        </div>
+
+                        <!-- 썸네일 이미지 설정 및 실시간 미리보기 박스 -->
+                        <div class="bg-slate-50/90 p-3 rounded-xl border border-slate-200/80 space-y-2.5">
+                            <div class="flex items-center justify-between">
+                                <label class="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                                    <span>🖼️ 품목 썸네일</span>
+                                    <span id="thumbAutoStatus" class="text-[10px] font-normal text-slate-400">(미입력 시 맞춤 아이콘 자동 적용)</span>
+                                </label>
+                                <label class="text-[11px] bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 px-2 py-1 rounded-md cursor-pointer font-medium transition shadow-2xs">
+                                    📷 사진 파일 선택
+                                    <input type="file" id="reqImageFile" accept="image/*" onchange="handleImageFileUpload(event)" class="hidden">
+                                </label>
+                            </div>
+
+                            <div class="flex items-center gap-3">
+                                <div id="formThumbPreviewBox" class="w-14 h-14 rounded-xl bg-white border border-slate-200 flex items-center justify-center overflow-hidden shrink-0 shadow-2xs relative">
+                                    <span id="formThumbFallbackEmoji" class="text-2xl">🍪</span>
+                                    <img id="formThumbPreviewImg" src="" alt="미리보기" class="hidden w-full h-full object-cover" onerror="handlePreviewImgError()">
+                                </div>
+                                <div class="flex-1 min-w-0 space-y-1">
+                                    <input type="text" id="reqImage" oninput="updateThumbPreview()" placeholder="또는 이미지 주소(URL) 붙여넣기" class="w-full text-xs px-2.5 py-1.5 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#0083CA]">
+                                    <div class="flex items-center justify-between">
+                                        <p class="text-[10px] text-slate-400 truncate">쇼핑몰 이미지 우클릭 → '이미지 주소 복사'</p>
+                                        <button type="button" id="clearThumbBtn" onclick="clearThumbPreview()" class="hidden text-[10px] text-rose-500 hover:underline font-medium shrink-0">초기화</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">한줄 메모 / 신청 사유 (선택)</label>
+                            <input type="text" id="reqNote" placeholder="예: 당 충전용으로 같이 먹고 싶어요!" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] focus:ring-2 focus:ring-[#0083CA]/15 transition">
+                        </div>
+
+                        <button type="submit" class="w-full dadam-gradient dadam-gradient-hover text-white font-semibold py-2.5 rounded-lg transition text-sm shadow-xs">
+                            신청 목록에 올리기
+                        </button>
+                    </form>
                 </div>
+            </div>
 
-                <form id="requestForm" onsubmit="submitRequest(event)" class="p-5 space-y-4">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">신청자 <span class="text-[#0083CA]">*</span></label>
-                            <input type="text" id="reqAuthor" required placeholder="이름 (또는 익명)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1.5">분류 <span class="text-[#0083CA]">*</span></label>
-                            <select id="reqCategory" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#0083CA] transition">
-                                <option value="음료·커피">음료·커피</option>
-                                <option value="스낵·간편식">스낵·간편식</option>
-                                <option value="탕비실 소모품">탕비실 소모품</option>
-                                <option value="사무용품">사무용품</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">품목명 및 수량 <span class="text-[#0083CA]">*</span></label>
-                        <input type="text" id="reqName" required placeholder="예: 코카콜라 제로 355ml 1박스" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
-                    </div>
-
-                    <div>
-                        <div class="flex items-center justify-between mb-1.5">
-                            <label class="block text-xs font-semibold text-slate-700">구매 링크 (선택)</label>
-                            <span id="mallBadgePreview" class="hidden text-[11px] font-semibold text-[#0083CA] bg-[#0083CA]/10 px-1.5 py-0.5 rounded"></span>
-                        </div>
-                        <input type="url" id="reqLink" oninput="previewMallBadge(this.value)" placeholder="쿠팡, 네이버쇼핑 등 URL 붙여넣기" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">한줄 코멘트 / 사유 (선택)</label>
-                        <input type="text" id="reqNote" placeholder="예: 당 충전용으로 먹고 싶어요 / 재고 소진" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA] transition">
-                    </div>
-
-                    <button type="submit" class="w-full dadam-gradient dadam-gradient-hover text-white font-semibold py-2.5 rounded-lg shadow-xs transition text-sm">
-                        신청 등록하기
-                    </button>
-                </form>
-            </section>
-
-            <!-- [우측 8칸] 직원 희망 메뉴 & 신청 현황 보드 -->
-            <section class="lg:col-span-8 space-y-4">
-
-                <!-- 상단 필터 및 도구 바 -->
+            <!-- 우측: 직원 희망 메뉴 & 발주 현황판 (8칸) -->
+            <div class="lg:col-span-8 space-y-4">
+                
+                <!-- 상단 필터 및 정렬 바 -->
                 <div class="bg-white p-4 rounded-xl border border-slate-200/90 shadow-2xs flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                     <div class="flex items-center space-x-2">
-                        <h2 class="text-sm font-bold text-slate-900">신청 현황 및 먹고 싶은 메뉴 투표</h2>
-                        <span id="orderCountBadge" class="text-xs bg-[#159E8A]/10 text-[#0F766E] px-2 py-0.5 rounded font-bold">0건</span>
+                        <h2 class="text-sm font-bold text-slate-900">신청 및 발주 현황</h2>
+                        <span id="orderCountBadge" class="text-xs bg-[#159E8A]/10 text-[#159E8A] px-2 py-0.5 rounded-md font-bold">0건</span>
                     </div>
 
                     <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                        <select id="statusFilter" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#159E8A]">
+                        <select id="sortSelect" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0083CA]">
+                            <option value="popular">👍 공감 많은 순</option>
+                            <option value="latest">🕒 최신 등록 순</option>
+                        </select>
+                        <select id="statusFilter" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0083CA]">
                             <option value="all">전체 상태</option>
                             <option value="pending">접수 대기</option>
                             <option value="ordered">발주 완료</option>
                             <option value="completed">비치 완료</option>
                         </select>
-
-                        <select id="categoryFilter" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#159E8A]">
+                        <select id="categoryFilter" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:border-[#0083CA]">
                             <option value="all">전체 분류</option>
-                            <option value="음료·커피">음료·커피</option>
                             <option value="스낵·간편식">스낵·간편식</option>
+                            <option value="음료·커피">음료·커피</option>
                             <option value="탕비실 소모품">탕비실 소모품</option>
                             <option value="사무용품">사무용품</option>
                         </select>
-
-                        <select id="sortOrder" onchange="renderOrders()" class="text-xs bg-white border border-slate-200 rounded-lg px-2.5 py-1.5 font-medium text-slate-700 focus:outline-none focus:border-[#159E8A]">
-                            <option value="latest">최신 등록순</option>
-                            <option value="likes">공감(투표) 많은 순</option>
-                        </select>
-
-                        <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-semibold transition ml-auto sm:ml-0">
-                            발주 대기 목록 복사
+                        <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-lg font-medium transition">
+                            대기목록 복사
                         </button>
                     </div>
                 </div>
 
-                <!-- 담당자 모드 안내 배너 -->
-                <div id="adminBanner" class="hidden dadam-gradient text-white px-4 py-3 rounded-xl flex items-center justify-between text-xs shadow-xs">
-                    <div>
-                        <span class="font-bold">총괄 담당자 모드가 켜져 있습니다.</span>
-                        <span class="text-white/90 ml-1">각 품목의 발주/비치 상태를 변경하거나 안내 메모를 남길 수 있습니다.</span>
-                    </div>
-                    <button onclick="openSettingsModal()" class="text-xs bg-white/20 hover:bg-white/30 text-white px-2.5 py-1 rounded font-semibold shrink-0 ml-2">
-                        비밀번호/공지 변경
-                    </button>
+                <!-- 담당자 모드 활성화 안내 배너 -->
+                <div id="adminBanner" class="hidden bg-[#0083CA]/10 border border-[#0083CA]/25 text-slate-800 px-4 py-2.5 rounded-xl text-xs flex items-center justify-between">
+                    <span>💡 <strong>총괄 담당자 모드 실행 중:</strong> 각 품목의 발주 상태를 변경하거나 입고 일정 메모를 남길 수 있습니다.</span>
+                    <button onclick="openSettingsModal()" class="text-[#0083CA] font-bold hover:underline shrink-0 ml-2">비밀번호 변경 ↗</button>
                 </div>
 
                 <!-- 신청 카드 리스트 -->
-                <div id="ordersContainer" class="space-y-2.5">
-                    <!-- JS 렌더링 -->
-                </div>
-            </section>
+                <div id="ordersContainer" class="space-y-2.5"></div>
+            </div>
 
         </div>
     </main>
@@ -272,51 +271,69 @@
                 <span>|</span>
                 <span>(주)다담랩스 사내 탕비실 · 비품 총괄 관리 시스템</span>
             </div>
-            <div>© DadamLabs. All Rights Reserved.</div>
+            <div onclick="handleSecretFooterClick()" class="cursor-pointer select-none" title="담당자 호출">© DadamLabs. All Rights Reserved.</div>
         </div>
     </footer>
 
     <!-- 1. 담당자 로그인 모달 -->
-    <div id="loginModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-[1px] hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-xs w-full p-6 border border-slate-200 shadow-xl modal-enter">
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl overflow-hidden relative">
+            <div class="h-1 w-full dadam-gradient absolute top-0 left-0"></div>
             <div class="flex justify-between items-center mb-2">
                 <h3 class="text-sm font-bold text-slate-900">총괄 담당자 로그인</h3>
                 <button onclick="closeLoginModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
             </div>
-            <p class="text-xs text-slate-500 mb-4">담당자 비밀번호(PIN)를 입력해 주세요.<br><span class="text-slate-400">(초기 비밀번호: 1234)</span></p>
+            <p class="text-xs text-slate-500 mb-4">담당자 비밀번호(PIN)를 입력해 주세요.<br><span id="defaultPinHint" class="text-slate-400">(초기 비밀번호: 1234)</span></p>
             <form onsubmit="submitAdminLogin(event)" class="space-y-3">
-                <input type="password" id="loginPinInput" required placeholder="비밀번호 입력" class="w-full text-center tracking-widest font-bold text-sm px-3 py-2.5 rounded-lg border border-slate-300 focus:outline-none focus:border-[#0083CA]">
-                <p id="loginErrorText" class="hidden text-xs text-rose-600 font-medium text-center">비밀번호가 일치하지 않습니다.</p>
+                <input type="password" id="loginPinInput" required placeholder="비밀번호 입력" class="w-full text-sm px-3 py-2.5 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                <p id="loginErrorText" class="text-xs text-rose-600 hidden">비밀번호가 일치하지 않습니다.</p>
                 <div class="flex justify-end space-x-2 pt-1">
-                    <button type="button" onclick="closeLoginModal()" class="flex-1 text-xs py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
-                    <button type="submit" class="flex-1 text-xs py-2 rounded-lg dadam-gradient text-white font-semibold">확인</button>
+                    <button type="button" onclick="closeLoginModal()" class="text-xs px-3.5 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">취소</button>
+                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient text-white font-semibold">확인</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 2. 담당자 환경설정 모달 -->
-    <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-[1px] hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-md w-full p-6 border border-slate-200 shadow-xl space-y-5 modal-enter">
+    <!-- 2. 담당자 환경설정 모달 (비밀번호 변경 / 공지 수정 / 버튼 숨김 / 완료내역 정리) -->
+    <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-md w-full p-6 border border-slate-200 shadow-xl space-y-5 relative overflow-hidden">
+            <div class="h-1 w-full dadam-gradient absolute top-0 left-0"></div>
             <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-base font-bold text-slate-900">담당자 환경설정</h3>
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-[#159E8A]"></span>
+                    <h3 class="text-base font-bold text-slate-900">총괄 담당자 환경설정</h3>
+                </div>
                 <button onclick="closeSettingsModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
             </div>
-
+            
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1.5">상단 안내 공지 문구</label>
-                    <input type="text" id="settingNoticeInput" placeholder="예: 매주 금요일 오후 2시에 일괄 발주됩니다." class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <input type="text" id="settingNoticeInput" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">담당자 비밀번호(PIN) 변경</label>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1.5">담당자 비밀번호(PIN) 변경 <span class="text-[11px] font-normal text-[#159E8A]">(변경 즉시 모든 PC에 공통 적용)</span></label>
                     <input type="password" id="settingNewPinInput" placeholder="새 비밀번호 입력 (변경 시에만 입력)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
-                    <p class="text-[11px] text-slate-400 mt-1">비워두면 기존 비밀번호가 그대로 유지됩니다.</p>
+                    <p class="text-[11px] text-slate-400 mt-1">비워두면 기존 비밀번호가 그대로 유지되며, 저장 시 클라우드에 암호화되어 모든 접속자에게 동일하게 적용됩니다.</p>
+                </div>
+
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-xs font-semibold text-slate-800">일반 직원 화면에서 '담당자 로그인' 버튼 숨기기</p>
+                            <p class="text-[11px] text-slate-500">켜두면 일반 링크에서는 로그인 버튼이 아예 보이지 않습니다.</p>
+                        </div>
+                        <input type="checkbox" id="settingHideAdminBtn" class="w-4 h-4 accent-[#159E8A] rounded cursor-pointer">
+                    </div>
+                    <div class="text-[11px] bg-white p-2 rounded-lg border border-slate-200 text-slate-600">
+                        💡 버튼을 숨기더라도 <strong>푸터의 '© DadamLabs' 글자를 연속 3번 클릭</strong>하거나 주소 뒤에 <code>?admin=1</code>을 붙이면 언제든 담당자 로그인 창이 열립니다.
+                    </div>
                 </div>
 
                 <div class="pt-3 border-t border-slate-100 space-y-2">
-                    <label class="block text-xs font-semibold text-slate-700">신청 내역 정리</label>
+                    <label class="block text-xs font-semibold text-slate-700">완료 데이터 정리</label>
                     <button type="button" onclick="clearCompletedOrders()" class="w-full text-xs bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 py-2.5 rounded-lg font-semibold transition">
                         '비치 완료'된 지난 내역 일괄 삭제하기
                     </button>
@@ -324,63 +341,84 @@
             </div>
 
             <div class="flex justify-end space-x-2 pt-3 border-t border-slate-100">
-                <button type="button" onclick="closeSettingsModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
+                <button type="button" onclick="closeSettingsModal()" class="text-xs px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">닫기</button>
                 <button type="button" onclick="saveAdminSettings()" class="text-xs px-4 py-2 rounded-lg dadam-gradient text-white font-semibold">설정 저장</button>
             </div>
         </div>
     </div>
 
     <!-- 3. 단골 품목 추가 모달 -->
-    <div id="presetModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-[1px] hidden items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4 modal-enter">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
-                <h3 class="text-sm font-bold text-slate-900">자주 찾는 단골 품목 추가</h3>
+    <div id="presetAddModal" class="fixed inset-0 bg-slate-900/50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl max-w-sm w-full p-6 border border-slate-200 shadow-xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-sm font-bold text-slate-900">단골 품목 추가</h3>
                 <button onclick="closePresetAddModal()" class="text-slate-400 hover:text-slate-600 text-lg leading-none">&times;</button>
             </div>
             <form onsubmit="submitPresetAdd(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">분류</label>
-                    <select id="newPresetCategory" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white">
-                        <option value="음료·커피">음료·커피</option>
+                    <select id="newPresetCategory" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 bg-white focus:outline-none focus:border-[#0083CA]">
                         <option value="스낵·간편식">스낵·간편식</option>
+                        <option value="음료·커피">음료·커피</option>
                         <option value="탕비실 소모품">탕비실 소모품</option>
                         <option value="사무용품">사무용품</option>
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-1">품목명 및 규격</label>
-                    <input type="text" id="newPresetName" required placeholder="예: 카누 미니 다크로스트 (100T)" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">품목명</label>
+                    <input type="text" id="newPresetName" required placeholder="예: 오리온 비쵸비 1박스" class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">썸네일 이미지 URL (선택)</label>
+                    <input type="url" id="newPresetImage" placeholder="https://..." class="w-full text-sm px-3 py-2 rounded-lg border border-slate-200 focus:outline-none focus:border-[#0083CA]">
                 </div>
                 <div class="flex justify-end space-x-2 pt-2">
-                    <button type="button" onclick="closePresetAddModal()" class="text-xs px-3.5 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-semibold">취소</button>
-                    <button type="submit" class="text-xs px-3.5 py-2 rounded-lg dadam-gradient text-white font-semibold">추가하기</button>
+                    <button type="button" onclick="closePresetAddModal()" class="text-xs px-3.5 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">취소</button>
+                    <button type="submit" class="text-xs px-4 py-2 rounded-lg dadam-gradient text-white font-semibold">추가하기</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- 하단 토스트 메시지 -->
-    <div id="toastBox" class="fixed bottom-5 right-5 z-50 hidden dadam-gradient text-white text-xs font-semibold px-4 py-3 rounded-lg shadow-lg">
-        <span id="toastText">완료되었습니다.</span>
+    <!-- 4. 썸네일 이미지 확대 보기 모달 -->
+    <div id="imageZoomModal" onclick="closeImageZoom()" class="fixed inset-0 bg-slate-900/75 hidden items-center justify-center z-50 p-4 cursor-zoom-out">
+        <div class="bg-white p-3 rounded-2xl max-w-md w-full shadow-2xl space-y-2.5" onclick="event.stopPropagation()">
+            <div class="flex justify-between items-center px-1">
+                <h4 id="zoomModalTitle" class="text-xs font-bold text-slate-800 truncate pr-4">품목 이미지</h4>
+                <button onclick="closeImageZoom()" class="text-slate-400 hover:text-slate-700 text-lg leading-none">&times;</button>
+            </div>
+            <div class="w-full aspect-square rounded-xl bg-slate-50 border border-slate-100 flex items-center justify-center overflow-hidden">
+                <img id="zoomModalImg" src="" alt="확대 이미지" class="w-full h-full object-contain">
+            </div>
+        </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
         const CONFIG_KEY = 'dadamlabs_pantry_config_v1';
         const PRESET_KEY = 'dadamlabs_pantry_presets_v1';
-        const ORDERS_KEY = 'dadamlabs_pantry_orders_v1';
+        const ORDERS_KEY = 'dadamlabs_pantry_orders_v2';
+        const LIKED_IDS_KEY = 'dadamlabs_my_liked_ids_v1';
+
+        let myLikedIds = JSON.parse(localStorage.getItem(LIKED_IDS_KEY)) || [103];
 
         let appConfig = JSON.parse(localStorage.getItem(CONFIG_KEY)) || {
+            pinHash: "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
             pin: "1234",
-            notice: "먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다."
+            notice: "먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.",
+            hideAdminBtn: false
         };
 
         let presetItems = JSON.parse(localStorage.getItem(PRESET_KEY)) || [
-            { name: "코카콜라 제로 355ml (24캔)", category: "음료·커피" },
-            { name: "카누 미니 다크로스트 (100T)", category: "음료·커피" },
-            { name: "오리온 비쵸비", category: "스낵·간편식" },
-            { name: "구운란 30구", category: "스낵·간편식" },
-            { name: "종이컵 1박스", category: "탕비실 소모품" },
-            { name: "더블에이 A4 복사용지 1박스", category: "사무용품" }
+            { name: "코카콜라 제로 355ml (24캔)", category: "음료·커피", image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=240&q=80" },
+            { name: "카누 미니 다크로스트 (100T)", category: "음료·커피", image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=240&q=80" },
+            { name: "오리온 비쵸비", category: "스낵·간편식", image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=240&q=80" },
+            { name: "구운란 30구", category: "스낵·간편식", image: "https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?auto=format&fit=crop&w=240&q=80" },
+            { name: "종이컵 1박스", category: "탕비실 소모품", image: "" },
+            { name: "더블에이 A4 복사용지 1박스", category: "사무용품", image: "" }
         ];
 
         let orders = JSON.parse(localStorage.getItem(ORDERS_KEY)) || [
@@ -390,9 +428,9 @@
                 category: "음료·커피",
                 name: "코카콜라 제로 355ml (24캔) 2박스",
                 link: "https://www.coupang.com",
+                image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&w=300&q=80",
                 reqNote: "탕비실 냉장고 음료 재고가 거의 다 떨어졌어요!",
                 likes: 6,
-                liked: false,
                 status: "pending",
                 adminMemo: "",
                 date: "11/13"
@@ -403,9 +441,9 @@
                 category: "스낵·간편식",
                 name: "고메 소바바 치킨 (달콤갈비맛) 2봉",
                 link: "https://shopping.naver.com",
+                image: "https://images.unsplash.com/photo-1562967914-608f82629710?auto=format&fit=crop&w=300&q=80",
                 reqNote: "오후 출출할 때 다 같이 돌려서 먹고 싶습니다",
                 likes: 4,
-                liked: false,
                 status: "ordered",
                 adminMemo: "발주 완료 (다음 주 월요일 입고 예정)",
                 date: "11/12"
@@ -416,9 +454,9 @@
                 category: "스낵·간편식",
                 name: "오리온 비쵸비 3박스",
                 link: "",
+                image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?auto=format&fit=crop&w=300&q=80",
                 reqNote: "커피랑 같이 먹을 달달한 과자 요청합니다",
                 likes: 8,
-                liked: true,
                 status: "completed",
                 adminMemo: "탕비실 스낵 선반에 비치 완료했습니다!",
                 date: "11/10"
@@ -427,11 +465,143 @@
 
         let isAdmin = false;
         let editingMemoId = null;
+        let linkFetchTimer = null;
+        let footerClickCount = 0;
+        let footerClickTimer = null;
 
-        function saveState() {
+        let db = null;
+        let auth = null;
+        let currentUser = null;
+        let sharedStateDocRef = null;
+
+        async function sha256Hash(str) {
+            try {
+                const msgBuffer = new TextEncoder().encode(str);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            } catch (e) {
+                return str;
+            }
+        }
+
+        function setSyncBadge(status, label) {
+            const dot = document.getElementById('syncDot');
+            const text = document.getElementById('syncText');
+            const badge = document.getElementById('syncStatusBadge');
+            if (!dot || !text || !badge) return;
+
+            text.innerText = label;
+            if (status === 'live') {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-[#43A842]";
+                badge.className = "inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25";
+            } else {
+                dot.className = "w-1.5 h-1.5 rounded-full bg-[#0083CA]";
+                badge.className = "inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200";
+            }
+        }
+
+        async function initCloudSync() {
+            try {
+                if (typeof __firebase_config === 'undefined' || !__firebase_config) {
+                    setSyncBadge('local', '브라우저 저장 모드');
+                    return;
+                }
+                const firebaseConfig = JSON.parse(__firebase_config);
+                const appId = typeof __app_id !== 'undefined' ? __app_id : 'dadamlabs-pantry-app';
+                const app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    await signInWithCustomToken(auth, __initial_auth_token);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                onAuthStateChanged(auth, (user) => {
+                    currentUser = user;
+                    if (!user) return;
+
+                    sharedStateDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'pantry_board', 'shared_state');
+
+                    onSnapshot(sharedStateDocRef, (snapshot) => {
+                        setSyncBadge('live', '실시간 전사 공유중');
+
+                        if (snapshot.exists()) {
+                            const data = snapshot.data();
+                            if (data.appConfig) appConfig = data.appConfig;
+                            if (Array.isArray(data.presetItems)) presetItems = data.presetItems;
+                            if (Array.isArray(data.orders)) orders = data.orders;
+
+                            localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
+                            localStorage.setItem(PRESET_KEY, JSON.stringify(presetItems));
+                            localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+
+                            applyUIWithConfig();
+                            renderPresets();
+                            renderOrders();
+                        } else {
+                            saveState();
+                        }
+                    }, (error) => {
+                        console.error("Realtime sync error:", error);
+                        setSyncBadge('local', '로컬 저장 모드');
+                    });
+                });
+            } catch (err) {
+                console.warn("Cloud init fallback:", err);
+                setSyncBadge('local', '로컬 저장 모드');
+            }
+        }
+
+        function getSmartVisual(name = '', category = '') {
+            const text = (name + ' ' + category).toLowerCase();
+            if (text.includes('콜라') || text.includes('사이다') || text.includes('탄산') || text.includes('음료')) {
+                return { emoji: '🥤', bg: 'bg-sky-50 border-sky-200/70 text-sky-700', label: '음료' };
+            }
+            if (text.includes('커피') || text.includes('카누') || text.includes('캡슐') || text.includes('원두') || text.includes('차')) {
+                return { emoji: '☕', bg: 'bg-amber-50 border-amber-200/70 text-amber-800', label: '커피·차' };
+            }
+            if (text.includes('치킨') || text.includes('핫도그') || text.includes('만두') || text.includes('피자')) {
+                return { emoji: '🍗', bg: 'bg-orange-50 border-orange-200/70 text-orange-700', label: '간편식' };
+            }
+            if (text.includes('라면') || text.includes('컵라면') || text.includes('햇반')) {
+                return { emoji: '🍜', bg: 'bg-red-50 border-red-200/70 text-red-700', label: '라면·즉석식' };
+            }
+            if (text.includes('계란') || text.includes('구운란') || text.includes('훈제란')) {
+                return { emoji: '🥚', bg: 'bg-yellow-50 border-yellow-200/70 text-yellow-700', label: '영양간식' };
+            }
+            if (text.includes('과자') || text.includes('비쵸비') || text.includes('쿠키') || text.includes('초코') || category === '스낵·간편식') {
+                return { emoji: '🍪', bg: 'bg-amber-50/80 border-amber-200/70 text-amber-700', label: '스낵' };
+            }
+            if (text.includes('종이컵') || text.includes('물티슈') || text.includes('티슈') || text.includes('세제') || category === '탕비실 소모품') {
+                return { emoji: '🧻', bg: 'bg-teal-50 border-teal-200/70 text-teal-700', label: '소모품' };
+            }
+            if (text.includes('a4') || text.includes('복사용지') || text.includes('펜') || text.includes('노트') || category === '사무용품') {
+                return { emoji: '📄', bg: 'bg-indigo-50 border-indigo-200/70 text-indigo-700', label: '사무비품' };
+            }
+            return { emoji: '📦', bg: 'bg-slate-50 border-slate-200 text-slate-600', label: '기타품목' };
+        }
+
+        async function saveState() {
             localStorage.setItem(CONFIG_KEY, JSON.stringify(appConfig));
             localStorage.setItem(PRESET_KEY, JSON.stringify(presetItems));
             localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+            localStorage.setItem(LIKED_IDS_KEY, JSON.stringify(myLikedIds));
+
+            if (currentUser && sharedStateDocRef) {
+                try {
+                    await setDoc(sharedStateDocRef, {
+                        appConfig,
+                        presetItems,
+                        orders,
+                        updatedAt: Date.now()
+                    });
+                } catch (e) {
+                    console.error("Failed to sync state to cloud:", e);
+                }
+            }
         }
 
         function showToast(msg) {
@@ -444,57 +614,187 @@
             }, 2400);
         }
 
-        function initApp() {
-            document.getElementById('headerNoticeText').innerText = appConfig.notice;
-            renderPresets();
-            renderOrders();
+        function applyUIWithConfig() {
+            document.getElementById('headerNoticeText').innerText = appConfig.notice || "먹고 싶은 간식이나 필요한 비품을 남겨주시면 담당자가 확인 후 발주합니다.";
+            
+            const defaultHash = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+            const hintEl = document.getElementById('defaultPinHint');
+            if (hintEl) {
+                if ((appConfig.pinHash && appConfig.pinHash !== defaultHash) || (appConfig.pin && appConfig.pin !== "1234")) {
+                    hintEl.innerText = "(담당자가 설정한 고유 비밀번호를 입력하세요)";
+                } else {
+                    hintEl.innerText = "(초기 비밀번호: 1234)";
+                }
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const forceAdminBtn = urlParams.get('admin') === '1' || urlParams.get('admin') === 'true';
+            const toggleBtn = document.getElementById('adminToggleBtn');
+            if (toggleBtn) {
+                if (!isAdmin && appConfig.hideAdminBtn && !forceAdminBtn) {
+                    toggleBtn.classList.add('hidden');
+                } else {
+                    toggleBtn.classList.remove('hidden');
+                }
+            }
         }
 
-        function updateSummaryStats() {
-            const pendingCount = orders.filter(o => o.status === 'pending').length;
-            const orderedCount = orders.filter(o => o.status === 'ordered').length;
-            const completedCount = orders.filter(o => o.status === 'completed').length;
+        function initApp() {
+            applyUIWithConfig();
+            renderPresets();
+            renderOrders();
+            initCloudSync();
+        }
 
-            document.getElementById('statPending').innerText = `${pendingCount}건`;
-            document.getElementById('statOrdered').innerText = `${orderedCount}건`;
-            document.getElementById('statCompleted').innerText = `${completedCount}건`;
-
-            const activeOrders = orders.filter(o => o.status !== 'completed');
-            const pool = activeOrders.length > 0 ? activeOrders : orders;
-
-            if (pool.length > 0) {
-                const topItem = [...pool].sort((a, b) => b.likes - a.likes)[0];
-                document.getElementById('topLikedItemName').innerText = topItem.name;
-                document.getElementById('topLikeCount').innerText = `공감 ${topItem.likes}`;
+        function handleSecretFooterClick() {
+            footerClickCount += 1;
+            clearTimeout(footerClickTimer);
+            if (footerClickCount >= 3) {
+                footerClickCount = 0;
+                handleAdminButton();
             } else {
-                document.getElementById('topLikedItemName').innerText = '신청 내역 없음';
-                document.getElementById('topLikeCount').innerText = '0명';
+                footerClickTimer = setTimeout(() => {
+                    footerClickCount = 0;
+                }, 1000);
             }
         }
 
         function detectMallName(url) {
             if (!url) return '';
-            if (url.includes('coupang.com')) return '쿠팡';
-            if (url.includes('naver.com')) return '네이버쇼핑';
-            if (url.includes('kurly.com')) return '컬리';
-            if (url.includes('ssg.com') || url.includes('emart')) return 'SSG';
+            const lower = url.toLowerCase();
+            if (lower.includes('coupang.com')) return '쿠팡';
+            if (lower.includes('naver.com')) return '네이버쇼핑';
+            if (lower.includes('gmarket.co.kr')) return 'G마켓';
+            if (lower.includes('11st.co.kr')) return '11번가';
+            if (lower.includes('ssg.com')) return 'SSG';
+            if (lower.includes('kurly.com')) return '컬리';
             return '구매링크';
         }
 
-        function previewMallBadge(url) {
+        function handleLinkInput(val) {
             const badge = document.getElementById('mallBadgePreview');
-            const mall = detectMallName(url);
+            const mall = detectMallName(val);
             if (mall) {
-                badge.innerText = mall + ' 링크 인식됨';
+                badge.innerText = `🔗 ${mall} 링크 인식됨`;
                 badge.classList.remove('hidden');
             } else {
                 badge.classList.add('hidden');
             }
+
+            clearTimeout(linkFetchTimer);
+            const trimmed = val.trim();
+            if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+                if (/\.(jpeg|jpg|gif|png|webp)(\?.*)?$/i.test(trimmed)) {
+                    document.getElementById('reqImage').value = trimmed;
+                    updateThumbPreview();
+                    return;
+                }
+                const statusEl = document.getElementById('thumbAutoStatus');
+                statusEl.innerText = "(링크에서 상품 썸네일 탐색 중...)";
+                linkFetchTimer = setTimeout(async () => {
+                    try {
+                        const res = await fetch(`https://api.microlink.io/?url=${encodeURIComponent(trimmed)}`);
+                        const json = await res.json();
+                        const ogImg = json?.data?.image?.url || json?.data?.logo?.url;
+                        if (ogImg && !document.getElementById('reqImage').value.trim()) {
+                            document.getElementById('reqImage').value = ogImg;
+                            updateThumbPreview();
+                            statusEl.innerText = "(링크 썸네일 자동 추출 완료!)";
+                            return;
+                        }
+                    } catch (e) {
+                        // CORS 제한 등으로 추출 실패 시 기본 아이콘 유지
+                    }
+                    statusEl.innerText = "(미입력 시 맞춤 아이콘 자동 적용)";
+                }, 500);
+            }
         }
 
-        // 단골 품목 렌더링
+        function updateThumbPreview() {
+            const imgUrl = document.getElementById('reqImage').value.trim();
+            const nameVal = document.getElementById('reqName').value.trim();
+            const catVal = document.getElementById('reqCategory').value;
+            const imgEl = document.getElementById('formThumbPreviewImg');
+            const emojiEl = document.getElementById('formThumbFallbackEmoji');
+            const clearBtn = document.getElementById('clearThumbBtn');
+
+            const visual = getSmartVisual(nameVal, catVal);
+            emojiEl.innerText = visual.emoji;
+
+            if (imgUrl) {
+                imgEl.src = imgUrl;
+                imgEl.classList.remove('hidden');
+                emojiEl.classList.add('hidden');
+                clearBtn.classList.remove('hidden');
+            } else {
+                imgEl.src = '';
+                imgEl.classList.add('hidden');
+                emojiEl.classList.remove('hidden');
+                clearBtn.classList.add('hidden');
+            }
+        }
+
+        function handlePreviewImgError() {
+            const imgEl = document.getElementById('formThumbPreviewImg');
+            const emojiEl = document.getElementById('formThumbFallbackEmoji');
+            imgEl.classList.add('hidden');
+            emojiEl.classList.remove('hidden');
+        }
+
+        function handleImageFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(ev) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 220;
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > h) {
+                        if (w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
+                    } else {
+                        if (h > maxDim) { w = Math.round(w * maxDim / h); h = maxDim; }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    const dataUrl = canvas.toDataURL('image/jpeg', 0.82);
+                    document.getElementById('reqImage').value = dataUrl;
+                    document.getElementById('thumbAutoStatus').innerText = "(사진 파일 첨부됨)";
+                    updateThumbPreview();
+                };
+                img.src = ev.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearThumbPreview() {
+            document.getElementById('reqImage').value = '';
+            document.getElementById('reqImageFile').value = '';
+            document.getElementById('thumbAutoStatus').innerText = "(미입력 시 맞춤 아이콘 자동 적용)";
+            updateThumbPreview();
+        }
+
+        function openImageZoom(src, title) {
+            if (!src) return;
+            document.getElementById('zoomModalImg').src = src;
+            document.getElementById('zoomModalTitle').innerText = title || '품목 이미지';
+            const modal = document.getElementById('imageZoomModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeImageZoom() {
+            const modal = document.getElementById('imageZoomModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
         function renderPresets() {
-            const container = document.getElementById('presetList');
+            const container = document.getElementById('presetListContainer');
             container.innerHTML = '';
 
             if (presetItems.length === 0) {
@@ -502,31 +802,31 @@
                 return;
             }
 
-            presetItems.forEach((item, index) => {
+            presetItems.forEach((p, idx) => {
+                const visual = getSmartVisual(p.name, p.category);
                 const chip = document.createElement('div');
-                chip.className = "inline-flex items-center bg-slate-100 hover:bg-[#159E8A]/10 border border-transparent hover:border-[#159E8A]/30 text-slate-700 text-xs px-3 py-1.5 rounded-lg transition cursor-pointer select-none";
+                chip.className = "inline-flex items-center bg-slate-50 hover:bg-[#159E8A]/10 text-slate-700 hover:text-[#0083CA] border border-slate-200/90 hover:border-[#159E8A]/40 text-xs pl-1.5 pr-3 py-1 rounded-full cursor-pointer transition gap-1.5";
                 
-                const labelSpan = document.createElement('span');
-                labelSpan.innerHTML = `<span class="text-[#159E8A] mr-1.5 font-semibold">${item.category}</span><span class="font-medium text-slate-800">${item.name}</span>`;
-                labelSpan.onclick = () => {
-                    document.getElementById('reqName').value = item.name;
-                    document.getElementById('reqCategory').value = item.category;
-                    document.getElementById('reqAuthor').focus();
-                    showToast(`'${item.name}' 품목이 입력란에 채워졌습니다.`);
-                };
-                chip.appendChild(labelSpan);
+                const thumbHtml = p.image
+                    ? `<img src="${p.image}" alt="" class="w-5 h-5 rounded-full object-cover border border-slate-200 shrink-0" onerror="this.style.display='none'">`
+                    : `<span class="w-5 h-5 rounded-full bg-white border border-slate-200 flex items-center justify-center text-[11px] shrink-0">${visual.emoji}</span>`;
+
+                const textSpan = document.createElement('span');
+                textSpan.className = "flex items-center gap-1.5 font-medium";
+                textSpan.innerHTML = `${thumbHtml}<span>${p.name}</span>`;
+                textSpan.onclick = () => applyPresetToForm(p.name, p.category, p.image || '');
+                chip.appendChild(textSpan);
 
                 if (isAdmin) {
                     const delBtn = document.createElement('button');
-                    delBtn.className = "ml-2 text-slate-400 hover:text-rose-600 font-bold leading-none";
+                    delBtn.className = "ml-1 text-slate-400 hover:text-rose-600 font-bold leading-none";
                     delBtn.innerHTML = "&times;";
                     delBtn.title = "단골 품목 삭제";
                     delBtn.onclick = (e) => {
                         e.stopPropagation();
-                        presetItems.splice(index, 1);
+                        presetItems.splice(idx, 1);
                         saveState();
                         renderPresets();
-                        showToast("단골 품목에서 삭제되었습니다.");
                     };
                     chip.appendChild(delBtn);
                 }
@@ -535,16 +835,25 @@
             });
         }
 
+        function applyPresetToForm(name, category, image = '') {
+            document.getElementById('reqName').value = name;
+            document.getElementById('reqCategory').value = category;
+            document.getElementById('reqImage').value = image;
+            updateThumbPreview();
+            document.getElementById('reqAuthor').focus();
+            showToast(`'${name}' 품목이 신청서에 입력되었습니다.`);
+        }
+
         function openPresetAddModal() {
             document.getElementById('newPresetName').value = '';
-            const modal = document.getElementById('presetModal');
+            document.getElementById('newPresetImage').value = '';
+            const modal = document.getElementById('presetAddModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
-            setTimeout(() => document.getElementById('newPresetName').focus(), 50);
         }
 
         function closePresetAddModal() {
-            const modal = document.getElementById('presetModal');
+            const modal = document.getElementById('presetAddModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
@@ -553,53 +862,56 @@
             e.preventDefault();
             const name = document.getElementById('newPresetName').value.trim();
             const category = document.getElementById('newPresetCategory').value;
+            const image = document.getElementById('newPresetImage').value.trim();
             if (!name) return;
-            presetItems.push({ name, category });
+            presetItems.push({ name, category, image });
             saveState();
             renderPresets();
             closePresetAddModal();
-            showToast("자주 찾는 단골 품목에 추가되었습니다.");
+            showToast("단골 품목에 추가되었습니다.");
         }
 
-        // 신규 신청 등록
         function submitRequest(e) {
             e.preventDefault();
             const now = new Date();
             const dateStr = `${now.getMonth() + 1}/${now.getDate()}`;
+            const newId = Date.now();
 
             const newItem = {
-                id: Date.now(),
+                id: newId,
                 author: document.getElementById('reqAuthor').value.trim(),
                 category: document.getElementById('reqCategory').value,
                 name: document.getElementById('reqName').value.trim(),
                 link: document.getElementById('reqLink').value.trim(),
+                image: document.getElementById('reqImage').value.trim(),
                 reqNote: document.getElementById('reqNote').value.trim(),
                 likes: 1,
-                liked: true,
                 status: 'pending',
                 adminMemo: '',
                 date: dateStr
             };
 
+            myLikedIds.push(newId);
             orders.unshift(newItem);
             saveState();
             renderOrders();
 
             document.getElementById('requestForm').reset();
             document.getElementById('mallBadgePreview').classList.add('hidden');
-            showToast("신청이 정상적으로 등록되었습니다.");
+            clearThumbPreview();
+            showToast("신청이 등록되어 모든 직원에게 공유되었습니다.");
         }
 
-        // 나도 원해요(공감) 버튼 토글
         function toggleLike(id) {
             const item = orders.find(o => o.id === id);
             if (!item) return;
-            if (item.liked) {
+            const alreadyLiked = myLikedIds.includes(id);
+            if (alreadyLiked) {
                 item.likes = Math.max(1, item.likes - 1);
-                item.liked = false;
+                myLikedIds = myLikedIds.filter(itemId => itemId !== id);
             } else {
                 item.likes += 1;
-                item.liked = true;
+                myLikedIds.push(id);
             }
             saveState();
             renderOrders();
@@ -607,11 +919,12 @@
 
         function setOrderStatus(id, status) {
             const item = orders.find(o => o.id === id);
-            if (!item) return;
-            item.status = status;
-            saveState();
-            renderOrders();
-            showToast("진행 상태가 변경되었습니다.");
+            if (item) {
+                item.status = status;
+                saveState();
+                renderOrders();
+                showToast("진행 상태가 변경되었습니다.");
+            }
         }
 
         function toggleMemoInput(id) {
@@ -620,27 +933,14 @@
         }
 
         function saveInlineMemo(id) {
-            const input = document.getElementById(`memoInput_${id}`);
+            const inputEl = document.getElementById(`memoInput_${id}`);
             const item = orders.find(o => o.id === id);
-            if (item && input) {
-                item.adminMemo = input.value.trim();
+            if (item && inputEl) {
+                item.adminMemo = inputEl.value.trim();
                 editingMemoId = null;
                 saveState();
                 renderOrders();
                 showToast("담당자 안내 메모가 저장되었습니다.");
-            }
-        }
-
-        function promoteToPreset(id) {
-            const item = orders.find(o => o.id === id);
-            if (!item) return;
-            if (!presetItems.some(p => p.name === item.name)) {
-                presetItems.push({ name: item.name, category: item.category });
-                saveState();
-                renderPresets();
-                showToast("상단 단골 품목에 등록되었습니다.");
-            } else {
-                showToast("이미 단골 품목에 등록되어 있습니다.");
             }
         }
 
@@ -651,10 +951,23 @@
             showToast("신청 내역이 삭제되었습니다.");
         }
 
+        function promoteToPreset(id) {
+            const item = orders.find(o => o.id === id);
+            if (!item) return;
+            if (!presetItems.some(p => p.name === item.name)) {
+                presetItems.push({ name: item.name, category: item.category, image: item.image || '' });
+                saveState();
+                renderPresets();
+                showToast("상단 단골 품목에 등록되었습니다.");
+            } else {
+                showToast("이미 단골 품목에 등록되어 있습니다.");
+            }
+        }
+
         function handleAdminButton() {
             if (isAdmin) {
                 setAdminState(false);
-                showToast("담당자 모드가 종료되었습니다.");
+                showToast("총괄 담당자 모드가 종료되었습니다.");
             } else {
                 document.getElementById('loginPinInput').value = '';
                 document.getElementById('loginErrorText').classList.add('hidden');
@@ -671,10 +984,13 @@
             modal.classList.remove('flex');
         }
 
-        function submitAdminLogin(e) {
+        async function submitAdminLogin(e) {
             e.preventDefault();
-            const inputPin = document.getElementById('loginPinInput').value;
-            if (inputPin === appConfig.pin) {
+            const inputPin = document.getElementById('loginPinInput').value.trim();
+            const inputHash = await sha256Hash(inputPin);
+
+            const isMatch = (appConfig.pinHash && inputHash === appConfig.pinHash) || (appConfig.pin && inputPin === appConfig.pin);
+            if (isMatch) {
                 closeLoginModal();
                 setAdminState(true);
                 showToast("총괄 담당자 모드로 전환되었습니다.");
@@ -692,6 +1008,7 @@
             const adminBanner = document.getElementById('adminBanner');
 
             if (isAdmin) {
+                toggleBtn.classList.remove('hidden');
                 toggleBtn.innerText = "담당자 모드 종료";
                 toggleBtn.className = "text-xs bg-slate-800 hover:bg-slate-900 text-white px-3.5 py-2 rounded-lg font-semibold transition";
                 settingsBtn.classList.remove('hidden');
@@ -708,6 +1025,7 @@
                 adminBadge.classList.add('hidden');
                 adminBanner.classList.add('hidden');
                 editingMemoId = null;
+                applyUIWithConfig();
             }
             renderPresets();
             renderOrders();
@@ -716,6 +1034,7 @@
         function openSettingsModal() {
             document.getElementById('settingNoticeInput').value = appConfig.notice;
             document.getElementById('settingNewPinInput').value = '';
+            document.getElementById('settingHideAdminBtn').checked = !!appConfig.hideAdminBtn;
             const modal = document.getElementById('settingsModal');
             modal.classList.remove('hidden');
             modal.classList.add('flex');
@@ -727,50 +1046,68 @@
             modal.classList.remove('flex');
         }
 
-        function saveAdminSettings() {
+        async function saveAdminSettings() {
             const newNotice = document.getElementById('settingNoticeInput').value.trim();
             const newPin = document.getElementById('settingNewPinInput').value.trim();
+            const hideBtn = document.getElementById('settingHideAdminBtn').checked;
 
             if (newNotice) {
                 appConfig.notice = newNotice;
-                document.getElementById('headerNoticeText').innerText = newNotice;
             }
             if (newPin) {
-                appConfig.pin = newPin;
+                appConfig.pinHash = await sha256Hash(newPin);
+                delete appConfig.pin;
             }
+            appConfig.hideAdminBtn = hideBtn;
 
-            saveState();
+            applyUIWithConfig();
+            await saveState();
             closeSettingsModal();
-            showToast("담당자 환경설정이 저장되었습니다.");
+            showToast("설정이 저장되어 모든 접속자에게 즉시 적용되었습니다.");
         }
 
         function clearCompletedOrders() {
-            const before = orders.length;
             orders = orders.filter(o => o.status !== 'completed');
-            const removed = before - orders.length;
             saveState();
             renderOrders();
             closeSettingsModal();
-            showToast(`비치 완료된 내역 ${removed}건이 정리되었습니다.`);
+            showToast("비치 완료된 지난 내역이 정리되었습니다.");
         }
 
-        // 신청 목록 렌더링
-        function renderOrders() {
-            updateSummaryStats();
+        function updateSummaryDashboard() {
+            const pendingCnt = orders.filter(o => o.status === 'pending').length;
+            const orderedCnt = orders.filter(o => o.status === 'ordered').length;
+            const completedCnt = orders.filter(o => o.status === 'completed').length;
 
-            const statusFilter = document.getElementById('statusFilter').value;
-            const categoryFilter = document.getElementById('categoryFilter').value;
-            const sortOrder = document.getElementById('sortOrder').value;
+            document.getElementById('statPending').innerText = `${pendingCnt}건`;
+            document.getElementById('statOrdered').innerText = `${orderedCnt}건`;
+            document.getElementById('statCompleted').innerText = `${completedCnt}건`;
+
+            const activeOrders = orders.filter(o => o.status !== 'completed');
+            if (activeOrders.length > 0) {
+                const top = [...activeOrders].sort((a, b) => b.likes - a.likes)[0];
+                document.getElementById('statTopItem').innerText = `${top.name} (${top.likes}명)`;
+            } else {
+                document.getElementById('statTopItem').innerText = "대기 품목 없음";
+            }
+        }
+
+        function renderOrders() {
+            updateSummaryDashboard();
+
+            const sortVal = document.getElementById('sortSelect').value;
+            const statusVal = document.getElementById('statusFilter').value;
+            const catVal = document.getElementById('categoryFilter').value;
             const container = document.getElementById('ordersContainer');
             container.innerHTML = '';
 
             let filtered = orders.filter(o => {
-                const matchStatus = statusFilter === 'all' || o.status === statusFilter;
-                const matchCat = categoryFilter === 'all' || o.category === categoryFilter;
-                return matchStatus && matchCat;
+                const mStatus = statusVal === 'all' || o.status === statusVal;
+                const mCat = catVal === 'all' || o.category === catVal;
+                return mStatus && mCat;
             });
 
-            if (sortOrder === 'likes') {
+            if (sortVal === 'popular') {
                 filtered.sort((a, b) => b.likes - a.likes);
             } else {
                 filtered.sort((a, b) => b.id - a.id);
@@ -780,8 +1117,8 @@
 
             if (filtered.length === 0) {
                 container.innerHTML = `
-                    <div class="bg-white rounded-xl p-10 text-center text-slate-400 border border-slate-200 text-xs">
-                        조건에 해당하는 신청 내역이 없습니다.
+                    <div class="bg-white rounded-xl p-12 text-center text-slate-400 border border-slate-200/80 text-sm">
+                        해당 조건의 신청 내역이 없습니다.
                     </div>
                 `;
                 return;
@@ -790,19 +1127,34 @@
             filtered.forEach(o => {
                 let statusBadge = '';
                 if (o.status === 'pending') {
-                    statusBadge = `<span class="text-[11px] bg-[#0083CA]/10 text-[#0083CA] border border-[#0083CA]/25 px-2 py-0.5 rounded font-semibold">접수 대기</span>`;
+                    statusBadge = '<span class="text-[11px] bg-[#0083CA]/10 text-[#0083CA] border border-[#0083CA]/25 px-2 py-0.5 rounded-md font-semibold">접수 대기</span>';
                 } else if (o.status === 'ordered') {
-                    statusBadge = `<span class="text-[11px] bg-[#159E8A]/10 text-[#0F766E] border border-[#159E8A]/25 px-2 py-0.5 rounded font-semibold">발주 완료</span>`;
+                    statusBadge = '<span class="text-[11px] bg-[#159E8A]/10 text-[#159E8A] border border-[#159E8A]/25 px-2 py-0.5 rounded-md font-semibold">발주 완료</span>';
                 } else if (o.status === 'completed') {
-                    statusBadge = `<span class="text-[11px] bg-[#43A842]/10 text-[#2E7D32] border border-[#43A842]/25 px-2 py-0.5 rounded font-semibold">비치 완료</span>`;
+                    statusBadge = '<span class="text-[11px] bg-[#43A842]/10 text-[#43A842] border border-[#43A842]/25 px-2 py-0.5 rounded-md font-semibold">비치 완료</span>';
                 }
 
                 const mallName = detectMallName(o.link);
+                const visual = getSmartVisual(o.name, o.category);
+                const safeTitle = (o.name || '').replace(/'/g, "\\'");
+                const isLikedByMe = myLikedIds.includes(o.id);
+
+                const thumbnailBlock = o.image
+                    ? `<div onclick="openImageZoom('${o.image}', '${safeTitle}')" title="클릭하여 이미지 크게 보기" class="w-16 h-16 sm:w-18 sm:h-18 rounded-xl border border-slate-200 overflow-hidden shrink-0 bg-slate-50 cursor-zoom-in relative group shadow-2xs">
+                           <img src="${o.image}" alt="${o.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200" onerror="this.parentElement.innerHTML='<div class=\\'w-full h-full flex flex-col items-center justify-center ${visual.bg}\\'><span class=\\'text-2xl\\'>${visual.emoji}</span></div>'">
+                           <span class="absolute bottom-1 right-1 bg-slate-900/60 text-white text-[9px] px-1 rounded opacity-0 group-hover:opacity-100 transition">확대</span>
+                       </div>`
+                    : `<div class="w-16 h-16 sm:w-18 sm:h-18 rounded-xl border ${visual.bg} flex flex-col items-center justify-center shrink-0 select-none shadow-2xs">
+                           <span class="text-2xl leading-none">${visual.emoji}</span>
+                           <span class="text-[10px] font-semibold mt-1 opacity-80">${visual.label}</span>
+                       </div>`;
+
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-xl p-4 border border-slate-200/90 shadow-2xs transition hover:border-[#159E8A]/50";
 
                 let html = `
-                    <div class="flex justify-between items-start gap-4">
+                    <div class="flex justify-between items-start gap-3.5">
+                        ${thumbnailBlock}
                         <div class="space-y-1 flex-1 min-w-0">
                             <div class="flex flex-wrap items-center gap-2">
                                 ${statusBadge}
@@ -814,13 +1166,13 @@
                             ${o.reqNote ? `<p class="text-xs text-slate-500">${o.reqNote}</p>` : ''}
                         </div>
 
-                        <div class="flex items-center space-x-2 shrink-0">
+                        <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2 shrink-0">
                             ${o.link ? `
                                 <a href="${o.link}" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg font-medium transition">
                                     ${mallName} ↗
                                 </a>
                             ` : ''}
-                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${o.liked ? 'dadam-gradient text-white border-transparent shadow-2xs' : 'bg-white hover:bg-[#159E8A]/5 text-slate-700 border-slate-200'}">
+                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg border text-xs font-semibold transition ${isLikedByMe ? 'dadam-gradient text-white border-transparent shadow-2xs' : 'bg-white hover:bg-[#159E8A]/5 text-slate-700 border-slate-200'}">
                                 <span>👍 나도 원해요</span>
                                 <span class="font-bold">${o.likes}</span>
                             </button>
@@ -830,35 +1182,37 @@
 
                 if (o.adminMemo) {
                     html += `
-                        <div class="mt-3 text-xs bg-[#159E8A]/5 text-slate-700 px-3 py-2 rounded-lg border border-[#159E8A]/20">
-                            <span class="font-bold text-[#0F766E]">담당자 안내:</span> ${o.adminMemo}
+                        <div class="mt-3 text-xs bg-[#159E8A]/5 text-slate-700 px-3 py-2 rounded-lg border border-[#159E8A]/20 flex items-center space-x-1.5">
+                            <span class="font-bold text-[#0083CA] shrink-0">담당자 안내:</span>
+                            <span>${o.adminMemo}</span>
                         </div>
                     `;
                 }
 
                 if (isAdmin) {
                     html += `
-                        <div class="mt-3 pt-3 border-t border-slate-100 space-y-2">
-                            <div class="flex flex-wrap justify-between items-center gap-2">
-                                <div class="flex items-center space-x-1">
-                                    <button onclick="setOrderStatus(${o.id}, 'pending')" class="text-[11px] px-2.5 py-1 rounded border font-semibold transition ${o.status === 'pending' ? 'bg-[#0083CA] text-white border-[#0083CA]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">접수대기</button>
-                                    <button onclick="setOrderStatus(${o.id}, 'ordered')" class="text-[11px] px-2.5 py-1 rounded border font-semibold transition ${o.status === 'ordered' ? 'bg-[#159E8A] text-white border-[#159E8A]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">발주완료</button>
-                                    <button onclick="setOrderStatus(${o.id}, 'completed')" class="text-[11px] px-2.5 py-1 rounded border font-semibold transition ${o.status === 'completed' ? 'bg-[#43A842] text-white border-[#43A842]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">비치완료</button>
-                                    <button onclick="toggleMemoInput(${o.id})" class="text-[11px] px-2.5 py-1 rounded border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">안내메모 입력</button>
-                                </div>
-                                <div class="flex items-center space-x-1">
-                                    <button onclick="promoteToPreset(${o.id})" class="text-[11px] px-2 py-1 text-[#0F766E] hover:bg-[#159E8A]/10 rounded font-semibold">+ 단골품목 등록</button>
-                                    <button onclick="removeOrder(${o.id})" class="text-[11px] px-2 py-1 text-rose-600 hover:bg-rose-50 rounded font-medium">삭제</button>
-                                </div>
+                        <div class="mt-3 pt-3 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-1">
+                                <button onclick="setOrderStatus(${o.id}, 'pending')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition ${o.status==='pending' ? 'bg-[#0083CA] text-white border-[#0083CA]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">접수 대기</button>
+                                <button onclick="setOrderStatus(${o.id}, 'ordered')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition ${o.status==='ordered' ? 'bg-[#159E8A] text-white border-[#159E8A]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">발주 완료</button>
+                                <button onclick="setOrderStatus(${o.id}, 'completed')" class="text-[11px] px-2.5 py-1 rounded-md border font-medium transition ${o.status==='completed' ? 'bg-[#43A842] text-white border-[#43A842]' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'}">비치 완료</button>
+                                <button onclick="toggleMemoInput(${o.id})" class="text-[11px] px-2.5 py-1 rounded-md border border-slate-200 text-slate-600 hover:bg-slate-50 font-medium">안내메모 입력</button>
                             </div>
-                            ${editingMemoId === o.id ? `
-                                <div class="flex items-center gap-2 pt-1">
-                                    <input type="text" id="memoInput_${o.id}" value="${o.adminMemo || ''}" placeholder="입고 예정일 또는 안내 사항을 입력하세요" class="flex-1 text-xs px-2.5 py-1.5 rounded border border-slate-300 focus:outline-none focus:border-[#159E8A]">
-                                    <button onclick="saveInlineMemo(${o.id})" class="text-xs dadam-gradient text-white px-3 py-1.5 rounded font-semibold">저장</button>
-                                </div>
-                            ` : ''}
+                            <div class="flex items-center space-x-1">
+                                <button onclick="promoteToPreset(${o.id})" class="text-[11px] px-2 py-1 text-[#0083CA] hover:bg-[#0083CA]/10 rounded font-medium">+단골등록</button>
+                                <button onclick="removeOrder(${o.id})" class="text-[11px] px-2 py-1 text-rose-600 hover:bg-rose-50 rounded font-medium">삭제</button>
+                            </div>
                         </div>
                     `;
+
+                    if (editingMemoId === o.id) {
+                        html += `
+                            <div class="mt-2.5 flex items-center space-x-2">
+                                <input type="text" id="memoInput_${o.id}" value="${o.adminMemo || ''}" placeholder="예: 금요일 입고 예정입니다 / 품절로 대체 상품 발주" class="flex-1 text-xs px-3 py-1.5 rounded-lg border border-slate-300 focus:outline-none focus:border-[#0083CA]">
+                                <button onclick="saveInlineMemo(${o.id})" class="text-xs dadam-gradient text-white px-3 py-1.5 rounded-lg font-semibold">저장</button>
+                            </div>
+                        `;
+                    }
                 }
 
                 card.innerHTML = html;
@@ -867,28 +1221,59 @@
         }
 
         function copyPendingOrders() {
-            const list = orders.filter(o => o.status === 'pending');
-            if (list.length === 0) {
+            const pendingList = orders.filter(o => o.status === 'pending');
+            if (pendingList.length === 0) {
                 showToast("현재 접수 대기 중인 품목이 없습니다.");
                 return;
             }
-            let text = "[DadamLabs 탕비실·비품 발주 대기 목록]\n\n";
-            list.forEach((o, i) => {
-                text += `${i + 1}. [${o.category}] ${o.name} (신청: ${o.author} / 공감 ${o.likes}명)\n`;
+
+            let text = "[(주)다담랩스 탕비실·비품 발주 대기 목록]\n\n";
+            pendingList.forEach((o, i) => {
+                text += `${i + 1}. [${o.category}] ${o.name} (공감 ${o.likes}명 / 신청: ${o.author})\n`;
                 if (o.link) text += `   - 구매링크: ${o.link}\n`;
             });
 
-            const textarea = document.createElement('textarea');
-            textarea.value = text;
-            document.body.appendChild(textarea);
-            textarea.select();
+            const tempArea = document.createElement('textarea');
+            tempArea.value = text;
+            document.body.appendChild(tempArea);
+            tempArea.select();
             document.execCommand('copy');
-            document.body.removeChild(textarea);
+            document.body.removeChild(tempArea);
 
             showToast("발주 대기 목록이 클립보드에 복사되었습니다.");
         }
 
-        window.onload = initApp;
+        Object.assign(window, {
+            openSettingsModal,
+            closeSettingsModal,
+            saveAdminSettings,
+            clearCompletedOrders,
+            handleAdminButton,
+            closeLoginModal,
+            submitAdminLogin,
+            openPresetAddModal,
+            closePresetAddModal,
+            submitPresetAdd,
+            submitRequest,
+            handleLinkInput,
+            updateThumbPreview,
+            handlePreviewImgError,
+            handleImageFileUpload,
+            clearThumbPreview,
+            openImageZoom,
+            closeImageZoom,
+            renderOrders,
+            copyPendingOrders,
+            toggleLike,
+            setOrderStatus,
+            toggleMemoInput,
+            saveInlineMemo,
+            promoteToPreset,
+            removeOrder,
+            handleSecretFooterClick
+        });
+
+        window.addEventListener('DOMContentLoaded', initApp);
     </script>
 </body>
 </html>
