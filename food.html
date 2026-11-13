@@ -193,13 +193,13 @@
 
             <!-- 오른쪽: 신청 및 투표 현황 보드 -->
             <div class="lg:col-span-8 space-y-4">
-                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-200/90 shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                     <div class="flex items-center space-x-2.5">
                         <h2 class="text-sm sm:text-base font-extrabold text-slate-900">신청 · 공감 현황</h2>
                         <span id="totalCount" class="text-xs bg-[#0083CA]/15 text-[#0083CA] px-3 py-1 rounded-full font-extrabold border border-[#0083CA]/30">0건</span>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2.5 w-full sm:w-auto">
+                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
                         <select id="sortOrder" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="popular">👍 공감 많은 순</option>
                             <option value="latest">🕒 최신 등록 순</option>
@@ -212,16 +212,14 @@
                             <option value="탕비실 소모품">탕비실 소모품</option>
                             <option value="사무용품">사무용품</option>
                         </select>
-                        <div class="flex items-center gap-2 ml-auto sm:ml-0">
-                            <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3.5 py-2 rounded-xl font-bold transition shadow-2xs">
-                                📋 발주 목록 복사
+                        <button onclick="copyPendingOrders()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3.5 py-2 rounded-xl font-bold transition shadow-2xs whitespace-nowrap">
+                            📋 발주 목록 복사
+                        </button>
+                        <!-- 담당자 로그인 시에만 나타나는 엑셀 정산 다운로드 버튼 -->
+                        <div id="adminExcelExportControl" class="hidden inline-block">
+                            <button onclick="exportToExcelCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl font-bold transition shadow-md flex items-center gap-1 whitespace-nowrap">
+                                <span>📊 엑셀 다운로드</span>
                             </button>
-                            <!-- 담당자 로그인 시에만 나타나는 엑셀 정산 다운로드 버튼 -->
-                            <div id="adminExcelExportControl" class="hidden">
-                                <button onclick="exportToExcelCSV()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl font-bold transition shadow-md flex items-center gap-1">
-                                    <span>📊 엑셀 다운로드</span>
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -328,12 +326,12 @@
     <script>
         let orders = [];
         let presets = [
-            { name: "코카콜라 제로 355ml (24캔)", category: "커피·음료" },
-            { name: "카누 미니 다크로스트 (100T)", category: "커피·음료" },
-            { name: "오리온 비즈비 (3박스)", category: "과자·스낵" },
-            { name: "무항생제 구운란 (30구)", category: "라면·간편식" },
-            { name: "종이컵 6.5온스 (1박스)", category: "탕비실 소모품" },
-            { name: "도톰한 물티슈 (10팩)", category: "탕비실 소모품" }
+            { name: "코카콜라 제로 355ml (24캔)", category: "커피·음료", link: "" },
+            { name: "카누 미니 다크로스트 (100T)", category: "커피·음료", link: "" },
+            { name: "오리온 비즈비 (3박스)", category: "과자·스낵", link: "" },
+            { name: "무항생제 구운란 (30구)", category: "라면·간편식", link: "" },
+            { name: "종이컵 6.5온스 (1박스)", category: "탕비실 소모품", link: "" },
+            { name: "도톰한 물티슈 (10팩)", category: "탕비실 소모품", link: "" }
         ];
         let appConfig = {
             totalBudget: 700000,
@@ -342,6 +340,7 @@
         let myLikedIds = [];
         let isAdmin = false;
         let activeTargetId = null;
+        let lastActionSeq = 0;
 
         const SYNC_CHANNEL_NAME = "dadamlabs_pantry_sync_v2026_final";
         const CLOUD_STORAGE_KEY = "dadamlabs_pantry_shared_room_v2026_final";
@@ -422,6 +421,7 @@
                     if (parsed.presets) presets = parsed.presets;
                     if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
                     if (parsed.myLikedIds) myLikedIds = parsed.myLikedIds;
+                    if (parsed.actionSeq) lastActionSeq = parsed.actionSeq;
                 }
             } catch(e) {}
             renderPresets();
@@ -430,27 +430,23 @@
         }
 
         function saveStateToLocalStorage() {
+            lastActionSeq++;
             const payload = {
                 orders: orders,
                 presets: presets,
                 appConfig: appConfig,
                 myLikedIds: myLikedIds,
-                updatedAt: Date.now()
+                updatedAt: Date.now(),
+                actionSeq: lastActionSeq
             };
             try {
                 localStorage.setItem(CLOUD_STORAGE_KEY, JSON.stringify(payload));
             } catch(e) {}
+            return payload;
         }
 
         function broadcastState() {
-            saveStateToLocalStorage();
-            const payload = {
-                orders: orders,
-                presets: presets,
-                appConfig: appConfig,
-                myLikedIds: myLikedIds,
-                updatedAt: Date.now()
-            };
+            const payload = saveStateToLocalStorage();
             if (broadcastChannel) {
                 try {
                     broadcastChannel.postMessage({ type: 'SYNC_UPDATE', payload: payload });
@@ -463,14 +459,22 @@
             if (!payload || !payload.updatedAt) return;
             const currentLocal = localStorage.getItem(CLOUD_STORAGE_KEY);
             let localUpdatedAt = 0;
+            let localSeq = 0;
             if (currentLocal) {
-                try { localUpdatedAt = JSON.parse(currentLocal).updatedAt || 0; } catch(e) {}
+                try {
+                    const parsedLocal = JSON.parse(currentLocal);
+                    localUpdatedAt = parsedLocal.updatedAt || 0;
+                    localSeq = parsedLocal.actionSeq || 0;
+                } catch(e) {}
             }
-            if (payload.updatedAt >= localUpdatedAt) {
+            
+            // 타임스탬프 또는 시퀀스가 더 최신이거나 같을 때 반영 (삭제 및 금액 변경 실시간 동기화 보장)
+            if (payload.updatedAt > localUpdatedAt || (payload.updatedAt === localUpdatedAt && (payload.actionSeq || 0) > localSeq)) {
                 if (payload.orders) orders = payload.orders;
                 if (payload.presets) presets = payload.presets;
                 if (payload.appConfig) appConfig = { ...appConfig, ...payload.appConfig };
                 if (payload.myLikedIds) myLikedIds = payload.myLikedIds;
+                if (payload.actionSeq) lastActionSeq = payload.actionSeq;
                 localStorage.setItem(CLOUD_STORAGE_KEY, JSON.stringify(payload));
                 renderPresets();
                 renderOrders();
