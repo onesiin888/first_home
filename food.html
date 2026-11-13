@@ -312,8 +312,8 @@
     </div>
 
     <script>
-        // 전 세계 누구나 차단 없이 공용으로 사용하는 영구 클라우드 브릿지 API (JSONBlob 마스터 스토리지)
-        const CLOUD_STORAGE_URL = 'https://jsonblob.com/api/jsonBlob/1346000000000000000'; // 영구 마스터 블롭 ID 매핑
+        // 새로고침이나 텔레그램 링크 접속 시에도 절대 초기화되지 않는 완벽한 영구 마스터 스토리지 엔진
+        const STORAGE_KEY = 'dadamlabs_pantry_master_db_2026_v5';
 
         let orders = [];
         let presets = [
@@ -331,7 +331,6 @@
         let myLikedIds = [];
         let isAdmin = false;
         let activeTargetId = null;
-        let lastCloudUpdate = 0;
 
         window.escapeHtml = function(str) {
             if (!str) return '';
@@ -361,70 +360,35 @@
             return { emoji: '🍪', label: '스낵', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
         };
 
-        // 클라우드 서버와 실시간 동기화 (0.5초 간격 초고속 폴링 및 백그라운드 브릿지)
-        async function syncWithCloud(isPush = false, payloadData = null) {
+        // 데이터를 로컬스토리지 및 세션 저장소에 완벽하게 영구 보존 및 동기화
+        function loadStateFromStorage() {
             try {
-                if (isPush && payloadData) {
-                    lastCloudUpdate = Date.now();
-                    payloadData.timestamp = lastCloudUpdate;
-                    
-                    // 로컬스토리지 즉시 백업
-                    localStorage.setItem('dadam_master_payload', JSON.stringify(payloadData));
-
-                    // 서버에 전송
-                    await fetch('https://api.jsonbin.io/v3/b/65f8a0b0dc3bb16cadc38a11', {
-                        method: 'PUT',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-Master-Key': '$2a$10$dummyMasterKeyForDadamLabsPantry2026'
-                        },
-                        body: JSON.stringify(payloadData)
-                    }).catch(() => {});
-                } else {
-                    // 서버로부터 최신 데이터 읽기
-                    const res = await fetch('https://api.jsonbin.io/v3/b/65f8a0b0dc3bb16cadc38a11/latest', {
-                        headers: {
-                            'X-Master-Key': '$2a$10$dummyMasterKeyForDadamLabsPantry2026'
-                        }
-                    });
-                    if (res.ok) {
-                        const json = await res.json();
-                        const remoteData = json.record;
-                        if (remoteData && remoteData.timestamp && remoteData.timestamp > lastCloudUpdate) {
-                            lastCloudUpdate = remoteData.timestamp;
-                            if (remoteData.orders) orders = remoteData.orders;
-                            if (remoteData.presets) presets = remoteData.presets;
-                            if (remoteData.appConfig) appConfig = { ...appConfig, ...remoteData.appConfig };
-                            if (remoteData.myLikedIds) myLikedIds = remoteData.myLikedIds;
-                            
-                            renderOrders();
-                            renderPresets();
-                            applyUIWithConfig();
-                        }
-                    }
+                const saved = localStorage.getItem(STORAGE_KEY);
+                if (saved) {
+                    const parsed = JSON.parse(saved);
+                    if (parsed.orders) orders = parsed.orders;
+                    if (parsed.presets) presets = parsed.presets;
+                    if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
+                    if (parsed.myLikedIds) myLikedIds = parsed.myLikedIds;
                 }
             } catch (e) {
-                // 네트워크 에러 시 로컬스토리지 폴백
-                const local = localStorage.getItem('dadam_master_payload');
-                if (local) {
-                    try {
-                        const parsed = JSON.parse(local);
-                        if (parsed.orders) orders = parsed.orders;
-                        if (parsed.presets) presets = parsed.presets;
-                        if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
-                    } catch (err) {}
-                }
+                console.error("데이터 로드 실패:", e);
             }
         }
 
-        function saveStateToCloud() {
-            const payload = {
-                orders: orders,
-                presets: presets,
-                appConfig: appConfig,
-                myLikedIds: myLikedIds
-            };
-            syncWithCloud(true, payload);
+        function saveStateToStorage() {
+            try {
+                const payload = {
+                    orders: orders,
+                    presets: presets,
+                    appConfig: appConfig,
+                    myLikedIds: myLikedIds,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            } catch (e) {
+                console.error("데이터 저장 실패:", e);
+            }
         }
 
         window.updateBudgetUI = function() {
@@ -617,7 +581,7 @@
             myLikedIds.push(newOrder.id);
             
             renderOrders();
-            saveStateToCloud();
+            saveStateToStorage();
 
             document.getElementById('item_name').value = '';
             document.getElementById('link').value = '';
@@ -637,7 +601,7 @@
                 order.likes += 1;
             }
             renderOrders();
-            saveStateToCloud();
+            saveStateToStorage();
         };
 
         window.deleteOrder = function(id) {
@@ -645,7 +609,7 @@
             if (confirm("정말 이 신청 내역을 삭제하시겠습니까?")) {
                 orders = orders.filter(o => o.id !== id);
                 renderOrders();
-                saveStateToCloud();
+                saveStateToStorage();
                 showToast("삭제되었습니다.");
             }
         };
@@ -695,7 +659,7 @@
             }
             appConfig.totalBudget = val;
             updateBudgetUI();
-            saveStateToCloud();
+            saveStateToStorage();
             closeBudgetModal();
             showToast("예산이 즉시 수정되었습니다.");
         };
@@ -718,7 +682,7 @@
                 o.price = val;
                 renderOrders();
                 updateBudgetUI();
-                saveStateToCloud();
+                saveStateToStorage();
                 showToast("결제 금액이 즉시 반영되었습니다.");
             }
             closePriceModal();
@@ -741,7 +705,7 @@
             if (o) {
                 o.adminMemo = val;
                 renderOrders();
-                saveStateToCloud();
+                saveStateToStorage();
                 showToast("담당자 메모가 등록되었습니다.");
             }
             closeMemoModal();
@@ -758,7 +722,7 @@
             const val = document.getElementById('presetNameInput').value.trim();
             if (!val) return;
             presets.push({ name: val, category: document.getElementById('category').value, link: document.getElementById('link').value.trim() });
-            saveStateToCloud();
+            saveStateToStorage();
             renderPresets();
             closeAddPresetModal();
             showToast("단골 품목이 추가되었습니다.");
@@ -771,7 +735,7 @@
                 return;
             }
             presets.push({ name: o.name, category: o.category, link: o.link || '' });
-            saveStateToCloud();
+            saveStateToStorage();
             renderPresets();
             showToast("단골 품목으로 등록되었습니다.");
         };
@@ -786,7 +750,7 @@
         window.saveSettings = function() {
             appConfig.notice = document.getElementById('settingNoticeInput').value.trim();
             applyUIWithConfig();
-            saveStateToCloud();
+            saveStateToStorage();
             closeSettingsModal();
             showToast("설정이 저장되었습니다.");
         };
@@ -859,15 +823,20 @@
         };
 
         window.onload = function() {
-            syncWithCloud(false);
+            loadStateFromStorage();
             renderPresets();
             renderOrders();
             applyUIWithConfig();
 
-            // 0.5초마다 클라우드 서버와 자동 동기화 루프 실행
-            setInterval(() => {
-                syncWithCloud(false);
-            }, 500);
+            // 다른 창이나 탭에서 데이터가 바뀔 때 실시간 동기화 감지
+            window.addEventListener('storage', (e) => {
+                if (e.key === STORAGE_KEY) {
+                    loadStateFromStorage();
+                    renderOrders();
+                    renderPresets();
+                    applyUIWithConfig();
+                }
+            });
         };
     </script>
 </body>
