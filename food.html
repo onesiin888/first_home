@@ -199,7 +199,7 @@
                         <span id="totalCount" class="text-xs bg-[#0083CA]/15 text-[#0083CA] px-3 py-1 rounded-full font-extrabold border border-[#0083CA]/30">0건</span>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2 w-full md:w-auto">
+                    <div class="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
                         <select id="sortOrder" onchange="renderOrders()" class="text-xs bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 font-bold text-slate-700 focus:outline-none focus:border-[#0083CA]">
                             <option value="popular">👍 공감 많은 순</option>
                             <option value="latest">🕒 최신 등록 순</option>
@@ -409,7 +409,7 @@
             }
 
             fetchLatestFromCloud();
-            setInterval(fetchLatestFromCloud, 10000);
+            setInterval(fetchLatestFromCloud, 4000);
         }
 
         function loadStateFromLocalStorage() {
@@ -468,8 +468,8 @@
                 } catch(e) {}
             }
             
-            // 타임스탬프 또는 시퀀스가 더 최신이거나 같을 때 반영 (삭제 및 금액 변경 실시간 동기화 보장)
-            if (payload.updatedAt > localUpdatedAt || (payload.updatedAt === localUpdatedAt && (payload.actionSeq || 0) > localSeq)) {
+            // 최신 타임스탬프 또는 시퀀스인 경우 무조건 강제 동기화 적용
+            if (payload.updatedAt > localUpdatedAt || (payload.updatedAt === localUpdatedAt && (payload.actionSeq || 0) > localSeq) || Math.abs(payload.updatedAt - localUpdatedAt) < 10000) {
                 if (payload.orders) orders = payload.orders;
                 if (payload.presets) presets = payload.presets;
                 if (payload.appConfig) appConfig = { ...appConfig, ...payload.appConfig };
@@ -521,7 +521,7 @@
             fetchLatestFromCloud();
             setTimeout(() => {
                 showToast("✨ 최신 상태로 동기화 완료되었습니다!");
-            }, 800);
+            }, 600);
         }
 
         function updateBudgetUI() {
