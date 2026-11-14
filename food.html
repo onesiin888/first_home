@@ -64,10 +64,10 @@
             </div>
 
             <div class="flex items-center space-x-2 shrink-0">
-                <button onclick="openSettingsModal()" id="settingsBtn" class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-xl font-bold transition flex items-center space-x-1 shadow-2xs">
+                <button onclick="openSettingsModal()" id="settingsBtn" class="hidden text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3 py-2 rounded-xl font-bold transition flex items-center space-x-1 shadow-2xs cursor-pointer">
                     <span>⚙️ 설정</span>
                 </button>
-                <button onclick="openLoginModal()" id="adminBtn" class="text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md">
+                <button onclick="openLoginModal()" id="adminBtn" class="text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md cursor-pointer">
                     🔒 담당자 로그인
                 </button>
             </div>
@@ -94,7 +94,7 @@
                         <span>이번 달 탕비실 예산 현황</span>
                     </span>
                     <div id="adminBudgetControl" class="hidden">
-                        <button onclick="openBudgetModal()" class="text-[11px] bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded font-bold transition shadow-2xs">
+                        <button onclick="openBudgetModal()" class="text-[11px] bg-white hover:bg-slate-100 text-slate-700 border border-slate-300 px-2 py-0.5 rounded font-bold transition shadow-2xs cursor-pointer">
                             ⚙️ 예산설정
                         </button>
                     </div>
@@ -119,7 +119,7 @@
                     <span class="text-[11px] font-medium text-slate-400">클릭하면 좌측 신청서에 바로 입력됩니다</span>
                 </div>
                 <div id="adminPresetControl" class="hidden">
-                    <button onclick="openAddPresetModal()" class="text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#0F766E] px-3 py-1.5 rounded-lg font-bold transition border border-[#159E8A]/30">
+                    <button onclick="openAddPresetModal()" class="text-xs bg-[#159E8A]/10 hover:bg-[#159E8A]/20 text-[#0F766E] px-3 py-1.5 rounded-lg font-bold transition border border-[#159E8A]/30 cursor-pointer">
                         + 단골 품목 추가
                     </button>
                 </div>
@@ -229,8 +229,8 @@
             <p class="text-xs text-slate-500 mb-4 font-medium">담당자 비밀번호를 입력해주세요.</p>
             <input type="password" id="adminPasswordInput" onkeydown="if(event.key==='Enter') submitLogin()" placeholder="비밀번호 입력" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
             <div class="flex space-x-2">
-                <button onclick="closeLoginModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
-                <button onclick="submitLogin()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">로그인</button>
+                <button onclick="closeLoginModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer">취소</button>
+                <button onclick="submitLogin()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md cursor-pointer">로그인</button>
             </div>
         </div>
     </div>
@@ -242,8 +242,8 @@
             <p class="text-xs text-slate-500 mb-4 font-medium">이번 달 총 예산 금액을 설정해주세요.</p>
             <input type="number" id="budgetInputModal" placeholder="예: 700000" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
             <div class="flex space-x-2">
-                <button onclick="closeBudgetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
-                <button onclick="handleSaveBudget()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">저장하기</button>
+                <button onclick="closeBudgetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer">취소</button>
+                <button onclick="handleSaveBudget()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md cursor-pointer">저장하기</button>
             </div>
         </div>
     </div>
@@ -255,8 +255,8 @@
             <p class="text-xs text-slate-500 mb-4 font-medium">실제 구매 확정된 금액을 입력해주세요.</p>
             <input type="number" id="priceInputModal" placeholder="예: 15000" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
             <div class="flex space-x-2">
-                <button onclick="closePriceModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
-                <button onclick="saveItemPrice()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">금액 저장</button>
+                <button onclick="closePriceModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer">취소</button>
+                <button onclick="saveItemPrice()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md cursor-pointer">금액 저장</button>
             </div>
         </div>
     </div>
@@ -268,8 +268,8 @@
             <p class="text-xs text-slate-500 mb-4 font-medium">직원들에게 전달할 안내를 적어주세요.</p>
             <input type="text" id="memoInputModal" placeholder="예: 화요일 오전 일괄 주문 예정입니다" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
             <div class="flex space-x-2">
-                <button onclick="closeMemoModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
-                <button onclick="saveItemMemo()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">메모 저장</button>
+                <button onclick="closeMemoModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer">취소</button>
+                <button onclick="saveItemMemo()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md cursor-pointer">메모 저장</button>
             </div>
         </div>
     </div>
@@ -281,26 +281,30 @@
             <p class="text-xs text-slate-500 mb-4 font-medium">버튼으로 등록할 단골 품목 이름을 입력해주세요.</p>
             <input type="text" id="presetNameInput" placeholder="예: 오리온 비초비 (3박스)" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
             <div class="flex space-x-2">
-                <button onclick="closeAddPresetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
-                <button onclick="saveNewPreset()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">추가하기</button>
+                <button onclick="closeAddPresetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer">취소</button>
+                <button onclick="saveNewPreset()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md cursor-pointer">추가하기</button>
             </div>
         </div>
     </div>
 
-    <!-- 모달: 설정 -->
+    <!-- 모달: 설정 (공지 문구 + 담당자 비밀번호 암호화 실시간 동기화) -->
     <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200">
-            <h3 class="text-base font-extrabold text-slate-900 mb-2">⚙️ 보드 설정</h3>
-            <p class="text-xs text-slate-500 mb-4 font-medium">상단 공지사항 문구를 변경할 수 있습니다.</p>
-            <div class="space-y-3 mb-4">
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">⚙️ 보드 및 담당자 설정</h3>
+            <p class="text-xs text-slate-500 mb-4 font-medium">변경 내용은 암호화되어 클라우드로 전 직원 화면에 즉시 반영됩니다.</p>
+            <div class="space-y-3.5 mb-5">
                 <div>
                     <label class="block text-xs font-bold text-slate-700 mb-1">상단 공지 문구</label>
                     <input type="text" id="settingNoticeInput" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:border-[#0083CA]">
                 </div>
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">담당자 비밀번호 변경 <span class="text-[11px] font-normal text-emerald-600">(암호화 실시간 동기화)</span></label>
+                    <input type="password" id="settingPasswordInput" placeholder="새 비밀번호 입력 (미입력 시 기존 비밀번호 유지)" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 font-medium focus:outline-none focus:border-[#0083CA]">
+                </div>
             </div>
             <div class="flex space-x-2">
-                <button onclick="closeSettingsModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
-                <button onclick="saveSettings()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">설정 저장</button>
+                <button onclick="closeSettingsModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer">취소</button>
+                <button onclick="saveSettings()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md cursor-pointer">설정 저장</button>
             </div>
         </div>
     </div>
@@ -311,8 +315,8 @@
             <h3 class="text-base font-extrabold text-slate-900 mb-2">🗑️ 신청 내역 삭제</h3>
             <p class="text-xs text-slate-500 mb-4 font-medium">정말 이 신청 내역을 삭제하시겠습니까? 삭제 즉시 모든 직원의 화면에서 사라집니다.</p>
             <div class="flex space-x-2">
-                <button onclick="closeDeleteConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
-                <button onclick="confirmDeleteOrder()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">삭제하기</button>
+                <button onclick="closeDeleteConfirmModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition cursor-pointer">취소</button>
+                <button onclick="confirmDeleteOrder()" class="flex-1 bg-rose-600 hover:bg-rose-700 text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md cursor-pointer">삭제하기</button>
             </div>
         </div>
     </div>
@@ -332,9 +336,20 @@
             appId: "1:275981100037:web:fbaaa1703e97406794286c"
         };
 
-        const STORAGE_KEY = 'dadamlabs_pantry_master_db_2026_v6';
-        const LIKED_KEY = 'dadamlabs_pantry_my_likes_2026_v6';
-        const ADMIN_AUTH_KEY = 'dadamlabs_pantry_admin_auth_2026_v6';
+        const STORAGE_KEY = 'dadamlabs_pantry_master_db_2026_v8';
+        const LIKED_KEY = 'dadamlabs_pantry_my_likes_2026_v8';
+        const ADMIN_AUTH_KEY = 'dadamlabs_pantry_admin_auth_2026_v8';
+
+        // 초기 비밀번호 '1234'의 SHA-256 암호화 해시 (소스 보기로 원문 노출 방지)
+        const DEFAULT_PWD_HASH = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+
+        async function hashPassword(plainText) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(String(plainText));
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
 
         let dbDocRef = null;
         let isCloudReady = false;
@@ -351,7 +366,8 @@
         ];
         let appConfig = {
             totalBudget: 700000,
-            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요. (매주 화·목 정기 발주)"
+            notice: "먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요. (매주 화·목 정기 발주)",
+            adminPasswordHash: DEFAULT_PWD_HASH
         };
         let myLikedIds = [];
         let isAdmin = false;
@@ -417,7 +433,10 @@
                     const parsed = JSON.parse(saved);
                     if (Array.isArray(parsed.orders)) orders = parsed.orders;
                     if (Array.isArray(parsed.presets) && parsed.presets.length > 0) presets = parsed.presets;
-                    if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
+                    if (parsed.appConfig) {
+                        appConfig = { ...appConfig, ...parsed.appConfig };
+                        if (!appConfig.adminPasswordHash) appConfig.adminPasswordHash = DEFAULT_PWD_HASH;
+                    }
                     if (parsed.timestamp) lastUpdated = Number(parsed.timestamp) || 0;
                 }
             } catch (e) {
@@ -428,10 +447,15 @@
         async function saveStateToStorage() {
             try {
                 lastUpdated = Date.now();
+                const cleanConfig = {
+                    totalBudget: appConfig.totalBudget,
+                    notice: appConfig.notice,
+                    adminPasswordHash: appConfig.adminPasswordHash || DEFAULT_PWD_HASH
+                };
                 const payload = {
                     orders: orders,
                     presets: presets,
-                    appConfig: appConfig,
+                    appConfig: cleanConfig,
                     updatedAt: lastUpdated
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...payload, timestamp: lastUpdated }));
@@ -465,7 +489,13 @@
                             lastUpdated = Number(data.updatedAt) || Date.now();
                             if (Array.isArray(data.orders)) orders = data.orders;
                             if (Array.isArray(data.presets) && data.presets.length > 0) presets = data.presets;
-                            if (data.appConfig) appConfig = { ...appConfig, ...data.appConfig };
+                            if (data.appConfig) {
+                                appConfig = {
+                                    totalBudget: data.appConfig.totalBudget ?? 700000,
+                                    notice: data.appConfig.notice ?? appConfig.notice,
+                                    adminPasswordHash: data.appConfig.adminPasswordHash || DEFAULT_PWD_HASH
+                                };
+                            }
 
                             localStorage.setItem(STORAGE_KEY, JSON.stringify({
                                 orders: orders,
@@ -547,13 +577,13 @@
 
             if (isAdmin) {
                 adminBtn.innerText = "🔓 담당자 모드 종료";
-                adminBtn.className = "text-xs bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md";
+                adminBtn.className = "text-xs bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md cursor-pointer";
                 settingsBtn.classList.remove('hidden');
                 presetCtrl.classList.remove('hidden');
                 budgetCtrl.classList.remove('hidden');
             } else {
                 adminBtn.innerText = "🔒 담당자 로그인";
-                adminBtn.className = "text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md";
+                adminBtn.className = "text-xs bg-slate-900 hover:bg-slate-800 text-white px-4 py-2.5 rounded-xl font-bold transition shadow-md cursor-pointer";
                 settingsBtn.classList.add('hidden');
                 presetCtrl.classList.add('hidden');
                 budgetCtrl.classList.add('hidden');
@@ -631,7 +661,7 @@
 
                         <div class="flex items-center space-x-2 self-end sm:self-center shrink-0">
                             ${safeLink ? `<a href="${safeLink}" target="_blank" rel="noopener noreferrer" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-300 px-3.5 py-2 rounded-xl font-bold transition">구매링크 ↗</a>` : ''}
-                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border text-xs font-extrabold transition shadow-2xs ${likeBtnStyle}">
+                            <button onclick="toggleLike(${o.id})" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-xl border text-xs font-extrabold transition shadow-2xs cursor-pointer ${likeBtnStyle}">
                                 <span>👍 나도 원해요</span>
                                 <span class="px-2 py-0.5 rounded-full text-[11px] ${isLiked ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-800'}">${o.likes}</span>
                             </button>
@@ -651,12 +681,12 @@
                         <div class="mt-4 pt-3.5 border-t border-slate-100 flex flex-wrap justify-between items-center gap-2">
                             <div class="flex items-center space-x-2">
                                 <span class="text-[11px] font-bold text-slate-400">관리:</span>
-                                <button onclick="openMemoModal(${o.id})" class="text-xs px-3 py-1.5 rounded-lg font-bold border border-slate-300 text-slate-700 hover:bg-slate-50 transition">💬 메모</button>
-                                <button onclick="openPriceModal(${o.id})" class="text-xs px-3 py-1.5 rounded-lg font-bold border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition">💰 금액입력</button>
+                                <button onclick="openMemoModal(${o.id})" class="text-xs px-3 py-1.5 rounded-lg font-bold border border-slate-300 text-slate-700 hover:bg-slate-50 transition cursor-pointer">💬 메모</button>
+                                <button onclick="openPriceModal(${o.id})" class="text-xs px-3 py-1.5 rounded-lg font-bold border border-emerald-300 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 transition cursor-pointer">💰 금액입력</button>
                             </div>
                             <div class="flex items-center space-x-1.5">
-                                <button onclick="registerToPreset(${o.id})" class="text-xs px-3 py-1.5 text-[#0F766E] hover:bg-[#159E8A]/10 rounded-lg font-bold transition">+ 단골등록</button>
-                                <button onclick="deleteOrder(${o.id})" class="text-xs px-3 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg font-bold transition">삭제</button>
+                                <button onclick="registerToPreset(${o.id})" class="text-xs px-3 py-1.5 text-[#0F766E] hover:bg-[#159E8A]/10 rounded-lg font-bold transition cursor-pointer">+ 단골등록</button>
+                                <button onclick="deleteOrder(${o.id})" class="text-xs px-3 py-1.5 text-rose-600 hover:bg-rose-50 rounded-lg font-bold transition cursor-pointer">삭제</button>
                             </div>
                         </div>
                     `;
@@ -757,9 +787,13 @@
             document.getElementById('loginModal').classList.add('hidden');
         };
 
-        window.submitLogin = function() {
+        window.submitLogin = async function() {
             const pwd = document.getElementById('adminPasswordInput').value;
-            if (pwd === 'ddam') {
+            if (!pwd) return;
+            const inputHash = await hashPassword(pwd);
+            const targetHash = appConfig.adminPasswordHash || DEFAULT_PWD_HASH;
+
+            if (inputHash === targetHash) {
                 isAdmin = true;
                 localStorage.setItem(ADMIN_AUTH_KEY, 'true');
                 closeLoginModal();
@@ -869,6 +903,7 @@
 
         window.openSettingsModal = function() {
             document.getElementById('settingNoticeInput').value = appConfig.notice || '';
+            document.getElementById('settingPasswordInput').value = '';
             document.getElementById('settingsModal').classList.remove('hidden');
         };
         window.closeSettingsModal = function() {
@@ -876,10 +911,14 @@
         };
         window.saveSettings = async function() {
             appConfig.notice = document.getElementById('settingNoticeInput').value.trim();
+            const newPwd = document.getElementById('settingPasswordInput').value.trim();
+            if (newPwd) {
+                appConfig.adminPasswordHash = await hashPassword(newPwd);
+            }
             applyUIWithConfig();
             await saveStateToStorage();
             closeSettingsModal();
-            showToast("설정이 저장되었습니다.");
+            showToast(newPwd ? "설정이 저장되었으며 새 비밀번호가 암호화되어 실시간 반영되었습니다." : "설정이 저장되었습니다.");
         };
 
         window.showToast = function(msg) {
