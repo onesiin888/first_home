@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DadamLabs | 탕비실 · 비품 신청 보드</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
@@ -55,9 +54,9 @@
                         <span class="hidden md:inline-flex items-center gap-1 text-[11px] font-bold px-2.5 py-1 rounded-md bg-teal-50 text-teal-800 border border-teal-200 shadow-2xs">
                             <span>🚚 정기 주문: 화·목</span>
                         </span>
-                        <div onclick="forceSyncNow()" title="클릭 시 즉시 강제 동기화" class="cursor-pointer inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-2xs hover:bg-emerald-100 transition">
-                            <span id="syncDot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                            <span id="syncStatusText">실시간 연동중</span>
+                        <div id="syncBadge" onclick="forceSyncNow()" title="Firebase 클라우드 실시간 동기화 상태" class="cursor-pointer inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-amber-50 text-amber-800 border border-amber-300 shadow-2xs transition">
+                            <span id="syncDot" class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                            <span id="syncStatusText">클라우드 연결중...</span>
                         </div>
                     </div>
                     <p class="text-xs font-medium text-slate-500 truncate mt-0.5" id="headerNoticeText">먹고 싶은 간식이나 필요한 비품을 등록하거나 '나도 원해요'를 눌러주세요.</p>
@@ -225,7 +224,7 @@
 
     <!-- 모달: 담당자 로그인 -->
     <div id="loginModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
-        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200 animate-in fade-in zoom-in duration-200">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200">
             <h3 class="text-base font-extrabold text-slate-900 mb-2">🔒 담당자 로그인</h3>
             <p class="text-xs text-slate-500 mb-4 font-medium">담당자 비밀번호를 입력해주세요.</p>
             <input type="password" id="adminPasswordInput" onkeydown="if(event.key==='Enter') submitLogin()" placeholder="비밀번호 입력" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
@@ -280,7 +279,7 @@
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200">
             <h3 class="text-base font-extrabold text-slate-900 mb-2">+ 자주 찾는 단골 품목 추가</h3>
             <p class="text-xs text-slate-500 mb-4 font-medium">버튼으로 등록할 단골 품목 이름을 입력해주세요.</p>
-            <input type="text" id="presetNameInput" placeholder="예: 오리온 비즈비 (3박스)" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
+            <input type="text" id="presetNameInput" placeholder="예: 오리온 비초비 (3박스)" class="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0083CA] mb-4 font-medium">
             <div class="flex space-x-2">
                 <button onclick="closeAddPresetModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 rounded-xl font-bold text-xs transition">취소</button>
                 <button onclick="saveNewPreset()" class="flex-1 dadam-gradient-btn text-white py-2.5 rounded-xl font-bold text-xs transition shadow-md">추가하기</button>
@@ -306,7 +305,7 @@
         </div>
     </div>
 
-    <!-- 모달: 삭제 확인 (브라우저 기본 confirm 대체) -->
+    <!-- 모달: 삭제 확인 -->
     <div id="deleteConfirmModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex items-center justify-center hidden p-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl border border-slate-200">
             <h3 class="text-base font-extrabold text-slate-900 mb-2">🗑️ 신청 내역 삭제</h3>
@@ -318,22 +317,28 @@
         </div>
     </div>
 
-    <script>
-        // 크롬, 엣지, 모바일, 5시간 전 텔레그램 링크 어디서 열든 100% 동일한 데이터를 바라보는 글로벌 Retain 클라우드 엔진
-        const STORAGE_KEY = 'dadamlabs_pantry_master_db_2026_v5';
-        const LIKED_KEY = 'dadamlabs_pantry_my_likes_2026_v5';
-        const ADMIN_AUTH_KEY = 'dadamlabs_pantry_admin_auth_2026_v5';
-        const CLOUD_TOPIC = 'dadamlabs/pantry/shared_board_2026_master_v1/state';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // 글로벌 웹소켓 브로커 다중화 (Canvas 보안 정책을 통과하며 즉시 Retain 동기화되는 브로커만 사용)
-        const BROKER_URLS = [
-            'wss://broker.emqx.io:8084/mqtt',
-            'wss://broker.hivemq.com:8884/mqtt'
-        ];
+        // dadam-lounge 공용 Firebase 프로젝트 연결 설정
+        const firebaseConfig = {
+            apiKey: "AIzaSyABxlam7kz_xvQvQafIoId-Zs4EJvS7Yd8",
+            authDomain: "dadam-lounge.firebaseapp.com",
+            projectId: "dadam-lounge",
+            storageBucket: "dadam-lounge.firebasestorage.app",
+            messagingSenderId: "275981100037",
+            appId: "1:275981100037:web:fbaaa1703e97406794286c"
+        };
 
-        let mqttClients = [];
+        const STORAGE_KEY = 'dadamlabs_pantry_master_db_2026_v6';
+        const LIKED_KEY = 'dadamlabs_pantry_my_likes_2026_v6';
+        const ADMIN_AUTH_KEY = 'dadamlabs_pantry_admin_auth_2026_v6';
+
+        let dbDocRef = null;
+        let isCloudReady = false;
         let lastUpdated = 0;
-        let clientId = 'dadam_' + Math.random().toString(36).substring(2, 10);
 
         let orders = [];
         let presets = [
@@ -356,11 +361,11 @@
         window.escapeHtml = function(str) {
             if (!str) return '';
             return String(str)
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+                .replace(/&/g, "&")
+                .replace(/</g, "<")
+                .replace(/>/g, ">")
+                .replace(/"/g, """)
+                .replace(/'/g, "'");
         };
 
         window.getSmartBadge = function(name, category) {
@@ -381,7 +386,23 @@
             return { emoji: '🍪', label: '스낵', bg: 'bg-rose-50 text-rose-700 border-rose-200' };
         };
 
-        // 로컬 캐시 불러오기 (초기 화면 즉시 표시용)
+        function updateSyncStatusBadge(state) {
+            const badge = document.getElementById('syncBadge');
+            const dot = document.getElementById('syncDot');
+            const txt = document.getElementById('syncStatusText');
+            if (!badge || !dot || !txt) return;
+
+            if (state === 'connected') {
+                badge.className = "cursor-pointer inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300 shadow-2xs transition";
+                dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
+                txt.innerText = "실시간 동기화 완료";
+            } else if (state === 'error') {
+                badge.className = "cursor-pointer inline-flex items-center gap-1.5 text-[11px] font-bold px-2.5 py-1 rounded-md bg-rose-50 text-rose-800 border border-rose-300 shadow-2xs transition";
+                dot.className = "w-2 h-2 rounded-full bg-rose-500";
+                txt.innerText = "오프라인 (연결 확인)";
+            }
+        }
+
         function loadStateFromStorage() {
             try {
                 if (localStorage.getItem(ADMIN_AUTH_KEY) === 'true') {
@@ -400,143 +421,83 @@
                     if (parsed.timestamp) lastUpdated = Number(parsed.timestamp) || 0;
                 }
             } catch (e) {
-                console.error("데이터 로드 실패:", e);
+                console.error("로컬 캐시 로드 생략:", e);
             }
         }
 
-        // 로컬 저장 + 글로벌 클라우드 브로커 3곳에 Retain(영구 고정 메시지)으로 즉시 전송
-        function saveStateToStorage() {
+        async function saveStateToStorage() {
             try {
                 lastUpdated = Date.now();
                 const payload = {
                     orders: orders,
                     presets: presets,
                     appConfig: appConfig,
-                    timestamp: lastUpdated,
-                    sender: clientId
+                    updatedAt: lastUpdated
                 };
-                const jsonStr = JSON.stringify(payload);
-                localStorage.setItem(STORAGE_KEY, jsonStr);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...payload, timestamp: lastUpdated }));
                 localStorage.setItem(LIKED_KEY, JSON.stringify(myLikedIds));
 
-                // 연결된 모든 글로벌 브로커에 retain: true 로 발행하여, 5시간 뒤 엣지나 텔레그램으로 열어도 즉시 이 데이터를 받게 함
-                mqttClients.forEach(client => {
-                    if (client && client.connected) {
-                        client.publish(CLOUD_TOPIC, jsonStr, { qos: 1, retain: true });
-                    }
-                });
+                if (isCloudReady && dbDocRef) {
+                    await setDoc(dbDocRef, payload);
+                }
             } catch (e) {
-                console.error("데이터 저장 실패:", e);
+                console.error("클라우드 저장 실패:", e);
+                showToast("⚠️ 서버 저장 중 일시적 오류가 발생했습니다.");
             }
         }
 
-        // 클라우드 브로커로부터 수신된 최신 데이터를 화면에 즉시 반영
-        function applyIncomingCloudData(dataStr) {
+        async function initFirebaseSync() {
             try {
-                const parsed = JSON.parse(dataStr);
-                if (!parsed || typeof parsed !== 'object') return;
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
 
-                const incomingTime = Number(parsed.timestamp) || 0;
-                // 더 최신 데이터이거나 내 로컬이 초기 상태(lastUpdated === 0)일 때 즉시 덮어쓰기
-                if (incomingTime >= lastUpdated || lastUpdated === 0) {
-                    lastUpdated = incomingTime;
-                    if (Array.isArray(parsed.orders)) orders = parsed.orders;
-                    if (Array.isArray(parsed.presets) && parsed.presets.length > 0) presets = parsed.presets;
-                    if (parsed.appConfig) appConfig = { ...appConfig, ...parsed.appConfig };
+                await signInAnonymously(auth);
 
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                        orders: orders,
-                        presets: presets,
-                        appConfig: appConfig,
-                        timestamp: lastUpdated
-                    }));
+                dbDocRef = doc(db, 'dadam_pantry', 'main_state');
+                isCloudReady = true;
 
-                    renderPresets();
-                    renderOrders();
-                    applyUIWithConfig();
-                } else if (lastUpdated > incomingTime && parsed.sender !== clientId) {
-                    // 만약 내 브라우저가 더 최신 데이터를 가지고 있다면 클라우드 쪽을 내 최신 데이터로 갱신
-                    const myPayload = JSON.stringify({
-                        orders: orders,
-                        presets: presets,
-                        appConfig: appConfig,
-                        timestamp: lastUpdated,
-                        sender: clientId
-                    });
-                    mqttClients.forEach(c => {
-                        if (c && c.connected) c.publish(CLOUD_TOPIC, myPayload, { qos: 1, retain: true });
-                    });
-                }
-            } catch (e) {
-                console.error("클라우드 데이터 병합 오류:", e);
-            }
-        }
+                onSnapshot(dbDocRef, (snap) => {
+                    updateSyncStatusBadge('connected');
+                    if (snap.exists()) {
+                        const data = snap.data();
+                        if (data) {
+                            lastUpdated = Number(data.updatedAt) || Date.now();
+                            if (Array.isArray(data.orders)) orders = data.orders;
+                            if (Array.isArray(data.presets) && data.presets.length > 0) presets = data.presets;
+                            if (data.appConfig) appConfig = { ...appConfig, ...data.appConfig };
 
-        // 글로벌 클라우드 브로커 3곳 동시 연결 및 Retain 메시지 구독
-        function initCloudSync() {
-            if (typeof mqtt === 'undefined') return;
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                                orders: orders,
+                                presets: presets,
+                                appConfig: appConfig,
+                                timestamp: lastUpdated
+                            }));
 
-            BROKER_URLS.forEach((url) => {
-                try {
-                    const client = mqtt.connect(url, {
-                        clientId: clientId + '_' + Math.random().toString(36).substring(2, 6),
-                        clean: true,
-                        connectTimeout: 5000,
-                        reconnectPeriod: 2000
-                    });
-
-                    client.on('connect', () => {
-                        const dot = document.getElementById('syncDot');
-                        const txt = document.getElementById('syncStatusText');
-                        if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-500 animate-pulse";
-                        if (txt) txt.innerText = "실시간 연동중";
-
-                        // 구독 즉시 브로커에 Retain(영구 보관)되어 있던 최신 상태가 0.1초 만에 들어옴
-                        client.subscribe(CLOUD_TOPIC, { qos: 1 }, (err) => {
-                            if (!err && lastUpdated > 0) {
-                                // 내 로컬에 이미 수정했던 내역이 있으면 브로커에도 한 번 동기화
-                                setTimeout(() => {
-                                    if (lastUpdated > 0) {
-                                        const payload = JSON.stringify({
-                                            orders: orders,
-                                            presets: presets,
-                                            appConfig: appConfig,
-                                            timestamp: lastUpdated,
-                                            sender: clientId
-                                        });
-                                        client.publish(CLOUD_TOPIC, payload, { qos: 1, retain: true });
-                                    }
-                                }, 600);
-                            }
-                        });
-                    });
-
-                    client.on('message', (topic, message) => {
-                        if (topic === CLOUD_TOPIC && message) {
-                            applyIncomingCloudData(message.toString());
+                            renderPresets();
+                            renderOrders();
+                            applyUIWithConfig();
                         }
-                    });
-
-                    client.on('error', () => {
-                        // 개별 브로커 일시적 연결 제한 시 조용히 무시하고 다른 브로커 유지
-                    });
-
-                    mqttClients.push(client);
-                } catch (err) {
-                    // 연결 예외 발생 시 무시하여 콘솔 에러 방지
-                }
-            });
+                    } else {
+                        saveStateToStorage();
+                    }
+                }, (error) => {
+                    console.error("실시간 수신 오류:", error);
+                    updateSyncStatusBadge('error');
+                });
+            } catch (err) {
+                console.error("Firebase 연결 실패:", err);
+                updateSyncStatusBadge('error');
+            }
         }
 
         window.forceSyncNow = function() {
-            mqttClients.forEach(client => {
-                if (client && client.connected) {
-                    client.unsubscribe(CLOUD_TOPIC, () => {
-                        client.subscribe(CLOUD_TOPIC, { qos: 1 });
-                    });
-                }
-            });
-            showToast("🔄 실시간 클라우드 데이터를 최신 상태로 동기화했습니다.");
+            if (isCloudReady) {
+                showToast("✓ Google Firebase 클라우드와 실시간 연결되어 있습니다.");
+            } else {
+                initFirebaseSync();
+                showToast("🔄 클라우드 재연결을 시도합니다...");
+            }
         };
 
         window.updateBudgetUI = function() {
@@ -559,21 +520,17 @@
                 progressBar.style.width = remainPercent + '%';
             }
 
-            // 잔액 비율에 따라 카드 배경, 배지, 상태 점, 게이지 바 색상이 직관적으로 변화
             if (balance <= 0 || remainPercent <= 20) {
-                // 잔액 부족 또는 초과 (위험 - 로즈 레드)
                 if (cardBox) cardBox.className = "md:col-span-5 bg-rose-50/70 p-4 rounded-xl border border-rose-300 shadow-2xs flex flex-col justify-center space-y-2 transition-colors duration-300";
                 if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-rose-500 animate-ping";
                 balanceEl.className = "text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-lg bg-rose-600 text-white border border-rose-700 shadow-xs transition-colors duration-300";
                 if (progressBar) progressBar.className = "bg-rose-500 h-2.5 rounded-full transition-all duration-500";
             } else if (remainPercent <= 50) {
-                // 잔액 절반 이하 (주의 - 앰버 오렌지)
                 if (cardBox) cardBox.className = "md:col-span-5 bg-amber-50/70 p-4 rounded-xl border border-amber-300 shadow-2xs flex flex-col justify-center space-y-2 transition-colors duration-300";
                 if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-amber-500";
                 balanceEl.className = "text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-lg bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs transition-colors duration-300";
                 if (progressBar) progressBar.className = "bg-amber-500 h-2.5 rounded-full transition-all duration-500";
             } else {
-                // 잔액 여유 (안정 - 에메랄드 그린)
                 if (cardBox) cardBox.className = "md:col-span-5 bg-emerald-50/60 p-4 rounded-xl border border-emerald-200 shadow-2xs flex flex-col justify-center space-y-2 transition-colors duration-300";
                 if (statusDot) statusDot.className = "w-2 h-2 rounded-full bg-emerald-500";
                 balanceEl.className = "text-xs sm:text-sm font-extrabold px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-2xs transition-colors duration-300";
@@ -710,7 +667,7 @@
             });
         };
 
-        window.handleFormSubmit = function(e) {
+        window.handleFormSubmit = async function(e) {
             e.preventDefault();
             const authorInput = document.getElementById('author').value.trim() || '익명';
             const categoryInput = document.getElementById('category').value;
@@ -737,15 +694,15 @@
             myLikedIds.push(newOrder.id);
             
             renderOrders();
-            saveStateToStorage();
+            await saveStateToStorage();
 
             document.getElementById('item_name').value = '';
             document.getElementById('link').value = '';
             document.getElementById('req_note').value = '';
-            showToast("✨ 신청이 즉시 등록되었습니다!");
+            showToast("✨ 신청이 실시간으로 등록되었습니다!");
         };
 
-        window.toggleLike = function(id) {
+        window.toggleLike = async function(id) {
             const order = orders.find(o => o.id === id);
             if (!order) return;
             const index = myLikedIds.indexOf(id);
@@ -757,7 +714,7 @@
                 order.likes += 1;
             }
             renderOrders();
-            saveStateToStorage();
+            await saveStateToStorage();
         };
 
         window.deleteOrder = function(id) {
@@ -771,14 +728,14 @@
             document.getElementById('deleteConfirmModal').classList.add('hidden');
         };
 
-        window.confirmDeleteOrder = function() {
+        window.confirmDeleteOrder = async function() {
             if (!isAdmin || pendingDeleteId === null) return;
             orders = orders.filter(o => o.id !== pendingDeleteId);
             pendingDeleteId = null;
             document.getElementById('deleteConfirmModal').classList.add('hidden');
             renderOrders();
             updateBudgetUI();
-            saveStateToStorage();
+            await saveStateToStorage();
             showToast("삭제되었습니다.");
         };
 
@@ -821,7 +778,7 @@
         window.closeBudgetModal = function() {
             document.getElementById('budgetModal').classList.add('hidden');
         };
-        window.handleSaveBudget = function() {
+        window.handleSaveBudget = async function() {
             const val = Number(document.getElementById('budgetInputModal').value);
             if (isNaN(val) || val < 0) {
                 showToast("올바른 금액을 입력해주세요.");
@@ -829,7 +786,7 @@
             }
             appConfig.totalBudget = val;
             updateBudgetUI();
-            saveStateToStorage();
+            await saveStateToStorage();
             closeBudgetModal();
             showToast("예산이 즉시 수정되었습니다.");
         };
@@ -844,7 +801,7 @@
             document.getElementById('priceModal').classList.add('hidden');
             activeTargetId = null;
         };
-        window.saveItemPrice = function() {
+        window.saveItemPrice = async function() {
             if (!activeTargetId) return;
             const val = Number(document.getElementById('priceInputModal').value) || 0;
             const o = orders.find(x => x.id === activeTargetId);
@@ -852,7 +809,7 @@
                 o.price = val;
                 renderOrders();
                 updateBudgetUI();
-                saveStateToStorage();
+                await saveStateToStorage();
                 showToast("결제 금액이 즉시 반영되었습니다.");
             }
             closePriceModal();
@@ -868,14 +825,14 @@
             document.getElementById('memoModal').classList.add('hidden');
             activeTargetId = null;
         };
-        window.saveItemMemo = function() {
+        window.saveItemMemo = async function() {
             if (!activeTargetId) return;
             const val = document.getElementById('memoInputModal').value.trim();
             const o = orders.find(x => x.id === activeTargetId);
             if (o) {
                 o.adminMemo = val;
                 renderOrders();
-                saveStateToStorage();
+                await saveStateToStorage();
                 showToast("담당자 메모가 등록되었습니다.");
             }
             closeMemoModal();
@@ -888,16 +845,16 @@
         window.closeAddPresetModal = function() {
             document.getElementById('presetModal').classList.add('hidden');
         };
-        window.saveNewPreset = function() {
+        window.saveNewPreset = async function() {
             const val = document.getElementById('presetNameInput').value.trim();
             if (!val) return;
             presets.push({ name: val, category: document.getElementById('category').value, link: document.getElementById('link').value.trim() });
-            saveStateToStorage();
+            await saveStateToStorage();
             renderPresets();
             closeAddPresetModal();
             showToast("단골 품목이 추가되었습니다.");
         };
-        window.registerToPreset = function(id) {
+        window.registerToPreset = async function(id) {
             const o = orders.find(x => x.id === id);
             if (!o) return;
             if (presets.some(p => p.name === o.name)) {
@@ -905,7 +862,7 @@
                 return;
             }
             presets.push({ name: o.name, category: o.category, link: o.link || '' });
-            saveStateToStorage();
+            await saveStateToStorage();
             renderPresets();
             showToast("단골 품목으로 등록되었습니다.");
         };
@@ -917,10 +874,10 @@
         window.closeSettingsModal = function() {
             document.getElementById('settingsModal').classList.add('hidden');
         };
-        window.saveSettings = function() {
+        window.saveSettings = async function() {
             appConfig.notice = document.getElementById('settingNoticeInput').value.trim();
             applyUIWithConfig();
-            saveStateToStorage();
+            await saveStateToStorage();
             closeSettingsModal();
             showToast("설정이 저장되었습니다.");
         };
@@ -933,23 +890,12 @@
             setTimeout(() => { toast.remove(); }, 2500);
         };
 
-        window.onload = function() {
-            loadStateFromStorage();
-            renderPresets();
-            renderOrders();
-            applyUIWithConfig();
-            initCloudSync();
-
-            // 다른 창이나 탭에서 데이터가 바뀔 때 실시간 동기화 감지
-            window.addEventListener('storage', (e) => {
-                if (e.key === STORAGE_KEY) {
-                    loadStateFromStorage();
-                    renderOrders();
-                    renderPresets();
-                    applyUIWithConfig();
-                }
-            });
-        };
+        // 초기 실행
+        loadStateFromStorage();
+        renderPresets();
+        renderOrders();
+        applyUIWithConfig();
+        initFirebaseSync();
     </script>
 </body>
 </html>
