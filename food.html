@@ -244,7 +244,7 @@ body { font-family: 'Pretendard', sans-serif; background-color: #EDF2F7; }
     </div>
 </div>
 
-<!-- 단골 품목 추가 모달 (분류 + 품목명 + 구매 링크) -->
+<!-- 단골 품목 추가 모달 -->
 <div id="presetModal" class="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200">
         <h3 class="text-base font-extrabold text-slate-900 mb-1">+ 자주 찾는 단골 품목 추가</h3>
@@ -276,7 +276,7 @@ body { font-family: 'Pretendard', sans-serif; background-color: #EDF2F7; }
     </div>
 </div>
 
-<!-- 설정 모달 (비밀번호 변경 실시간 동기화) -->
+<!-- 설정 모달 -->
 <div id="settingsModal" class="fixed inset-0 bg-slate-900/50 z-50 flex items-center justify-center hidden p-4">
     <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl border border-slate-200">
         <h3 class="text-base font-extrabold text-slate-900 mb-2">⚙️ 보드 및 비밀번호 설정</h3>
@@ -339,21 +339,40 @@ function showToast(msg) {
     setTimeout(function() { el.remove(); }, 2200);
 }
 
-function getSmartEmoji(name, category) {
-    // 선택한 카테고리가 명확하면 카테고리 아이콘을 최우선 적용
-    if (category === "커피·음료") return "🥤";
-    if (category === "라면·간편식") return "🍜";
-    if (category === "탕비실 소모품") return "🧻";
-    if (category === "사무용품") return "📎";
-    if (category === "과자·스낵") {
-        // 과자·스낵이라도 품목명 키워드가 음료/라면/소모품이면 보조 판별
-        var n = (name || "").toLowerCase();
-        if (n.indexOf("콜라") !== -1 || n.indexOf("사이다") !== -1 || n.indexOf("커피") !== -1 || n.indexOf("음료") !== -1 || n.indexOf("우유") !== -1) return "🥤";
-        if (n.indexOf("라면") !== -1 || n.indexOf("구운란") !== -1 || n.indexOf("햇반") !== -1) return "🍜";
-        if (n.indexOf("휴지") !== -1 || n.indexOf("물티슈") !== -1 || n.indexOf("종이컵") !== -1) return "🧻";
-        return "🍪";
+// 카테고리 및 키워드별 스마트 썸네일 정보 반환
+function getSmartThumbnail(name, category) {
+    var n = (name || "").toLowerCase();
+    if (category === "커피·음료" || n.indexOf("콜라") !== -1 || n.indexOf("사이다") !== -1 || n.indexOf("커피") !== -1 || n.indexOf("음료") !== -1 || n.indexOf("차") !== -1 || n.indexOf("우유") !== -1 || n.indexOf("주스") !== -1) {
+        return { emoji: "🥤", label: "음료", bg: "bg-sky-50 text-sky-700 border-sky-200" };
     }
-    return "🍪";
+    if (category === "라면·간편식" || n.indexOf("라면") !== -1 || n.indexOf("계란") !== -1 || n.indexOf("구운란") !== -1 || n.indexOf("햇반") !== -1 || n.indexOf("간편식") !== -1) {
+        return { emoji: "🍜", label: "간편", bg: "bg-amber-50 text-amber-700 border-amber-200" };
+    }
+    if (category === "탕비실 소모품" || n.indexOf("휴지") !== -1 || n.indexOf("물티슈") !== -1 || n.indexOf("종이컵") !== -1 || n.indexOf("세제") !== -1 || n.indexOf("봉투") !== -1) {
+        return { emoji: "🧻", label: "소모", bg: "bg-teal-50 text-teal-700 border-teal-200" };
+    }
+    if (category === "사무용품" || n.indexOf("볼펜") !== -1 || n.indexOf("노트") !== -1 || n.indexOf("클립") !== -1 || n.indexOf("a4") !== -1) {
+        return { emoji: "📎", label: "사무", bg: "bg-purple-50 text-purple-700 border-purple-200" };
+    }
+    return { emoji: "🍪", label: "스낵", bg: "bg-rose-50 text-rose-700 border-rose-200" };
+}
+
+// 구매 링크가 있을 경우 상품 대표 이미지(og:image)를 비동기로 추출해 썸네일에 반영
+function fetchProductImageIfNeeded(orderItem) {
+    if (!orderItem || !orderItem.link || orderItem.link.indexOf("http") !== 0) return;
+    if (orderItem.thumbFetched) return;
+    orderItem.thumbFetched = true;
+
+    fetch("https://api.microlink.io/?url=" + encodeURIComponent(orderItem.link))
+        .then(function(res) { return res.json(); })
+        .then(function(resData) {
+            if (resData && resData.status === "success" && resData.data && resData.data.image && resData.data.image.url) {
+                orderItem.thumbUrl = resData.data.image.url;
+                saveToCloud();
+                renderAll();
+            }
+        })
+        .catch(function() {});
 }
 
 function loadLocal() {
@@ -480,7 +499,7 @@ function renderAll() {
     document.getElementById("budgetProgressBar").style.width = pct + "%";
     updateBudgetColors(balance, pct);
 
-    // 단골 품목 버튼 렌더링 (카테고리 맞춤 아이콘 + 링크 연결 표시 + 담당자 삭제 버튼)
+    // 단골 품목 버튼 렌더링
     var presetBox = document.getElementById("presetContainer");
     presetBox.innerHTML = "";
     state.presets.forEach(function(p, idx) {
@@ -490,9 +509,9 @@ function renderAll() {
         var b = document.createElement("button");
         b.type = "button";
         b.className = "text-xs text-slate-700 hover:text-teal-800 px-3 py-2 font-bold cursor-pointer flex items-center gap-1.5";
-        var emoji = getSmartEmoji(p.name, p.category);
+        var thumbInfo = getSmartThumbnail(p.name, p.category);
         var linkBadge = (p.link && p.link.indexOf("http") === 0) ? '<span class="text-[10px] text-[#0083CA] bg-blue-50 px-1.5 py-0.5 rounded font-extrabold">🔗링크</span>' : '';
-        b.innerHTML = '<span>' + emoji + '</span><span>' + p.name + '</span>' + linkBadge;
+        b.innerHTML = '<span>' + thumbInfo.emoji + '</span><span>' + p.name + '</span>' + linkBadge;
         b.onclick = function() {
             document.getElementById("category").value = p.category || "과자·스낵";
             document.getElementById("item_name").value = p.name;
@@ -539,22 +558,50 @@ function renderAll() {
 
     list.forEach(function(o) {
         var liked = myLikes.indexOf(o.id) !== -1;
+        var thumbInfo = getSmartThumbnail(o.name, o.category);
+
         var card = document.createElement("div");
         card.className = "bg-white rounded-2xl p-5 border border-slate-200/90 shadow-md hover:shadow-lg transition space-y-3";
 
         var topRow = document.createElement("div");
-        topRow.className = "flex flex-col sm:flex-row justify-between items-start gap-3";
+        topRow.className = "flex flex-col sm:flex-row justify-between items-start gap-3.5";
+
+        // 좌측: 썸네일 영역 + 텍스트 정보 영역 묶음
+        var leftWrap = document.createElement("div");
+        leftWrap.className = "flex items-start gap-3.5 flex-1 min-w-0";
+
+        // 썸네일 박스 (상품 이미지 URL이 있으면 실제 이미지 표시, 없으면 스마트 아이콘 배지 표시)
+        var thumbBox = document.createElement("div");
+        thumbBox.className = "w-14 h-14 rounded-2xl border " + thumbInfo.bg + " flex flex-col items-center justify-center shrink-0 overflow-hidden shadow-2xs select-none relative";
+        if (o.thumbUrl) {
+            var img = document.createElement("img");
+            img.src = o.thumbUrl;
+            img.alt = o.name;
+            img.className = "w-full h-full object-cover";
+            img.onerror = function() {
+                thumbBox.innerHTML = '<span class="text-2xl leading-none">' + thumbInfo.emoji + '</span><span class="text-[9px] font-extrabold mt-1 leading-none">' + thumbInfo.label + '</span>';
+            };
+            thumbBox.appendChild(img);
+        } else {
+            thumbBox.innerHTML = '<span class="text-2xl leading-none">' + thumbInfo.emoji + '</span><span class="text-[9px] font-extrabold mt-1 leading-none">' + thumbInfo.label + '</span>';
+            if (o.link && o.link.indexOf("http") === 0 && !o.thumbFetched) {
+                fetchProductImageIfNeeded(o);
+            }
+        }
 
         var infoDiv = document.createElement("div");
         infoDiv.className = "space-y-1 flex-1 min-w-0";
         infoDiv.innerHTML = '<div class="flex flex-wrap items-center gap-1.5">'
-            + '<span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">' + getSmartEmoji(o.name, o.category) + ' ' + o.category + '</span>'
+            + '<span class="text-xs font-bold text-slate-700 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">' + o.category + '</span>'
             + '<span class="text-xs font-semibold text-slate-400">· ' + o.author + ' (' + (o.date || "오늘") + ')</span>'
             + '</div>'
             + '<div class="text-base font-extrabold text-slate-900 pt-0.5 break-words">' + o.name + '</div>'
             + (o.reqNote ? '<div class="text-xs font-medium text-slate-500">' + o.reqNote + '</div>' : '')
             + (o.adminMemo ? '<div class="mt-2.5 text-xs font-bold bg-[#159E8A]/10 text-[#0F766E] px-3.5 py-2.5 rounded-xl border border-[#159E8A]/25">📢 담당자 안내: ' + o.adminMemo + '</div>' : '')
             + (o.price > 0 ? '<div class="mt-2 text-xs font-bold bg-slate-100 text-slate-800 px-3 py-1.5 rounded-xl border border-slate-200 inline-block">💳 결제 완료 금액: <span class="text-[#0083CA] font-extrabold">' + Number(o.price).toLocaleString() + '원</span></div>' : '');
+
+        leftWrap.appendChild(thumbBox);
+        leftWrap.appendChild(infoDiv);
 
         var btnGroup = document.createElement("div");
         btnGroup.className = "flex items-center gap-2 self-end sm:self-center shrink-0";
@@ -582,7 +629,7 @@ function renderAll() {
         };
         btnGroup.appendChild(likeBtn);
 
-        topRow.appendChild(infoDiv);
+        topRow.appendChild(leftWrap);
         topRow.appendChild(btnGroup);
         card.appendChild(topRow);
 
@@ -709,6 +756,8 @@ document.getElementById("orderForm").onsubmit = function(e) {
         likes: 1,
         price: 0,
         adminMemo: "",
+        thumbUrl: "",
+        thumbFetched: false,
         date: new Date().toLocaleDateString("ko-KR", { month: "short", day: "numeric" })
     };
     state.orders.unshift(item);
@@ -767,7 +816,6 @@ document.getElementById("saveMemoBtn").onclick = function() {
     document.getElementById("memoModal").classList.add("hidden");
 };
 
-// 단골 품목 추가 모달 (분류 + 품목명 + 링크 저장)
 document.getElementById("openAddPresetBtn").onclick = function() {
     document.getElementById("presetCategoryInput").value = document.getElementById("category").value || "과자·스낵";
     document.getElementById("presetNameInput").value = "";
